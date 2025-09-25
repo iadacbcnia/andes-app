@@ -746,17 +746,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- INICIALIZACIÓN DE FIREBASE ---
     function initializeFirebase() {
         try {
-            const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-            if (!firebaseConfigStr) {
-                throw new Error("La configuración de Firebase no fue encontrada. La aplicación no puede funcionar.");
+            let firebaseConfig;
+            let initialAuthToken = null;
+
+            // Intenta usar la configuración dinámica de Canvas
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+                initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            } else {
+                // Si no está en Canvas, usa la configuración fija para Vercel/producción
+                firebaseConfig = {
+                    apiKey: "AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
+                    authDomain: "andes-app-turismo.firebaseapp.com",
+                    projectId: "andes-app-turismo",
+                    storageBucket: "andes-app-turismo.appspot.com",
+                    messagingSenderId: "685878856963",
+                    appId: "1:685878856963:web:660823dfdac24a0c39ed36"
+                };
             }
             
-            const firebaseConfig = JSON.parse(firebaseConfigStr);
-            if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-                throw new Error("La configuración de Firebase es inválida.");
+            if (!firebaseConfig || !firebaseConfig.apiKey) {
+                 throw new Error("La configuración de Firebase es inválida o no fue encontrada.");
             }
 
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
@@ -770,7 +782,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (consejosCollectionRef) listenForTips();
                 } else {
                     // Intenta iniciar sesión anónimamente o con token si no hay usuario
-                    await (initialAuthToken ? signInWithCustomToken(auth, initialAuthToken) : signInAnonymously(auth));
+                     try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (authError) {
+                        console.error("Error durante el inicio de sesión:", authError);
+                        // Muestra un error más específico si es posible
+                        if (authError.code === 'auth/configuration-not-found') {
+                           chatWindow.innerHTML = `<div class="ai-message text-red-500 p-4"><strong>Error de Configuración:</strong> No se encontró una configuración de autenticación válida. Verifica las reglas de tu proyecto Firebase.</div>`;
+                        }
+                    }
                 }
             });
         } catch (error) {
@@ -2313,4 +2337,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </body>
 </html>
 " selected as context.
+
 
