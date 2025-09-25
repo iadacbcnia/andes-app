@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andes - Tu Guía en la Comarca</title>
+    <script src="https://cdn.tailwindcss.com?v=2"></script>
+    <!-- Leaflet (Mapas) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- A-Frame (VR & AR) -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
+
+    <style>
+        :root {
+            --emerald-500: #10b981;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --gray-100: #f3f4f6;
+            --white: #ffffff;
+        }
+        .dark {
+            --bg-color: var(--slate-900);
+            --text-color: var(--gray-100);
+            --card-bg: var(--slate-800);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color, var(--gray-100));
+            color: var(--text-color, var(--slate-900));
+        }
+        .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
+        .ai-message { background-color: var(--card-bg, var(--white)); border-radius: 20px 20px 20px 5px; }
+        .sponsored-message {
+            background-color: var(--card-bg, var(--white));
+            border: 2px solid #facc15; /* yellow-400 */
+            box-shadow: 0 4px 14px 0 rgba(250, 204, 21, 0.3);
+        }
+        .place-link { color: var(--emerald-500); font-weight: 500; cursor: pointer; }
+        .place-link:hover { text-decoration: underline; }
+        .typing-indicator span {
+            height: 8px; width: 8px; background-color: #9ca3af;
+            border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-of-type(2) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-of-type(3) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        /* Estilos para el Rating Modal */
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; }
+        .star-rating input:checked ~ label, .star-rating:not(:checked) > label:hover, .star-rating:not(:checked) > label:hover ~ label { color: #f59e0b; }
+        /* Mapa */
+        #map { height: 100%; width: 100%; }
+        /* AR */
+        .ar-top-bar { position: absolute; top: 0; left: 0; right: 0; padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .ar-pill { background-color: rgba(0, 0, 0, 0.6); color: white; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; }
+        #ar-status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; color: white; background-color: rgba(0,0,0,0.7); padding: 1rem; border-radius: 0.5rem; text-align: center; }
+        
+        /* Estilo para el micrófono cuando está escuchando */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .mic-listening {
+            color: #ef4444; /* red-500 */
+            animation: pulse-red 1.5s infinite;
+            border-radius: 50%;
+        }
+
+    </style>
+     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
+</head>
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-16 md:w-64 bg-white dark:bg-slate-800 p-2 md:p-4 flex flex-col justify-between transition-all duration-300">
+        <div>
+            <div class="flex items-center justify-center md:justify-start mb-6">
+                <svg class="h-10 w-10 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 2a.75.75 0 01.75.75v.512c3.344.254 6.133 2.37 7.426 5.234a.75.75 0 01-1.352.648A6.388 6.388 0 0010.75 4.512V14.75a.75.75 0 01-1.5 0V4.512A6.388 6.388 0 003.176 8.496a.75.75 0 01-1.352-.648C3.114 5.132 5.903 3.016 9.25 2.762V2.75A.75.75 0 0110 2z" />
+                    <path d="M10 18a2 2 0 100-4 2 2 0 000 4zM2.5 10a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H3.25a.75.75 0 01-.75-.75z" />
+                </svg>
+                <h1 class="hidden md:block text-2xl font-bold ml-2">Andes</h1>
+            </div>
+            <nav class="space-y-2">
+                 <!-- BOTONES PÚBLICOS -->
+                 <button id="planner-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
+                    <span class="hidden md:block ml-3">Planificador de Viaje</span>
+                 </button>
+                 <button id="rincon-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.028.658a.78.78 0 01-.357.443 3.377 3.377 0 01-2.924.001zM18 8a2 2 0 11-4 0 2 2 0 014 0zm-1.808 1.054a6.458 6.458 0 00-1.905-3.959 3 3 0 014.308 3.516.78.78 0 01-.357-.443c.042-.216.051-.436.028-.658a.78.78 0 01-.358.442 3.377 3.377 0 01-2.924-.001zM10 18a3 3 0 100-6 3 3 0 000 6z" /></svg>
+                    <span class="hidden md:block ml-3">Rincón del Viajero</span>
+                </button>
+                 <button id="map-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
+                     <span class="hidden md:block ml-3">Mapa Interactivo</span>
+                </button>
+                 <button id="ar-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
+                    <span class="hidden md:block ml-3">Ver en AR</span>
+                </button>
+                 <!-- BOTÓN ADMIN -->
+                 <button id="admin-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+                    <span class="hidden md:block ml-3">Admin</span>
+                </button>
+            </nav>
+        </div>
+        <!-- Radio Player -->
+        <div class="mt-auto p-2">
+            <div class="bg-gray-100 dark:bg-slate-700 rounded-lg p-2">
+                 <button id="radio-btn" class="w-full flex items-center justify-center md:justify-start">
+                    <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
+                        <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
+                        <div id="radio-icon-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white">
+                            <!-- Play/Pause SVG will be inserted here by JS -->
+                        </div>
+                    </div>
+                    <div class="hidden md:block ml-2 overflow-hidden">
+                        <p class="font-semibold text-sm truncate">FM Paraíso 42</p>
+                        <p id="radio-status-text" class="text-xs text-gray-500 dark:text-gray-400">Click para escuchar</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen">
+        <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
+            <!-- Mensaje de bienvenida inicial -->
+            <div class="w-full flex justify-start">
+                <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
+                    ¡Hola! Soy Andes, tu guía personal en la Comarca Andina. Estoy aquí para ayudarte a descubrir los mejores lugares, planificar tu día o simplemente contarte sobre el clima. ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+            <!-- Sugerencias -->
+            <div id="suggestions" class="flex flex-wrap gap-2 mb-2">
+                <!-- Los botones de sugerencia se añaden aquí dinámicamente -->
+            </div>
+             <form id="chat-form" class="flex items-center gap-2">
+                 <div class="relative w-full">
+                    <input type="text" id="chat-input" placeholder="Pregúntame algo..." class="w-full p-3 pr-20 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <button type="button" id="mic-btn" class="absolute inset-y-0 right-10 flex items-center p-3 text-gray-500 hover:text-emerald-500">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                    </button>
+                 </div>
+                <button type="submit" class="bg-emerald-500 text-white p-3 rounded-lg hover:bg-emerald-600 disabled:bg-emerald-300">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.949a.75.75 0 00.95.544l4.25-1.214a.75.75 0 01.44 1.392l-4.25 1.214a.75.75 0 00-.95.544l-1.414 4.949a.75.75 0 00.826.95l14.083-4.024a.75.75 0 000-1.425L3.105 2.289z" /></svg>
+                </button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<!-- =============================================================== -->
+<!-- ======================= MODALES DE LA APP ===================== -->
+<!-- =============================================================== -->
+
+<!-- Planner Modal -->
+<div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
+        
+        <div class="text-center mb-8">
+             <div class="inline-block bg-emerald-100 dark:bg-emerald-900/50 p-3 rounded-full mb-3">
+                <svg class="h-10 w-10 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.5-13.5-3.432 3.432-3.432-3.432s.5-1.5 1.5-1.5 2.432 1.5 3.432 1.5 1.932-1.5 1.932-1.5ZM8.25 18.75h7.5" />
+                </svg>
+             </div>
+            <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100">Crea tu Aventura Perfecta</h3>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 3 datos para diseñarte un plan a medida.</p>
+        </div>
+
+        <button id="close-planner-modal-btn" class="absolute top-4 left-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-gray-200">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+           </svg>
+        </button>
+
+        <form id="planner-form" class="space-y-6">
+            <!-- Paso 1: Estilo de Viaje con Botones -->
+            <div>
+                <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">1</span>
+                    Tu estilo de viaje
+                </label>
+                <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
+                    <button type="button" data-value="Aventura" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-emerald-500 text-white border-emerald-500">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
+                        <span class="font-semibold">Aventura</span>
+                    </button>
+                    <button type="button" data-value="Relax" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>
+                        <span class="font-semibold">Relax</span>
+                    </button>
+                    <button type="button" data-value="Familiar" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3.75 3.75 0 0115 12a3.75 3.75 0 01-2.25 3.512m-9.75-2.962c0-.552.246-1.631 1.25-2.262a25.814 25.814 0 017.5 0c1.004.631 1.25 1.71 1.25 2.262m-9.75 1.068c0 .551.246 1.631 1.25 2.261a25.814 25.814 0 007.5 0c1.004-.63 1.25-1.71 1.25-2.261M12 6a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z" /></svg>
+                        <span class="font-semibold">Familiar</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Paso 2: Días -->
+            <div>
+                 <label for="planner-days" class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
+                    ¿Cuántos días te quedas?
+                </label>
+                <input type="number" id="planner-days" value="3" min="1" max="14" class="mt-1 block w-full p-3 border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-lg shadow-sm text-base text-center font-bold text-xl focus:border-emerald-500 focus:ring-emerald-500">
+            </div>
+            <!-- Paso 3: Nivel de Energía con Botones -->
+            <div>
+                 <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
+                    Tu nivel de energía
+                </label>
+                <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
+                     <button type="button" data-value="Bajo" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <span class="text-2xl">🐢</span>
+                        <span class="font-semibold">Bajo</span>
+                    </button>
+                     <button type="button" data-value="Medio" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-emerald-500 text-white border-emerald-500">
+                         <span class="text-2xl">🚶‍♂️</span>
+                        <span class="font-semibold">Medio</span>
+                    </button>
+                     <button type="button" data-value="Alto" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                         <span class="text-2xl">⚡</span>
+                        <span class="font-semibold">Alto</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pt-6">
+                <button type="submit" class="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:bg-emerald-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M3.5 2.75a.75.75 0 00-1.5 0v14.5a.75.75 0 001.5 0v-4.392l1.657-.348a6.44 6.44 0 014.231.575l.256.102a.75.75 0 00.868-.133l4.25-4.25a.75.75 0 00-.133-.868l-.102-.256a6.44 6.44 0 01-.575-4.231l.348-1.657V2.75z" />
+                    </svg>
+                    Generar Mi Plan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Admin Password Modal -->
+<div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Acceso de Administrador</h3>
+            <form id="password-form" class="mt-4 space-y-4">
+                <div>
+                    <label for="password-input" class="sr-only">Contraseña</label>
+                    <input type="password" id="password-input" placeholder="Ingresa la contraseña" class="w-full p-2 rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700">
+                    <p id="password-error" class="text-red-500 text-xs mt-1 hidden">Contraseña incorrecta.</p>
+                </div>
+                <div class="flex justify-end space-x-2">
+                     <button type="button" id="close-password-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-emerald-600">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel Modal -->
+<div id="admin-panel-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="flex justify-between items-center pb-3 border-b dark:border-slate-600">
+             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Panel de Administración</h3>
+             <button id="close-admin-panel-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+             </button>
+        </div>
+        <div class="mt-4 space-y-3">
+            <p class="text-sm text-gray-600 dark:text-gray-300">Desde aquí puedes añadir nuevo contenido y gestionar la información existente.</p>
+            <button id="admin-add-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                Añadir Nuevo Lugar
+            </button>
+            <button id="admin-manage-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 001 5.5v9A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0017.5 4h-15zM2 5.5a.5.5 0 01.5-.5h15a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-15a.5.5 0 01-.5-.5v-9zM8 8a.75.75 0 000 1.5h4a.75.75 0 000-1.5H8z" clip-rule="evenodd" /></svg>
+                Gestionar Contenido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================================== -->
+<!-- ================== FIN MODALES DE ADMIN ======================= -->
+<!-- =============================================================== -->
+
+
+<!-- Contribution Modal -->
+<div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="mt-3 text-center">
+            <h3 id="contribution-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Añadir conocimiento a Andes</h3>
+            <div class="mt-2 flex-grow overflow-y-auto p-2">
+                <!-- Tabs -->
+                <div id="contribution-tabs" class="border-b border-gray-200 dark:border-slate-600">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button id="tab-single" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-emerald-500 border-emerald-500">Añadir Uno</button>
+                        <button id="tab-bulk" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200">Carga Rápida</button>
+                    </nav>
+                </div>
+
+                <!-- Single Entry Form -->
+                <form id="contribution-form" class="mt-4 space-y-4 text-left">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div>
+                            <label for="lugar-tipo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Lugar</label>
+                            <select id="lugar-tipo" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option value="restaurantes" data-subtype="Restaurante">Restaurante</option>
+                                <option value="restaurantes" data-subtype="Bar">Bar</option>
+                                <option value="restaurantes" data-subtype="Confitería">Confitería</option>
+                                <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
+                                <option value="alojamiento" data-subtype="Apart Hotel">Apart Hotel</option>
+                                <option value="alojamiento" data-subtype="Cabañas">Cabañas</option>
+                                <option value="alojamiento" data-subtype="Campings">Campings</option>
+                                <option value="alojamiento" data-subtype="Hoteles">Hoteles</option>
+                                <option value="alojamiento" data-subtype="Hosterias">Hosterias</option>
+                                <option value="alojamiento" data-subtype="Hospedajes">Hospedajes</option>
+                                <option value="alojamiento" data-subtype="Hostels">Hostels</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Casas">Alquiler de Casas</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Departamentos">Alquiler de Departamentos</option>
+                                <option value="alojamiento" data-subtype="Bread & Breakfast">Bread & Breakfast</option>
+                                <option value="actividades">Actividades</option>
+                                <option value="lugaresParaVisitar">Lugar para Visitar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lugar-localidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Localidad</label>
+                            <select id="lugar-localidad" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option>El Bolsón</option>
+                                <option>Lago Puelo</option>
+                                <option>El Hoyo</option>
+                                <option>Epuyén</option>
+                                <option>El Maitén</option>
+                                <option>Cholila</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Lugar</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-nombre" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-direccion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirección (Opcional)</label>
+                         <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-direccion" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono (Opcional)</label>
+                         <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-telefono" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                           <label for="lugar-latitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Latitud (Opcional)</label>
+                           <input type="text" id="lugar-latitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-41.9669">
+                        </div>
+                        <div>
+                           <label for="lugar-longitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Longitud (Opcional)</label>
+                           <input type="text" id="lugar-longitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-71.5333">
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Busca el lugar en Google Maps, haz clic derecho y copia las coordenadas (ej: -41.96, -71.53).</p>
+                     <div>
+                        <label for="lugar-imagen" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen (Opcional)</label>
+                        <input type="url" id="lugar-imagen" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto.jpg">
+                    </div>
+                     <div>
+                        <label for="lugar-imagen360" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen 360° (Opcional)</label>
+                        <input type="url" id="lugar-imagen360" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto_360.jpg">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pega aquí el link a una foto equirectangular (formato 360°).</p>
+                    </div>
+                     <div>
+                        <label for="lugar-descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Principal</label>
+                        <div class="relative w-full mt-1">
+                           <textarea id="lugar-descripcion" rows="3" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
+                           <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                       </div>
+                    </div>
+                    <div>
+                        <label for="lugar-datos-clave" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Datos Clave / Puntos a Destacar (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <textarea id="lugar-datos-clave" rows="3" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="Ej: Horario: 9 a 18hs.&#10;No se aceptan mascotas.&#10;Aclaración: No hay un laberinto para niños."></textarea>
+                            <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                        </div>
+                    </div>
+                     <div class="flex items-center">
+                        <input id="lugar-sponsor" type="checkbox" class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                        <label for="lugar-sponsor" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">⭐ Es un lugar recomendado</label>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px]">Añadir Lugar</button>
+                    </div>
+                </form>
+
+                <!-- Bulk Entry Form -->
+                <div id="bulk-entry-form-container" class="hidden mt-4 text-left">
+                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pega cada lugar en una nueva línea. Separa cada dato con una coma. <strong class="dark:text-gray-200">La descripción siempre debe ir al final.</strong></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 mb-2">Si no tienes un dato (ej: teléfono o coordenadas), deja el espacio vacío entre las comas.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 p-2 rounded-md mb-4"><code>Tipo: Cabañas, Nombre: Mi Cabaña, Localidad: El Bolsón, ... , Descripción completa...: Texto libre.</code></p>
+                    <div class="relative w-full mt-1">
+                        <textarea id="bulk-input" rows="8" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md" placeholder="Tipo: Cabañas, Nombre: Cabaña La Escondida, Localidad: El Hoyo, Dirección: Curva de fin de la recta de El Pedregoso, Teléfono: +54 (294) 459-7157, Latitud: -42.007621, Longitud: -71.522818, Descripción completa...: Cabaña con capacidad para 4 personas, ideal para el descanso"></textarea>
+                        <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                        </button>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button type="button" id="process-bulk-btn" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Procesar</button>
+                    </div>
+                    <div id="bulk-review-container" class="mt-4"></div>
+                </div>
+
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="close-contribution-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Management Modal -->
+<div id="manage-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <!-- Header del modal con botones de descarga y restauración -->
+        <div class="flex flex-wrap justify-between items-center mb-4 pb-2 border-b dark:border-slate-600 gap-2">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Gestionar Contenido</h3>
+            <div class="flex items-center gap-2">
+                <button id="restore-backup-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 text-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Restaurar Backup
+                </button>
+                <button id="download-backup-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 text-sm flex items-center gap-2">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                       <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                     </svg>
+                    Descargar Backup
+                </button>
+            </div>
+        </div>
+        <div id="manage-list" class="flex-grow overflow-y-auto pr-2">
+            <!-- La lista agrupada se mostrará aquí -->
+        </div>
+        <div class="items-center px-4 py-3 text-right mt-4 border-t dark:border-slate-600">
+            <button id="close-manage-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Nuevo modal para "El Rincón del Viajero" -->
+<div id="rincon-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">El Rincón del Viajero</h3>
+            <button id="close-rincon-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <!-- Formulario para dejar un consejo -->
+        <form id="tip-form" class="mb-4">
+            <label for="tip-input" class="sr-only">Deja tu consejo</label>
+            <textarea id="tip-input" rows="3" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md" placeholder="Comparte un dato, una recomendación o un consejo para otros viajeros..."></textarea>
+            <div class="text-right mt-2">
+                <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Compartir Consejo</button>
+            </div>
+        </form>
+        <!-- Lista de consejos -->
+        <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4">
+            <!-- Los consejos de los viajeros se mostrarán aquí -->
+        </div>
+    </div>
+</div>
+
+<!-- Nuevo modal para Valoraciones y Comentarios -->
+<div id="rating-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
+            <h3 id="rating-modal-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Opiniones y Valoraciones</h3>
+            <button id="close-rating-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <!-- Rating y Comentarios -->
+        <div class="flex-grow overflow-y-auto pr-2">
+            <div id="average-rating-container" class="text-center mb-4"></div>
+            <div id="comments-list" class="space-y-4"></div>
+        </div>
+        <!-- Formulario para valorar -->
+        <form id="rating-form" class="mt-4 border-t dark:border-slate-600 pt-4">
+            <h4 class="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Deja tu valoración</h4>
+            <div class="star-rating mb-2">
+                <input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars">★</label>
+                <input type="radio" id="4-stars" name="rating" value="4" /><label for="4-stars">★</label>
+                <input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars">★</label>
+                <input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars">★</label>
+                <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star">★</label>
+            </div>
+            <textarea id="comment-input" rows="3" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md" placeholder="Escribe tu comentario aquí..."></textarea>
+            <div class="text-right mt-2">
+                <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Enviar Opinión</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Input oculto para seleccionar el archivo de backup -->
+<input type="file" id="backup-file-input" accept=".csv" class="hidden">
+
+
+<!-- Confirm Delete Modal (Individual & Planner) -->
+<div id="confirm-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Confirmar Eliminación</h3>
+        <p id="delete-confirmation-text" class="mt-2 text-sm text-gray-600 dark:text-gray-300">¿Estás seguro de que quieres eliminar este elemento?</p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Restore Modal -->
+<div id="confirm-restore-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-red-600 dark:text-red-400">¡Acción Irreversible!</h3>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            Estás a punto de <strong class="font-bold">BORRAR TODOS</strong> los datos actuales y reemplazarlos por el contenido del archivo de backup.
+            <br><br>
+            ¿Estás completamente seguro?
+        </p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-restore-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-restore-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Sí, restaurar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para confirmar borrado de rubro -->
+<div id="confirm-rubro-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-red-600 dark:text-red-400">Confirmar Eliminación de Rubro</h3>
+        <p id="rubro-delete-confirmation-text" class="mt-2 text-sm text-gray-600 dark:text-gray-300"></p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-rubro-delete-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-rubro-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Sí, eliminar rubro</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para el Mapa Interactivo -->
+<div id="map-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full hidden z-[80] transition-opacity duration-300 flex flex-col">
+    <div class="bg-white dark:bg-slate-800 p-3 flex justify-between items-center shadow-md">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Mapa Interactivo de la Comarca</h3>
+        <button id="close-map-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-gray-200" viewBox="0 0 20 20" fill="currentColor">
+               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+             </svg>
+        </button>
+    </div>
+    <div id="map-container" class="flex-grow">
+        <div id="map"></div>
+    </div>
+</div>
+
+<!-- Modal para la Vista de Realidad Virtual (360°) -->
+<div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
+    <div class="absolute top-0 right-0 p-2 z-10">
+        <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+    <a-scene id="vr-scene" embedded>
+      <a-sky id="vr-sky" radius="100"></a-sky>
+    </a-scene>
+</div>
+
+
+<!-- Modal para Realidad Aumentada -->
+<div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
+    <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
+        <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div id="ar-permissions-pill" class="ar-pill"></div>
+    </div>
+    <div id="ar-status"></div>
+    <div id="ar-modal-content">
+        <!-- La escena de A-Frame para AR se inyectará aquí dinámicamente -->
+    </div>
+</div>
+
+
+<audio id="radio-player" preload="none"></audio>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, setLogLevel, doc, updateDoc, deleteDoc, writeBatch, getDocs, query, orderBy, runTransaction, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- OBTENER ELEMENTOS DEL HTML ---
+    // Chat
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const suggestionsContainer = document.getElementById('suggestions');
+    const micBtn = document.getElementById('mic-btn');
+    
+    // Modales
+    const contributionModal = document.getElementById('contribution-modal');
+    const manageModal = document.getElementById('manage-modal');
+    const rinconModal = document.getElementById('rincon-modal');
+    const ratingModal = document.getElementById('rating-modal');
+    const mapModal = document.getElementById('map-modal');
+    const vrModal = document.getElementById('vr-modal');
+    const arModal = document.getElementById('ar-modal');
+    const passwordModal = document.getElementById('password-modal');
+    const adminPanelModal = document.getElementById('admin-panel-modal');
+    const plannerModal = document.getElementById('planner-modal');
+    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+    const confirmRubroDeleteModal = document.getElementById('confirm-rubro-delete-modal');
+    const deleteConfirmationText = document.getElementById('delete-confirmation-text');
+    const rubroDeleteConfirmationText = document.getElementById('rubro-delete-confirmation-text');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelRubroDeleteBtn = document.getElementById('cancel-rubro-delete-btn');
+    const confirmRubroDeleteBtn = document.getElementById('confirm-rubro-delete-btn');
+    
+    // Rating Modal Elements
+    const ratingModalTitle = document.getElementById('rating-modal-title');
+    const averageRatingContainer = document.getElementById('average-rating-container');
+    const commentsList = document.getElementById('comments-list');
+    const ratingForm = document.getElementById('rating-form');
+    const commentInput = document.getElementById('comment-input');
+
+
+    // Botones de la barra lateral
+    const rinconBtn = document.getElementById('rincon-btn');
+    const mapBtn = document.getElementById('map-btn');
+    const arBtn = document.getElementById('ar-btn');
+    const adminBtn = document.getElementById('admin-btn');
+    const plannerBtn = document.getElementById('planner-btn');
+
+    // Botones para cerrar modales
+    const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
+    const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
+    const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
+    const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
+    const closeMapModalBtn = document.getElementById('close-map-modal-btn');
+    const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
+    const closeArModalBtn = document.getElementById('close-ar-modal-btn');
+    const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
+    const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
+    const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
+
+    // Elementos del panel de Admin
+    const passwordForm = document.getElementById('password-form');
+    const passwordInput = document.getElementById('password-input');
+    const passwordError = document.getElementById('password-error');
+    const adminAddBtn = document.getElementById('admin-add-btn');
+    const adminManageBtn = document.getElementById('admin-manage-btn');
+
+    // Formularios
+    const contributionForm = document.getElementById('contribution-form');
+    const tipForm = document.getElementById('tip-form');
+    const tipInput = document.getElementById('tip-input');
+    const plannerForm = document.getElementById('planner-form');
+
+    const vrSky = document.getElementById('vr-sky');
+    const manageList = document.getElementById('manage-list');
+    const rinconList = document.getElementById('rincon-list');
+    
+    // --- VARIABLES GLOBALES Y CONFIGURACIÓN ---
+    const apiKey = "";
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    let db;
+    let auth;
+    let userId;
+    let lugaresCollectionRef;
+    let consejosCollectionRef;
+    let dynamicKnowledgeBase = {};
+    let placesCache = [];
+    let chatHistory = [];
+    let tipsCache = [];
+    let isAdmin = false; 
+    let map = null;
+    let mapInitialized = false;
+    let parsedBulkData = []; 
+    let editingBulkIndex = null;
+    let editingPlaceId = null; 
+    let deleteAction = null; 
+    let currentPlaceIdForRating = null;
+    let currentPlaceCommentsUnsubscribe = null;
+    let markersLayer = null;
+    let markersById = {};
+    let mainRecognition;
+    let isMainMicListening = false;
+    const radioBtn = document.getElementById('radio-btn');
+    const radioPlayer = document.getElementById('radio-player');
+    const radioLogo = document.getElementById('radio-logo');
+    const radioIconOverlay = document.getElementById('radio-icon-overlay');
+    const radioStatusText = document.getElementById('radio-status-text');
+    const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
+
+    // --- INICIALIZACIÓN DE FIREBASE ---
+    try {
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                lugaresCollectionRef = getCollectionRef('lugares');
+                consejosCollectionRef = getCollectionRef('consejos');
+                if (lugaresCollectionRef) listenForNewPlaces();
+                if (consejosCollectionRef) listenForTips();
+            } else {
+                console.log("No user signed in, attempting to sign in.");
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Error during sign-in:", error);
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error("Error initializing Firebase:", error);
+        document.getElementById('chat-window').innerHTML = '<div class="text-red-500 p-4">Error: No se pudo conectar con la base de datos. La configuración de Firebase es incorrecta.</div>';
+    }
+
+    function getCollectionRef(name) {
+        if (!db) {
+            console.error("Firestore DB not initialized.");
+            return null;
+        }
+        const path = `/artifacts/${appId}/public/data/${name}`;
+        return collection(db, path);
+    };
+    
+    //--- LÓGICA DE LOS MODALES Y BOTONES ---
+    function setupModalToggle(openBtn, modal, closeBtn) {
+        if (openBtn) openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    setupModalToggle(rinconBtn, rinconModal, closeRinconModalBtn);
+    setupModalToggle(plannerBtn, plannerModal, closePlannerModalBtn);
+    setupModalToggle(null, ratingModal, closeRatingModalBtn); 
+    setupModalToggle(null, contributionModal, closeContributionModalBtn);
+    setupModalToggle(null, manageModal, closeManageModalBtn);
+    adminBtn.addEventListener('click', () => {
+        if (isAdmin) {
+            adminPanelModal.classList.remove('hidden');
+        } else {
+            passwordModal.classList.remove('hidden');
+        }
+    });
+    closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
+    closeAdminPanelBtn.addEventListener('click', () => adminPanelModal.classList.add('hidden'));
+    passwordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (passwordInput.value === 'andesadmin') {
+            isAdmin = true;
+            passwordModal.classList.add('hidden');
+            adminPanelModal.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+            passwordInput.classList.remove('border-red-500');
+        } else {
+            passwordError.classList.remove('hidden');
+            passwordInput.classList.add('border-red-500');
+        }
+    });
+    adminAddBtn.addEventListener('click', () => {
+        contributionForm.reset();
+        editingPlaceId = null;
+        editingBulkIndex = null;
+        document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
+        contributionModal.classList.remove('hidden');
+        adminPanelModal.classList.add('hidden');
+    });
+    adminManageBtn.addEventListener('click', () => {
+        renderManagementList(); 
+        manageModal.classList.remove('hidden');
+        adminPanelModal.classList.add('hidden');
+    });
+    arBtn.addEventListener('click', () => arModal.classList.remove('hidden'));
+    closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
+    closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
+    closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
+
+    
+    // --- LÓGICA DEL FORMULARIO DE CONTRIBUCIÓN ---
+
+    // ===============================================================
+    // =================== INICIO LÓGICA CARGA RÁPIDA ==================
+    // ===============================================================
+
+    const tabSingle = document.getElementById('tab-single');
+    const tabBulk = document.getElementById('tab-bulk');
+    const bulkEntryFormContainer = document.getElementById('bulk-entry-form-container');
+    const bulkInput = document.getElementById('bulk-input');
+    const processBulkBtn = document.getElementById('process-bulk-btn');
+    const bulkReviewContainer = document.getElementById('bulk-review-container');
+
+    tabBulk.addEventListener('click', () => {
+        contributionForm.classList.add('hidden');
+        bulkEntryFormContainer.classList.remove('hidden');
+        tabSingle.classList.remove('text-emerald-500', 'border-emerald-500');
+        tabSingle.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        tabBulk.classList.add('text-emerald-500', 'border-emerald-500');
+        tabBulk.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        
+        if (editingBulkIndex !== null) {
+            contributionForm.reset();
+            editingBulkIndex = null;
+            document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
+        }
+    });
+
+    tabSingle.addEventListener('click', () => {
+        bulkEntryFormContainer.classList.add('hidden');
+        contributionForm.classList.remove('hidden');
+        tabBulk.classList.remove('text-emerald-500', 'border-emerald-500');
+        tabBulk.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        tabSingle.classList.add('text-emerald-500', 'border-emerald-500');
+        tabSingle.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+    });
+    
+    function parseBulkLine(line) {
+        const place = {};
+        const keyMap = {
+            'tipo': 'tipo_usuario', 'nombre': 'nombre', 'localidad': 'localidad',
+            'dirección': 'direccion', 'telefono': 'telefono', 'latitud': 'latitud',
+            'longitud': 'longitud', 'descripción completa...': 'descripcion'
+        };
+
+        const descKey = 'Descripción completa...:';
+        let description = '';
+        let partsString = line;
+
+        if (line.includes(descKey)) {
+            const descIndex = line.indexOf(descKey);
+            description = line.substring(descIndex + descKey.length).trim();
+            partsString = line.substring(0, descIndex);
+        }
+
+        const parts = partsString.split(',').map(p => p.trim()).filter(p => p);
+
+        parts.forEach(part => {
+            const separatorIndex = part.indexOf(':');
+            if (separatorIndex > -1) {
+                const keyRaw = part.substring(0, separatorIndex).trim().toLowerCase();
+                const value = part.substring(separatorIndex + 1).trim();
+                if (keyMap[keyRaw]) {
+                    place[keyMap[keyRaw]] = value;
+                }
+            }
+        });
+        
+        place.descripcion = description || 'Sin descripción.';
+        return place;
+    }
+    
+    const tipoSubtipoMap = {};
+    const tipoSelectOptions = document.getElementById('lugar-tipo').options;
+    for (let option of tipoSelectOptions) {
+        const tipoDB = option.value;
+        const subtipoDB = option.dataset.subtype || option.text;
+        tipoSubtipoMap[subtipoDB.toLowerCase()] = { tipo: tipoDB, subtipo: subtipoDB };
+    }
+
+    processBulkBtn.addEventListener('click', () => {
+        editingBulkIndex = null;
+        contributionForm.reset();
+        document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
+
+        const lines = bulkInput.value.split('\n').filter(line => line.trim() !== '');
+        parsedBulkData = lines.map(line => ({ ...parseBulkLine(line), isSaved: false }));
+        renderBulkReview();
+    });
+
+    function renderBulkReview() {
+        bulkReviewContainer.innerHTML = ''; 
+
+        if (parsedBulkData.length === 0) {
+             bulkReviewContainer.innerHTML = '<p class="text-yellow-500">No se encontraron datos para procesar. Revisa el formato.</p>';
+             return;
+        }
+
+        parsedBulkData.forEach((place, index) => {
+            const card = document.createElement('div');
+            const savedClasses = place.isSaved ? 'opacity-60 bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-slate-700';
+            card.className = `p-4 border rounded-lg mb-3 ${savedClasses}`;
+            
+            let content = `<h4 class="font-bold text-lg">${place.nombre || 'Sin Nombre'}</h4>`;
+            content += `<p class="text-sm text-gray-600 dark:text-gray-300"><strong>Tipo:</strong> ${place.tipo_usuario || 'No especificado'}</p>`;
+            content += `<p class="text-sm text-gray-600 dark:text-gray-300"><strong>Localidad:</strong> ${place.localidad || 'No especificado'}</p>`;
+            content += `<p class="text-xs mt-2 text-gray-500 dark:text-gray-400">${place.descripcion || ''}</p>`;
+            
+            content += `<div class="text-right mt-3 flex items-center justify-end gap-2">`;
+            if (place.isSaved) {
+                content += `<span class="text-green-600 font-bold text-sm">✓ Guardado</span>`;
+            } else {
+                 content += `
+                    <button data-index="${index}" class="edit-bulk-item-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600" title="Editar">
+                        <svg class="h-4 w-4 text-gray-600 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
+                    </button>
+                    <button data-index="${index}" class="save-bulk-item-btn bg-emerald-500 text-white font-bold py-1 px-3 text-sm rounded-lg hover:bg-emerald-600">Guardar</button>
+                 `;
+            }
+            content += `</div>`;
+            card.innerHTML = content;
+            bulkReviewContainer.appendChild(card);
+        });
+
+        const itemsToSave = parsedBulkData.filter(p => !p.isSaved).length;
+        if (itemsToSave > 0) {
+            const saveAllBtn = document.createElement('button');
+            saveAllBtn.id = 'save-all-bulk-btn';
+            saveAllBtn.className = 'w-full mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700';
+            saveAllBtn.textContent = `Guardar los ${itemsToSave} lugares restantes`;
+            bulkReviewContainer.appendChild(saveAllBtn);
+        }
+    }
+
+    async function saveBulkItem(index, btnElement) {
+        const placeData = parsedBulkData[index];
+        if (!placeData || placeData.isSaved) return;
+
+        if (btnElement) {
+             btnElement.disabled = true;
+             btnElement.textContent = '...';
+        }
+
+        const mapping = tipoSubtipoMap[(placeData.tipo_usuario || '').toLowerCase()];
+        const newPlace = {
+            nombre: placeData.nombre || 'Sin Nombre',
+            localidad: placeData.localidad || '',
+            direccion: placeData.direccion || '',
+            telefono: placeData.telefono || '',
+            latitud: placeData.latitud || '',
+            longitud: placeData.longitud || '',
+            descripcion: placeData.descripcion || '',
+            tipo: mapping ? mapping.tipo : (placeData.tipo_usuario || '').toLowerCase(),
+            subtipo: mapping ? mapping.subtipo : placeData.tipo_usuario || '',
+            imagenURL: '',
+            imagen360URL: '',
+            datosClave: '',
+            esAuspiciante: false,
+            createdAt: serverTimestamp()
+        };
+        
+        try {
+            await addDoc(lugaresCollectionRef, newPlace);
+            placeData.isSaved = true;
+        } catch (error) {
+            console.error(`Error saving item ${index}:`, error);
+            if (btnElement) {
+                btnElement.closest('.p-4').style.borderColor = 'red';
+            }
+        }
+    }
+
+    bulkReviewContainer.addEventListener('click', async (e) => {
+        const saveBtn = e.target.closest('.save-bulk-item-btn');
+        const editBtn = e.target.closest('.edit-bulk-item-btn');
+        const saveAllBtn = e.target.closest('#save-all-bulk-btn');
+
+        if (saveBtn) {
+            const index = saveBtn.dataset.index;
+            await saveBulkItem(index, saveBtn);
+            renderBulkReview();
+        }
+
+        if (editBtn) {
+            const index = editBtn.dataset.index;
+            editingBulkIndex = parseInt(index);
+            const placeData = parsedBulkData[editingBulkIndex];
+
+            document.getElementById('lugar-nombre').value = placeData.nombre || '';
+            document.getElementById('lugar-localidad').value = placeData.localidad || 'El Bolsón';
+            document.getElementById('lugar-direccion').value = placeData.direccion || '';
+            document.getElementById('lugar-telefono').value = placeData.telefono || '';
+            document.getElementById('lugar-latitud').value = placeData.latitud || '';
+            document.getElementById('lugar-longitud').value = placeData.longitud || '';
+            document.getElementById('lugar-descripcion').value = placeData.descripcion || '';
+            
+            const tipoSelect = document.getElementById('lugar-tipo');
+            for(let i=0; i < tipoSelect.options.length; i++) {
+                const option = tipoSelect.options[i];
+                if((option.dataset.subtype || option.text).toLowerCase() === (placeData.tipo_usuario || '').toLowerCase()) {
+                    tipoSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            tabSingle.click();
+            document.getElementById('contribution-submit-btn').textContent = 'Actualizar Borrador';
+        }
+
+        if (saveAllBtn) {
+            saveAllBtn.disabled = true;
+            saveAllBtn.textContent = 'Guardando todo...';
+            
+            const savePromises = [];
+            parsedBulkData.forEach((placeData, index) => {
+                if (!placeData.isSaved) {
+                    savePromises.push(saveBulkItem(index, null));
+                }
+            });
+
+            await Promise.all(savePromises);
+            renderBulkReview(); 
+        }
+    });
+
+
+    // ===============================================================
+    // ==================== FIN LÓGICA CARGA RÁPIDA ====================
+    // ===============================================================
+
+    contributionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // MODO EDICIÓN DE CARGA RÁPIDA
+        if (editingBulkIndex !== null) {
+            const place = parsedBulkData[editingBulkIndex];
+            const tipoSelect = document.getElementById('lugar-tipo');
+            const selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+
+            place.nombre = document.getElementById('lugar-nombre').value;
+            place.localidad = document.getElementById('lugar-localidad').value;
+            place.direccion = document.getElementById('lugar-direccion').value;
+            place.telefono = document.getElementById('lugar-telefono').value;
+            place.latitud = document.getElementById('lugar-latitud').value;
+            place.longitud = document.getElementById('lugar-longitud').value;
+            place.descripcion = document.getElementById('lugar-descripcion').value;
+            place.tipo_usuario = selectedOption.dataset.subtype || selectedOption.text;
+
+            renderBulkReview();
+            tabBulk.click();
+
+            contributionForm.reset();
+            document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
+            editingBulkIndex = null;
+            return; 
+        }
+        
+        // MODO NORMAL: AÑADIR O ACTUALIZAR UN LUGAR
+        const submitBtn = document.getElementById('contribution-submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        const tipoSelect = document.getElementById('lugar-tipo');
+        const selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+
+        const placeData = {
+            tipo: tipoSelect.value,
+            subtipo: selectedOption.dataset.subtype || '',
+            localidad: document.getElementById('lugar-localidad').value,
+            nombre: document.getElementById('lugar-nombre').value,
+            direccion: document.getElementById('lugar-direccion').value,
+            telefono: document.getElementById('lugar-telefono').value,
+            latitud: document.getElementById('lugar-latitud').value,
+            longitud: document.getElementById('lugar-longitud').value,
+            imagenURL: document.getElementById('lugar-imagen').value,
+            imagen360URL: document.getElementById('lugar-imagen360').value,
+            descripcion: document.getElementById('lugar-descripcion').value,
+            datosClave: document.getElementById('lugar-datos-clave').value,
+            esAuspiciante: document.getElementById('lugar-sponsor').checked
+        };
+
+        try {
+            if (!lugaresCollectionRef) throw new Error("La referencia a la base de datos no está lista.");
+            
+            if (editingPlaceId) {
+                // Actualizar
+                const placeRef = doc(lugaresCollectionRef, editingPlaceId);
+                await updateDoc(placeRef, placeData);
+            } else {
+                // Crear
+                placeData.createdAt = serverTimestamp();
+                await addDoc(lugaresCollectionRef, placeData);
+            }
+
+            submitBtn.textContent = '¡Guardado!';
+            submitBtn.classList.remove('bg-emerald-500');
+            submitBtn.classList.add('bg-green-600');
+            
+            setTimeout(() => {
+                contributionForm.reset();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Añadir Lugar';
+                submitBtn.classList.remove('bg-green-600');
+                submitBtn.classList.add('bg-emerald-500');
+                contributionModal.classList.add('hidden');
+                editingPlaceId = null; 
+            }, 1500);
+
+        } catch (error) {
+            console.error("Error al guardar el lugar: ", error);
+            submitBtn.textContent = 'Error al guardar';
+            submitBtn.classList.remove('bg-emerald-500');
+            submitBtn.classList.add('bg-red-600');
+            setTimeout(() => {
+                 submitBtn.disabled = false;
+                 submitBtn.textContent = editingPlaceId ? 'Actualizar Lugar' : 'Añadir Lugar';
+                 submitBtn.classList.remove('bg-red-600');
+                 submitBtn.classList.add('bg-emerald-500');
+            }, 2000);
+        }
+    });
+
+
+    // --- FUNCIONES DE RENDERIZADO Y FIREBASE (Listeners) ---
+    function listenForTips() {
+        if (!consejosCollectionRef) return;
+        onSnapshot(query(consejosCollectionRef, orderBy('createdAt', 'desc')), (snapshot) => {
+            tipsCache = [];
+            snapshot.docs.forEach(doc => {
+                tipsCache.push({ id: doc.id, ...doc.data() });
+            });
+            if (!rinconModal.classList.contains('hidden')) {
+                renderTipsList();
+            }
+        }, (error) => console.error("Error listening to tips:", error));
+    }
+    
+    tipForm.addEventListener('submit', async(e) => {
+        e.preventDefault();
+        const tipText = tipInput.value.trim();
+        if (tipText === '' || !consejosCollectionRef) return;
+
+        const submitBtn = tipForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        try {
+            await addDoc(consejosCollectionRef, {
+                text: tipText,
+                userId: userId,
+                createdAt: serverTimestamp()
+            });
+            tipInput.value = '';
+        } catch (error) {
+            console.error("Error al añadir consejo:", error);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    function renderTipsList() {
+        if (!rinconList) return;
+        rinconList.innerHTML = '';
+        if (tipsCache.length === 0) {
+            rinconList.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Aún no hay consejos. ¡Sé el primero en compartir uno!</p>';
+            return;
+        }
+        tipsCache.forEach(tip => {
+            const tipElement = document.createElement('div');
+            tipElement.className = "bg-gray-100 dark:bg-slate-700 p-3 rounded-lg";
+            const date = tip.createdAt ? new Date(tip.createdAt.seconds * 1000).toLocaleDateString() : 'hace un momento';
+            tipElement.innerHTML = `
+                <p class="text-sm">${tip.text || 'Consejo vacío.'}</p>
+                <p class="text-xs text-gray-400 text-right mt-1">Anónimo - ${date}</p>
+            `;
+            rinconList.appendChild(tipElement);
+        });
+    }
+
+    function renderManagementList() {
+        if (!manageList) return;
+        manageList.innerHTML = '';
+
+        if (placesCache.length === 0) {
+            manageList.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No hay lugares para gestionar.</p>';
+            return;
+        }
+
+        // 1. Group by localidad
+        const groupedByLocalidad = placesCache.reduce((acc, place) => {
+            const localidad = place.localidad || 'Sin Localidad';
+            if (!acc[localidad]) {
+                acc[localidad] = [];
+            }
+            acc[localidad].push(place);
+            return acc;
+        }, {});
+
+        // 2. Build the HTML
+        Object.keys(groupedByLocalidad).sort().forEach(localidad => {
+            const placesInLocalidad = groupedByLocalidad[localidad];
+
+            // Group by subtipo within localidad
+            const groupedBySubtipo = placesInLocalidad.reduce((acc, place) => {
+                const subtipo = place.subtipo || place.tipo || 'Sin Rubro';
+                if (!acc[subtipo]) {
+                    acc[subtipo] = [];
+                }
+                acc[subtipo].push(place);
+                return acc;
+            }, {});
+
+            let localidadHtml = `
+                <details class="bg-gray-100 dark:bg-slate-800 rounded-lg mb-2" open>
+                    <summary class="flex justify-between items-center p-3 cursor-pointer font-bold text-lg">
+                        <div>
+                            ${localidad} <span class="text-sm font-normal text-gray-500 dark:text-gray-400">(${placesInLocalidad.length} lugares)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600" data-edit-type="localidad" data-localidad="${localidad}" title="Renombrar Localidad">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
+                            </button>
+                            <button class="delete-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50" data-delete-type="localidad" data-localidad="${localidad}" title="Eliminar Localidad y todo su contenido">
+                                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    </summary>
+                    <div class="pl-4 pr-2 pb-2">
+            `;
+
+            Object.keys(groupedBySubtipo).sort().forEach(subtipo => {
+                const placesInSubtipo = groupedBySubtipo[subtipo];
+                localidadHtml += `
+                    <details class="bg-white dark:bg-slate-700 rounded-lg mb-2" open>
+                        <summary class="flex justify-between items-center p-2.5 cursor-pointer font-semibold">
+                            <div>
+                                ${subtipo} <span class="text-sm font-normal text-gray-500 dark:text-gray-400">(${placesInSubtipo.length})</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600" data-edit-type="subtipo" data-localidad="${localidad}" data-subtipo="${subtipo}" title="Renombrar Rubro">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
+                                </button>
+                                <button class="delete-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50" data-delete-type="subtipo" data-localidad="${localidad}" data-subtipo="${subtipo}" title="Eliminar Rubro y su contenido">
+                                    <svg class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                        </summary>
+                        <div class="p-2 space-y-2">
+                `;
+                placesInSubtipo.sort((a, b) => a.nombre.localeCompare(b.nombre)).forEach(place => {
+                    localidadHtml += `
+                        <div class="flex justify-between items-center p-2 rounded-md bg-gray-50 dark:bg-slate-600/50">
+                            <span class="truncate pr-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</span>
+                            <div class="flex-shrink-0 flex items-center gap-2">
+                                <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-500" data-edit-type="place" data-id="${place.id}" title="Editar Lugar">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
+                                </button>
+                                <button class="delete-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50" data-delete-type="place" data-id="${place.id}" data-name="${place.nombre}" title="Eliminar Lugar">
+                                    <svg class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                localidadHtml += `</div></details>`;
+            });
+
+            localidadHtml += `</div></details>`;
+            manageList.innerHTML += localidadHtml;
+        });
+    }
+
+    manageList.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-btn');
+        const deleteBtn = e.target.closest('.delete-btn');
+
+        if (editBtn) {
+            const type = editBtn.dataset.editType;
+            if (type === 'place') {
+                const placeId = editBtn.dataset.id;
+                const placeToEdit = placesCache.find(p => p.id === placeId);
+                if (placeToEdit) {
+                    editingPlaceId = placeId;
+                    
+                    document.getElementById('lugar-nombre').value = placeToEdit.nombre || '';
+                    document.getElementById('lugar-localidad').value = placeToEdit.localidad || 'El Bolsón';
+                    document.getElementById('lugar-direccion').value = placeToEdit.direccion || '';
+                    document.getElementById('lugar-telefono').value = placeToEdit.telefono || '';
+                    document.getElementById('lugar-latitud').value = placeToEdit.latitud || '';
+                    document.getElementById('lugar-longitud').value = placeToEdit.longitud || '';
+                    document.getElementById('lugar-descripcion').value = placeToEdit.descripcion || '';
+                    document.getElementById('lugar-datos-clave').value = placeToEdit.datosClave || '';
+                    document.getElementById('lugar-imagen').value = placeToEdit.imagenURL || '';
+                    document.getElementById('lugar-imagen360').value = placeToEdit.imagen360URL || '';
+                    document.getElementById('lugar-sponsor').checked = placeToEdit.esAuspiciante || false;
+
+                    const tipoSelect = document.getElementById('lugar-tipo');
+                    for(let i=0; i < tipoSelect.options.length; i++) {
+                        const option = tipoSelect.options[i];
+                        if(option.value === placeToEdit.tipo && (option.dataset.subtype || '') === placeToEdit.subtipo) {
+                            tipoSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+
+                    document.getElementById('contribution-title').textContent = 'Editar Lugar';
+                    document.getElementById('contribution-submit-btn').textContent = 'Actualizar Lugar';
+                    manageModal.classList.add('hidden');
+                    contributionModal.classList.remove('hidden');
+                }
+            } else if (type === 'localidad') {
+                const oldLocalidad = editBtn.dataset.localidad;
+                const newLocalidad = prompt(`Renombrar localidad "${oldLocalidad}":`, oldLocalidad);
+                if (newLocalidad && newLocalidad.trim() !== '' && newLocalidad !== oldLocalidad) {
+                    updateBatch('localidad', oldLocalidad, newLocalidad, null);
+                }
+            } else if (type === 'subtipo') {
+                const localidad = editBtn.dataset.localidad;
+                const oldSubtipo = editBtn.dataset.subtipo;
+                const newSubtipo = prompt(`Renombrar rubro "${oldSubtipo}" en ${localidad}:`, oldSubtipo);
+                if (newSubtipo && newSubtipo.trim() !== '' && newSubtipo !== oldSubtipo) {
+                     updateBatch('subtipo', oldSubtipo, newSubtipo, localidad);
+                }
+            }
+        }
+        if (deleteBtn) {
+            const type = deleteBtn.dataset.deleteType;
+            if(type === 'place'){
+                const placeId = deleteBtn.dataset.id;
+                const placeName = deleteBtn.dataset.name;
+                deleteAction = { type: 'place', id: placeId };
+                deleteConfirmationText.textContent = `¿Estás seguro de que quieres eliminar "${placeName}"? Esta acción no se puede deshacer.`;
+                confirmDeleteModal.classList.remove('hidden');
+            } else if(type === 'localidad'){
+                const localidad = deleteBtn.dataset.localidad;
+                const placesToDelete = placesCache.filter(p => p.localidad === localidad);
+                deleteAction = { type: 'localidad', localidad: localidad, places: placesToDelete };
+                rubroDeleteConfirmationText.innerHTML = `Estás a punto de eliminar la localidad <strong class="font-bold">"${localidad}"</strong> y sus <strong class="font-bold">${placesToDelete.length}</strong> lugares asociados. <br><br>¿Estás seguro?`;
+                confirmRubroDeleteModal.classList.remove('hidden');
+            } else if(type === 'subtipo'){
+                 const localidad = deleteBtn.dataset.localidad;
+                 const subtipo = deleteBtn.dataset.subtipo;
+                 const placesToDelete = placesCache.filter(p => p.localidad === localidad && p.subtipo === subtipo);
+                 deleteAction = { type: 'subtipo', localidad: localidad, subtipo: subtipo, places: placesToDelete };
+                 rubroDeleteConfirmationText.innerHTML = `Estás a punto de eliminar el rubro <strong class="font-bold">"${subtipo}"</strong> en ${localidad} y sus <strong class="font-bold">${placesToDelete.length}</strong> lugares asociados. <br><br>¿Estás seguro?`;
+                 confirmRubroDeleteModal.classList.remove('hidden');
+            }
+        }
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+        confirmDeleteModal.classList.add('hidden');
+        deleteAction = null;
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+        if(deleteAction && deleteAction.type === 'place'){
+            try {
+                await deleteDoc(doc(lugaresCollectionRef, deleteAction.id));
+            } catch (error) {
+                console.error("Error al eliminar el lugar:", error);
+            }
+        }
+        confirmDeleteModal.classList.add('hidden');
+        deleteAction = null;
+    });
+
+    cancelRubroDeleteBtn.addEventListener('click', () => {
+        confirmRubroDeleteModal.classList.add('hidden');
+        deleteAction = null;
+    });
+
+    confirmRubroDeleteBtn.addEventListener('click', async () => {
+        if(deleteAction && (deleteAction.type === 'localidad' || deleteAction.type === 'subtipo')){
+            const batch = writeBatch(db);
+            deleteAction.places.forEach(place => {
+                batch.delete(doc(lugaresCollectionRef, place.id));
+            });
+            try {
+                await batch.commit();
+            } catch (error) {
+                console.error(`Error al eliminar en lote:`, error);
+            }
+        }
+        confirmRubroDeleteModal.classList.add('hidden');
+        deleteAction = null;
+    });
+
+    async function updateBatch(fieldToUpdate, oldValue, newValue, filterLocalidad) {
+        const batch = writeBatch(db);
+        let placesToUpdate;
+
+        if (fieldToUpdate === 'localidad') {
+            placesToUpdate = placesCache.filter(p => p.localidad === oldValue);
+        } else if (fieldToUpdate === 'subtipo') {
+            placesToUpdate = placesCache.filter(p => p.localidad === filterLocalidad && p.subtipo === oldValue);
+        }
+
+        if (placesToUpdate && placesToUpdate.length > 0) {
+            placesToUpdate.forEach(place => {
+                const docRef = doc(lugaresCollectionRef, place.id);
+                const updateData = {};
+                if (fieldToUpdate === 'localidad') {
+                    updateData.localidad = newValue;
+                } else if (fieldToUpdate === 'subtipo') {
+                    updateData.subtipo = newValue;
+                }
+                batch.update(docRef, updateData);
+            });
+            try {
+                await batch.commit();
+            } catch (error) {
+                console.error("Error en la actualización por lotes:", error);
+            }
+        }
+    }
+
+
+    function listenForNewPlaces() {
+        if (!lugaresCollectionRef) return;
+        onSnapshot(lugaresCollectionRef, (snapshot) => {
+            placesCache = [];
+            dynamicKnowledgeBase = {
+                restaurantes: {},
+                alojamiento: {},
+                actividades: {},
+                lugaresParaVisitar: {}
+            };
+            snapshot.docs.forEach(doc => {
+                const place = { id: doc.id, ...doc.data() };
+                placesCache.push(place);
+
+                const tipo = place.tipo;
+                if (dynamicKnowledgeBase[tipo]) {
+                    if (!dynamicKnowledgeBase[tipo][place.localidad]) {
+                        dynamicKnowledgeBase[tipo][place.localidad] = [];
+                    }
+                    dynamicKnowledgeBase[tipo][place.localidad].push(place);
+                }
+            });
+            updateSuggestions();
+            if(!manageModal.classList.contains('hidden')){
+                renderManagementList();
+            }
+            if (!mapModal.classList.contains('hidden')) {
+                updateMapMarkers();
+            }
+        }, (error) => console.error("Error listening for places:", error));
+    }
+
+
+    // --- LÓGICA DEL CHAT ---
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+
+        addMessage({ text: userMessage }, 'user');
+        chatInput.value = '';
+        processUserMessage(userMessage);
+    });
+
+    chatWindow.addEventListener('click', function(e) {
+        const placeLink = e.target.closest('.place-link');
+        const view360Button = e.target.closest('.view-360-btn');
+        const ratePlaceButton = e.target.closest('.rate-place-btn');
+
+        if (placeLink) {
+            const placeId = placeLink.dataset.id;
+            const place = placesCache.find(p => p.id === placeId);
+            if (place) {
+                const aiMessage = formatPlaceForAI(place);
+                addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
+            }
+        }
+        if (view360Button) {
+            const imageUrl = view360Button.dataset.image;
+            if (imageUrl && vrSky) {
+                vrSky.setAttribute('src', imageUrl);
+                vrModal.classList.remove('hidden');
+            } else {
+                addMessage({text: "Lo siento, este lugar no tiene una imagen 360° disponible."}, 'ai');
+            }
+        }
+        if (ratePlaceButton) {
+            const placeId = ratePlaceButton.dataset.id;
+            openRatingModal(placeId);
+        }
+    });
+    
+    function addMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = `${sender === 'user' ? 'user-message' : 'ai-message'} w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
+        
+        if (message.isHtml) {
+            messageContent.innerHTML = message.text;
+        } else if (message.isPlannerResponse) {
+             messageContent.innerHTML = `<h3 class="font-bold text-lg mb-2">✨ Tu Plan de Viaje Personalizado</h3>${message.text}`;
+        } else {
+            messageContent.textContent = message.text;
+        }
+
+        if (sender === 'ai' && message.isSponsored) {
+            messageContent.classList.add('sponsored-message');
+        }
+
+        messageDiv.appendChild(messageContent);
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    async function processUserMessage(userMessage) {
+        const typingIndicator = showTypingIndicator();
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+
+        // Enviar al AI
+        const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
+        chatWindow.removeChild(typingIndicator);
+
+        addMessage({
+            text: aiResponseData.text,
+            isHtml: aiResponseData.isHtml,
+            isSponsored: aiResponseData.isSponsored
+        }, 'ai');
+        chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
+    }
+
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'w-full flex justify-start';
+        typingDiv.innerHTML = `
+            <div class="ai-message w-fit p-3 rounded-2xl shadow">
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        `;
+        chatWindow.appendChild(typingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return typingDiv;
+    }
+
+    // --- LÓGICA DE LA INTELIGENCIA ARTIFICIAL ---
+    async function getAIResponse(history, systemInstructions) {
+        try {
+            const payload = {
+                contents: history,
+                systemInstruction: { parts: [{ text: systemInstructions }] }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const text = result.candidates[0].content.parts[0].text;
+            
+            // Post-procesamiento para enlaces y contenido especial
+            return processAIResponseText(text);
+
+        } catch (error) {
+            console.error("Error calling AI API:", error);
+            return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
+        }
+    }
+    
+    function processAIResponseText(text) {
+        let isHtml = false;
+        let isSponsored = false;
+        
+        // Convertir [[Nombre del Lugar]] en un enlace
+        const linkRegex = /\[\[(.*?)\]\]/g;
+        let processedText = text.replace(linkRegex, (match, placeName) => {
+            const foundPlace = findPlaceByName(placeName.trim());
+            if (foundPlace) {
+                isHtml = true;
+                if (foundPlace.esAuspiciante) isSponsored = true;
+                return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
+            }
+            return placeName; // Si no se encuentra, devuelve el nombre tal cual
+        });
+
+        // Convertir Markdown simple a HTML
+        if (processedText.includes('*') || processedText.includes('\n-')) {
+             isHtml = true;
+             // Negrita: **texto** -> <strong>texto</strong>
+             processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+             // Listas: - item -> <li>item</li>
+             processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
+             if(processedText.includes('<li>')){
+                 processedText = `<ul>${processedText}</ul>`;
+             }
+        }
+
+        return { text: processedText, isHtml, isSponsored };
+    }
+
+    function findPlaceByName(name) {
+        return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
+    }
+
+    function formatPlaceForAI(place) {
+        let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
+        html += `<p class="text-sm">${place.descripcion}</p>`;
+
+        if (place.datosClave) {
+            html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+        }
+        
+        if (place.direccion || place.telefono) {
+            html += `<div class="mt-2 text-xs">`;
+            if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
+            if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+            html += `</div>`;
+        }
+
+        if (place.imagenURL) {
+            html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
+        }
+
+        html += `<div class="mt-3 flex gap-2">`;
+        if (place.imagen360URL) {
+            html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
+        }
+        html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
+        html += `</div>`;
+
+        return html;
+    }
+    
+    // --- LÓGICA DE SUGERENCIAS ---
+    function updateSuggestions() {
+        suggestionsContainer.innerHTML = '';
+        const suggestions = [
+            "¿Qué puedo hacer hoy?",
+            "Restaurantes en El Bolsón",
+            "Cabañas en Lago Puelo",
+            "Clima para mañana"
+        ];
+
+        suggestions.forEach(text => {
+            const button = document.createElement('button');
+            button.className = "bg-gray-200 dark:bg-slate-700 text-sm px-3 py-1 rounded-full hover:bg-gray-300 dark:hover:bg-slate-600";
+            button.textContent = text;
+            button.onclick = () => {
+                chatInput.value = text;
+                chatForm.dispatchEvent(new Event('submit'));
+            };
+            suggestionsContainer.appendChild(button);
+        });
+    }
+
+    // --- PROMPTS PARA LA IA ---
+    const systemPrompt = `
+        Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina del Paralelo 42 (El Bolsón, Lago Puelo, El Hoyo, etc.).
+        Tu objetivo es ser el mejor guía turístico. Eres conversador, útil y un poco informal. Usas emojis para darle personalidad a tus respuestas.
+
+        REGLAS FUNDAMENTALES:
+        1.  **USA TU CONOCIMIENTO INTERNO PRIMERO:** La siguiente base de datos es tu fuente principal y más confiable. Siempre que un usuario pregunte por lugares, busca en esta lista primero.
+            \`\`\`json
+            ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
+            \`\`\`
+        2.  **CÓMO RESPONDER SOBRE LUGARES:**
+            - Si encuentras un lugar EXACTO en tu base de datos, menciona su nombre entre corchetes dobles, así: [[Nombre Exacto del Lugar]]. NO inventes nombres. El nombre debe ser idéntico al de la base de datos. Esto lo convertirá en un enlace.
+            - Si el usuario pregunta por un tipo de lugar (ej. "restaurantes en El Bolsón"), dale una lista de 2 o 3 opciones de tu base de datos y menciónalos con [[Nombre Exacto]].
+            - Si el lugar es "esAuspiciante: true", menciónalo como un "lugar recomendado por la comunidad" o "un favorito de los viajeros" y ponle un emoji de estrella ⭐.
+        3.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no se puede responder con tu base de datos (ej. "clima", "historia del lúpulo", "horarios del colectivo"), puedes usar tu conocimiento general. Siempre aclara que la información puede variar.
+        4.  **SÉ BREVE Y AL GRANO:** No escribas párrafos largos. Usa listas con guiones (-) si es necesario.
+        5.  **NO DES INFORMACIÓN PRIVADA:** Nunca des la URL de una imagen o datos que no estén explícitamente en la descripción.
+        
+        EJEMPLOS DE RESPUESTA:
+        - Usuario: "busco un lugar para comer"
+        - Andes: "¡Claro! En El Bolsón te puedo recomendar [[Jauja]] que es un clásico, o si buscas algo más rústico, [[La Gorda]]. ¿Te gustaría saber más de alguno de ellos? 🍔"
+        - Usuario: "contame sobre el cerro piltriquitron"
+        - Andes: "El Piltriquitrón es el cerro guardián de El Bolsón. ¡Las vistas desde arriba son increíbles! 🤩 Puedes subir en auto una parte y luego hacer un trekking. Hay un bosque tallado muy famoso en el camino. ¡No te lo pierdas!"
+    `;
+    
+    //==============================================================
+    //================= LÓGICA DEL PLANIFICADOR ======================
+    //==============================================================
+
+    plannerForm.addEventListener('click', (e) => {
+        const btn = e.target.closest('.planner-option-btn');
+        if (!btn) return;
+
+        // Deseleccionar botones hermanos
+        const siblings = btn.parentElement.querySelectorAll('.planner-option-btn');
+        siblings.forEach(sibling => {
+            sibling.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+            sibling.classList.add('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
+        });
+
+        // Seleccionar el botón clickeado
+        btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+        btn.classList.remove('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
+    });
+
+    plannerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
+        const style = selectedStyleBtn ? selectedStyleBtn.dataset.value : 'Aventura'; // Valor por defecto
+
+        const days = document.getElementById('planner-days').value;
+        
+        const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
+        const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio'; // Valor por defecto
+
+        plannerModal.classList.add('hidden');
+
+        const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+        addMessage({ text: userMessage }, 'user');
+        
+        const typingIndicator = showTypingIndicator();
+
+        const plannerHistory = [{
+            role: "user",
+            parts: [{ text: `
+                - Estilo de Viaje: ${style}
+                - Duración: ${days} días
+                - Nivel de Energía: ${energy}
+            ` }]
+        }];
+        
+        const plannerSystemPrompt = systemPlannerPrompt
+            .replace('{travelStyle}', style)
+            .replace('{days}', days)
+            .replace('{energyLevel}', energy)
+            .replace('{knowledgeBase}', JSON.stringify(dynamicKnowledgeBase, null, 2));
+
+        const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
+        chatWindow.removeChild(typingIndicator);
+
+        addMessage({
+            text: aiResponseData.text,
+            isPlannerResponse: true
+        }, 'ai');
+    });
+
+     const systemPlannerPrompt = `
+        Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
+        Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
+
+        PREFERENCIAS DEL USUARIO:
+        - Estilo de Viaje: {travelStyle}
+        - Duración: {days} días
+        - Nivel de Energía: {energyLevel}
+
+        BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
+        \`\`\`json
+        {knowledgeBase}
+        \`\`\`
+
+        INSTRUCCIONES PARA CREAR EL ITINERARIO:
+        1.  **Formato Obligatorio:** Usa Markdown. Crea un título para cada día (ej: "**Día 1: Aventura y Sabores**"). Para cada día, sugiere 2 o 3 actividades/lugares. Usa listas con guiones.
+        2.  **Selección Inteligente:**
+            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
+            - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
+            - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
+        3.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
+        4.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
+        5.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
+
+        EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
+        **Día 1: Montaña y Cerveza Artesanal**
+        - Comienza el día con el trekking al [[Cajón del Azul]]. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
+        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]]. Tienen una vista espectacular.
+        
+        **Día 2: Cultura y Sabor Local**
+        - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
+        - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
+    `;
+
+    //==============================================================
+    //=============== LÓGICA DE BACKUP Y RESTORE ===================
+    //==============================================================
+    const downloadBackupBtn = document.getElementById('download-backup-btn');
+    const restoreBackupBtn = document.getElementById('restore-backup-btn');
+    const backupFileInput = document.getElementById('backup-file-input');
+    const confirmRestoreModal = document.getElementById('confirm-restore-modal');
+    const cancelRestoreBtn = document.getElementById('cancel-restore-btn');
+    const confirmRestoreBtn = document.getElementById('confirm-restore-btn');
+
+    downloadBackupBtn.addEventListener('click', () => {
+        if (placesCache.length === 0) {
+            alert("No hay datos para respaldar.");
+            return;
+        }
+
+        const headers = [
+            'id', 'tipo', 'subtipo', 'localidad', 'nombre', 'direccion', 'telefono', 
+            'latitud', 'longitud', 'imagenURL', 'imagen360URL', 'descripcion', 
+            'datosClave', 'esAuspiciante'
+        ];
+        
+        // Función para escapar comas y comillas en los valores
+        const escapeCSV = (value) => {
+            if (value === null || value === undefined) return '';
+            let str = String(value);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                str = `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+
+        let csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n';
+        
+        placesCache.forEach(place => {
+            const row = headers.map(header => escapeCSV(place[header]));
+            csvContent += row.join(',') + '\n';
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `backup_andes_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    restoreBackupBtn.addEventListener('click', () => {
+        backupFileInput.click();
+    });
+
+    backupFileInput.addEventListener('change', (event) => {
+        if (event.target.files.length > 0) {
+            confirmRestoreModal.classList.remove('hidden');
+        }
+    });
+    
+    cancelRestoreBtn.addEventListener('click', () => {
+        confirmRestoreModal.classList.add('hidden');
+        backupFileInput.value = ''; // Reset input
+    });
+
+    confirmRestoreBtn.addEventListener('click', async () => {
+        confirmRestoreModal.classList.add('hidden');
+        const file = backupFileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            
+            // Eliminar todos los documentos existentes
+            const deleteBatch = writeBatch(db);
+            placesCache.forEach(place => {
+                deleteBatch.delete(doc(lugaresCollectionRef, place.id));
+            });
+
+            try {
+                await deleteBatch.commit();
+                
+                // Añadir los nuevos documentos desde el CSV
+                const addBatch = writeBatch(db);
+                // Simple CSV parser
+                const rows = text.split('\n');
+                const headers = rows[0].split(',').map(h => h.trim());
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.trim() === '') continue;
+                    
+                    const values = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(val => val.replace(/^"|"$/g, '').replace(/""/g, '"'));
+                    
+                    const newPlace = {};
+                    headers.forEach((header, index) => {
+                        if (header !== 'id') { // No sobreescribir el ID
+                            if (header === 'esAuspiciante') {
+                                newPlace[header] = values[index] === 'true';
+                            } else {
+                                newPlace[header] = values[index] || '';
+                            }
+                        }
+                    });
+                    newPlace.createdAt = serverTimestamp();
+                    addBatch.set(doc(lugaresCollectionRef), newPlace);
+                }
+                
+                await addBatch.commit();
+                alert('Restauración completada con éxito.');
+
+            } catch (error) {
+                console.error("Error durante la restauración: ", error);
+                alert('Ocurrió un error durante la restauración.');
+            } finally {
+                backupFileInput.value = '';
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    
+    //==============================================================
+    //================= LÓGICA DE VALORACIONES =====================
+    //==============================================================
+
+    function getCommentsCollectionRef(placeId) {
+        if (!placeId) return null;
+        return collection(db, `/artifacts/${appId}/public/data/lugares/${placeId}/comentarios`);
+    }
+
+    function openRatingModal(placeId) {
+        const place = placesCache.find(p => p.id === placeId);
+        if (!place) return;
+
+        currentPlaceIdForRating = placeId;
+        ratingModalTitle.textContent = `Opiniones de "${place.nombre}"`;
+        ratingForm.reset();
+        commentsList.innerHTML = '<p class="text-gray-500">Cargando comentarios...</p>';
+        averageRatingContainer.innerHTML = '';
+        ratingModal.classList.remove('hidden');
+
+        // Cancelar la suscripción anterior
+        if (currentPlaceCommentsUnsubscribe) {
+            currentPlaceCommentsUnsubscribe();
+        }
+
+        // Suscribirse a los nuevos comentarios
+        const commentsRef = getCommentsCollectionRef(placeId);
+        if(commentsRef){
+            currentPlaceCommentsUnsubscribe = onSnapshot(query(commentsRef, orderBy('createdAt', 'desc')), (snapshot) => {
+                const comments = [];
+                let totalRating = 0;
+                snapshot.forEach(doc => {
+                    const commentData = doc.data();
+                    comments.push(commentData);
+                    totalRating += commentData.rating || 0;
+                });
+                
+                renderComments(comments);
+                
+                if (comments.length > 0) {
+                    const average = totalRating / comments.length;
+                    renderAverageRating(average, comments.length);
+                } else {
+                    averageRatingContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Este lugar aún no tiene valoraciones.</p>';
+                }
+            });
+        }
+    }
+
+    function renderAverageRating(average, count) {
+        const stars = '★'.repeat(Math.round(average)) + '☆'.repeat(5 - Math.round(average));
+        averageRatingContainer.innerHTML = `
+            <p class="text-3xl font-bold text-amber-500">${average.toFixed(1)} <span class="text-xl">${stars}</span></p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Basado en ${count} opiniones</p>
+        `;
+    }
+
+    function renderComments(comments) {
+        commentsList.innerHTML = '';
+        if (comments.length === 0) {
+            commentsList.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400">Sé el primero en dejar un comentario.</p>';
+            return;
+        }
+
+        comments.forEach(comment => {
+            const div = document.createElement('div');
+            div.className = 'p-3 bg-gray-100 dark:bg-slate-700 rounded-lg';
+            const stars = '★'.repeat(comment.rating || 0) + '☆'.repeat(5 - (comment.rating || 0));
+            const date = comment.createdAt ? new Date(comment.createdAt.seconds * 1000).toLocaleDateString() : '';
+
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-amber-500">${stars}</span>
+                    <span class="text-xs text-gray-400">${date}</span>
+                </div>
+                <p class="mt-1 text-sm text-gray-800 dark:text-gray-200">${comment.text || ''}</p>
+            `;
+            commentsList.appendChild(div);
+        });
+    }
+
+    ratingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const selectedRating = ratingForm.querySelector('input[name="rating"]:checked');
+        const commentText = commentInput.value.trim();
+
+        if (!selectedRating && commentText === '') {
+            alert('Por favor, selecciona una valoración o escribe un comentario.');
+            return;
+        }
+        if (!currentPlaceIdForRating) return;
+
+        const commentsRef = getCommentsCollectionRef(currentPlaceIdForRating);
+        if(!commentsRef) return;
+
+        try {
+            await addDoc(commentsRef, {
+                rating: selectedRating ? parseInt(selectedRating.value) : null,
+                text: commentText,
+                userId: userId,
+                createdAt: serverTimestamp()
+            });
+            ratingForm.reset();
+        } catch (error) {
+            console.error("Error al guardar la valoración:", error);
+            alert('Hubo un error al guardar tu opinión.');
+        }
+    });
+
+    //==============================================================
+    //===================== LÓGICA DEL MAPA ========================
+    //==============================================================
+
+    mapBtn.addEventListener('click', () => {
+        mapModal.classList.remove('hidden');
+        if (!mapInitialized) {
+            initMap();
+        }
+        // Forzamos al mapa a recalcular su tamaño
+        setTimeout(() => {
+            map.invalidateSize();
+            updateMapMarkers();
+        }, 100); 
+    });
+
+    function initMap() {
+        if (mapInitialized) return;
+        map = L.map('map').setView([-41.96, -71.53], 10); // Centrado en la comarca
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+
+        mapInitialized = true;
+    }
+    
+    function updateMapMarkers() {
+        if (!map || !markersLayer) return;
+
+        // Limpiar marcadores existentes
+        markersLayer.clearLayers();
+        markersById = {};
+
+        const placesWithCoords = placesCache.filter(p => p.latitud && p.longitud);
+
+        placesWithCoords.forEach(place => {
+            try {
+                const lat = parseFloat(place.latitud);
+                const lon = parseFloat(place.longitud);
+                if (!isNaN(lat) && !isNaN(lon)) {
+                     const marker = L.marker([lat, lon]).addTo(markersLayer);
+                     marker.bindPopup(`<b>${place.nombre}</b><br>${place.subtipo || place.tipo}`);
+                     markersById[place.id] = marker;
+                }
+            } catch (e) {
+                console.warn(`Coordenadas inválidas para ${place.nombre}: ${place.latitud}, ${place.longitud}`);
+            }
+        });
+        
+        if(placesWithCoords.length > 0){
+             map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+        }
+    }
+    
+    //==============================================================
+    //===================== LÓGICA DE AR ===========================
+    //==============================================================
+    
+    arModal.addEventListener('show.bs.modal', function () {
+        console.log("AR Modal is being shown");
+    });
+
+    arBtn.addEventListener('click', async () => {
+        const arStatus = document.getElementById('ar-status');
+        const arContent = document.getElementById('ar-modal-content');
+        const arTopBar = document.getElementById('ar-top-bar');
+
+        arStatus.textContent = "Iniciando modo AR...";
+        arContent.innerHTML = ''; // Limpiar contenido anterior
+        
+        // Comprobar si A-Frame está cargado
+        if (typeof AFRAME === 'undefined') {
+            arStatus.textContent = "Error: La librería de Realidad Aumentada no pudo cargarse.";
+            return;
+        }
+
+        // Crear dinámicamente la escena de AR
+        const sceneEl = document.createElement('a-scene');
+        sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
+        sceneEl.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false;');
+        sceneEl.setAttribute('renderer', 'antialias: true; alpha: true');
+
+        const cameraEl = document.createElement('a-camera');
+        cameraEl.setAttribute('gps-new-camera', 'gpsMinDistance: 5');
+        sceneEl.appendChild(cameraEl);
+
+        placesCache.forEach(place => {
+            if (place.latitud && place.longitud) {
+                const entityEl = document.createElement('a-entity');
+                entityEl.setAttribute('gps-new-entity-place', `latitude: ${place.latitud}; longitude: ${place.longitud}`);
+                entityEl.setAttribute('look-at', '[gps-new-camera]');
+                
+                // Entidad visual (caja)
+                const box = document.createElement('a-box');
+                box.setAttribute('scale', '10 10 10');
+                box.setAttribute('material', 'color: red');
+                box.setAttribute('position', '0 50 0'); // Elevarla para que se vea mejor
+                entityEl.appendChild(box);
+
+                // Texto con el nombre
+                const text = document.createElement('a-text');
+                text.setAttribute('value', place.nombre);
+                text.setAttribute('scale', '50 50 50');
+                text.setAttribute('position', '0 65 0');
+                text.setAttribute('align', 'center');
+                entityEl.appendChild(text);
+
+                sceneEl.appendChild(entityEl);
+            }
+        });
+
+        arContent.appendChild(sceneEl);
+        
+        // Esperar a que la escena se cargue para mostrarla
+        sceneEl.addEventListener('loaded', function () {
+            arStatus.style.display = 'none';
+            arTopBar.style.display = 'flex';
+        });
+
+        arModal.classList.remove('hidden');
+    });
+
+    closeArModalBtn.addEventListener('click', () => {
+        arModal.classList.add('hidden');
+        document.getElementById('ar-modal-content').innerHTML = ''; // Detener la escena
+        document.getElementById('ar-status').style.display = 'block';
+        document.getElementById('ar-top-bar').style.display = 'none';
+    });
+
+    //==============================================================
+    //================== LÓGICA DE VOZ (Web Speech API) ============
+    //==============================================================
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+        mainRecognition = new SpeechRecognition();
+        mainRecognition.continuous = false;
+        mainRecognition.lang = 'es-AR';
+        mainRecognition.interimResults = false;
+        mainRecognition.maxAlternatives = 1;
+
+        mainRecognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (document.activeElement.classList.contains('mic-input-btn')) {
+                 const targetInput = document.activeElement.previousElementSibling;
+                 targetInput.value += transcript;
+            } else {
+                 chatInput.value = transcript;
+                 chatForm.dispatchEvent(new Event('submit'));
+            }
+        };
+
+        mainRecognition.onspeechend = () => {
+            mainRecognition.stop();
+        };
+
+        mainRecognition.onnomatch = () => {
+             console.log("No se pudo reconocer el audio.");
+        };
+
+        mainRecognition.onerror = (event) => {
+            console.error('Error en el reconocimiento de voz:', event.error);
+        };
+        
+        mainRecognition.onstart = () => {
+            if(!document.activeElement.classList.contains('mic-input-btn')){
+               isMainMicListening = true;
+               micBtn.classList.add('mic-listening');
+            }
+        };
+
+        mainRecognition.onend = () => {
+             isMainMicListening = false;
+             micBtn.classList.remove('mic-listening');
+        };
+
+        micBtn.addEventListener('click', () => {
+            if (isMainMicListening) {
+                mainRecognition.stop();
+            } else {
+                mainRecognition.start();
+            }
+        });
+        
+        document.body.addEventListener('click', function(e) {
+            const micInputBtn = e.target.closest('.mic-input-btn');
+            if (micInputBtn) {
+                 mainRecognition.start();
+            }
+        });
+
+
+    } else {
+        console.warn("La API de reconocimiento de voz no es compatible con este navegador.");
+        micBtn.style.display = 'none';
+    }
+    
+    // ===============================================================
+    // ==================== LÓGICA REPRODUCTOR RADIO =================
+    // ===============================================================
+    function setRadioState(state) {
+        if (state === 'playing') {
+            radioIconOverlay.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                </svg>`;
+            radioLogo.classList.remove('opacity-70');
+            radioStatusText.textContent = 'Reproduciendo...';
+        } else { // 'paused' or 'stopped'
+            radioIconOverlay.innerHTML = `
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                 </svg>`;
+            radioLogo.classList.add('opacity-70');
+            radioStatusText.textContent = 'Click para escuchar';
+        }
+    }
+
+    radioBtn.addEventListener('click', () => {
+        if (radioPlayer.paused) {
+            radioPlayer.src = streamUrl;
+            radioPlayer.play().catch(e => console.error("Error al reproducir radio:", e));
+        } else {
+            radioPlayer.pause();
+            radioPlayer.src = ""; // Detener la carga del stream
+        }
+    });
+
+    radioPlayer.addEventListener('play', () => setRadioState('playing'));
+    radioPlayer.addEventListener('pause', () => setRadioState('paused'));
+    radioPlayer.addEventListener('error', () => {
+        setRadioState('paused');
+        radioStatusText.textContent = 'Error de stream';
+    });
+
+    // Estado inicial
+    setRadioState('paused');
+
+
+    // --- INICIALIZACIÓN GENERAL ---
+    updateSuggestions();
+    
+});
+</script>
+
+</body>
+</html>
