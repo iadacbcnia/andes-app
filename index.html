@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const rinconList = document.getElementById('rincon-list');
     
     // --- VARIABLES GLOBALES Y CONFIGURACIÓN ---
-    const apiKey = ""; // Dejar vacío para que Canvas lo inyecte automáticamente
+    const apiKey = "AIzaSyCm-UPN2qMqQBMbC2obFaBD4Ck0J9qg6Ng"; // Dejar vacío para que Canvas lo inyecte automáticamente
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
@@ -743,40 +743,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const radioStatusText = document.getElementById('radio-status-text');
     const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
 
-    // --- INICIALIZACIÓN DE FIREBASE ---
-    function initializeFirebase() {
-        try {
-            const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-            if (!firebaseConfigStr) {
-                throw new Error("La configuración de Firebase no fue encontrada. La aplicación no puede funcionar.");
-            }
-            
-            const firebaseConfig = JSON.parse(firebaseConfigStr);
-            if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-                throw new Error("La configuración de Firebase es inválida.");
-            }
+// --- INICIALIZACIÓN DE FIREBASE ---
+try {
+    // 🔑 CONFIGURACIÓN FIJA DE FIREBASE (NO USAR __firebase_config EN VERCEL)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
+        authDomain: "andes-app-turismo.firebaseapp.com",
+        projectId: "andes-app-turismo",
+        storageBucket: "andes-app-turismo.firebasestorage.app",
+        messagingSenderId: "685878856963",
+        appId: "1:685878856963:web:660823dfdac24a0c39ed36"
+    };
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
 
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-                
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    lugaresCollectionRef = getCollectionRef('lugares');
-                    consejosCollectionRef = getCollectionRef('consejos');
-                    if (lugaresCollectionRef) listenForNewPlaces();
-                    if (consejosCollectionRef) listenForTips();
-                } else {
-                    // Intenta iniciar sesión anónimamente o con token si no hay usuario
-                    await (initialAuthToken ? signInWithCustomToken(auth, initialAuthToken) : signInAnonymously(auth));
-                }
-            });
-        } catch (error) {
-            console.error("Error grave al inicializar Firebase:", error);
-            chatWindow.innerHTML = `<div class="ai-message text-red-500 p-4"><strong>Error de Conexión:</strong> No se pudo inicializar la base de datos. Por favor, recarga la página. <br><small>${error.message}</small></div>`;
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            userId = user.uid;
+            lugaresCollectionRef = collection(db, `/artifacts/default-app-id/public/data/lugares`);
+            consejosCollectionRef = collection(db, `/artifacts/default-app-id/public/data/consejos`);
+            if (lugaresCollectionRef) listenForNewPlaces();
+            if (consejosCollectionRef) listenForTips();
+        } else {
+            console.log("No user signed in, attempting to sign in.");
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Error during sign-in:", error);
+            }
         }
+    });
+} catch (error) {
+    console.error("Error initializing Firebase:", error);
+    document.getElementById('chat-window').innerHTML = '<div class="text-red-500 p-4">Error: No se pudo conectar con la base de datos.</div>';
+}
     }
 
     function getCollectionRef(name) {
@@ -2312,6 +2313,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
 
 
 
