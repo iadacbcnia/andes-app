@@ -707,6 +707,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const vrSky = document.getElementById('vr-sky');
     const manageList = document.getElementById('manage-list');
     const rinconList = document.getElementById('rincon-list');
+
+    // --- ESTADO INICIAL DE LA UI ---
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+    chatInput.disabled = true;
+    chatInput.placeholder = "Conectando...";
+    submitButton.disabled = true;
     
     // --- VARIABLES GLOBALES Y CONFIGURACIÓN ---
     const apiKey = ""; // Dejar vacío para que Canvas lo inyecte automáticamente
@@ -723,6 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let chatHistory = [];
     let tipsCache = [];
     let isAdmin = false; 
+    let isDataReady = false;
     let map = null;
     let mapInitialized = false;
     let parsedBulkData = []; 
@@ -750,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let initialAuthToken = null;
 
             // Intenta usar la configuración dinámica de Canvas
-            if (typeof __firebase_config !== 'undefined') {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 firebaseConfig = JSON.parse(__firebase_config);
                 initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             } else {
@@ -1504,6 +1511,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     dynamicKnowledgeBase[tipo][place.localidad].push(place);
                 }
             });
+
+            if (!isDataReady) {
+                chatInput.disabled = false;
+                submitButton.disabled = false;
+                chatInput.placeholder = "Pregúntame algo...";
+                isDataReady = true;
+            }
+
             updateSuggestions();
             if(!manageModal.classList.contains('hidden')){
                 renderManagementList();
@@ -1724,7 +1739,9 @@ document.addEventListener('DOMContentLoaded', function() {
             button.onclick = () => {
                 chatInput.value = text;
                 chatForm.dispatchEvent(new Event('submit'));
-        // ...
+            };
+            suggestionsContainer.appendChild(button);
+        });
     }
 
     // --- PROMPTS PARA LA IA ---
@@ -2335,7 +2352,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-" selected as context.
-
-
 
