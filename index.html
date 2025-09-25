@@ -16,13 +16,14 @@
             --emerald-500: #10b981;
             --slate-800: #1e293b;
             --slate-900: #0f172a;
+            --slate-700: #334155;
             --gray-100: #f3f4f6;
             --white: #ffffff;
         }
         .dark {
-            --bg-color: var(--slate-900);
+            --bg-color: var(--slate-800); /* Fondo principal un poco más claro */
             --text-color: var(--gray-100);
-            --card-bg: var(--slate-800);
+            --card-bg: var(--slate-700); /* Globos de chat y tarjetas más claras */
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -715,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function() {
     submitButton.disabled = true;
     
     // --- VARIABLES GLOBALES Y CONFIGURACIÓN ---
-    const apiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI"; // IMPORTANTE: Pega aquí la clave que generaste
+    const apiKey = "AQUÍ_VA_TU_API_KEY"; // IMPORTANTE: Pega aquí la clave que generaste
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
@@ -1850,9 +1851,10 @@ document.addEventListener('DOMContentLoaded', function() {
             - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
             - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
             - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
-        3.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
-        4.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
-        5.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
+        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1** del plan, enfócate en sugerir actividades y lugares para comer. **NO** sugieras un "alojamiento", ya que se asume que el viajero ya lo tiene resuelto para su llegada. La única excepción es que encuentres un alojamiento marcado como auspiciante de alta categoría (lo cual se indicará en el futuro).
+        4.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
+        5.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
+        6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
 
         EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
         **Día 1: Montaña y Cerveza Artesanal**
