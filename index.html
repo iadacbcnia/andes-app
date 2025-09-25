@@ -743,13 +743,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
 
     // --- INICIALIZACIÓN DE FIREBASE ---
-    try {
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+try {
+    const firebaseConfig = {
+        apiKey: "AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
+        authDomain: "andes-app-turismo.firebaseapp.com",
+        projectId: "andes-app-turismo",
+        storageBucket: "andes-app-turismo.firebasestorage.app",
+        messagingSenderId: "685878856963",
+        appId: "1:685878856963:web:660823dfdac24a0c39ed36"
+    };
+    const initialAuthToken = null;
 
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
         
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -2300,3 +2307,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
