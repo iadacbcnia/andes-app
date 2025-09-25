@@ -1583,6 +1583,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
         // Enviar al AI
+        const systemPrompt = generateSystemPrompt();
         const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
         chatWindow.removeChild(typingIndicator);
 
@@ -1723,13 +1724,12 @@ document.addEventListener('DOMContentLoaded', function() {
             button.onclick = () => {
                 chatInput.value = text;
                 chatForm.dispatchEvent(new Event('submit'));
-            };
-            suggestionsContainer.appendChild(button);
-        });
+        // ...
     }
 
     // --- PROMPTS PARA LA IA ---
-    const systemPrompt = `
+    function generateSystemPrompt() {
+        return `
         Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina del Paralelo 42 (El Bolsón, Lago Puelo, El Hoyo, etc.).
         Tu objetivo es ser el mejor guía turístico. Eres conversador, útil y un poco informal. Usas emojis para darle personalidad a tus respuestas.
 
@@ -1752,6 +1752,7 @@ document.addEventListener('DOMContentLoaded', function() {
         - Usuario: "contame sobre el cerro piltriquitron"
         - Andes: "El Piltriquitrón es el cerro guardián de El Bolsón. ¡Las vistas desde arriba son increíbles! 🤩 Puedes subir en auto una parte y luego hacer un trekking. Hay un bosque tallado muy famoso en el camino. ¡No te lo pierdas!"
     `;
+    }
     
     //==============================================================
     //================= LÓGICA DEL PLANIFICADOR ======================
@@ -1800,11 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ` }]
         }];
         
-        const plannerSystemPrompt = systemPlannerPrompt
-            .replace('{travelStyle}', style)
-            .replace('{days}', days)
-            .replace('{energyLevel}', energy)
-            .replace('{knowledgeBase}', JSON.stringify(dynamicKnowledgeBase, null, 2));
+        const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
 
         const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
         chatWindow.removeChild(typingIndicator);
@@ -1815,18 +1812,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 'ai');
     });
 
-    const systemPlannerPrompt = `
+    function generatePlannerPrompt(style, days, energy) {
+        return `
         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
         Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
 
         PREFERENCIAS DEL USUARIO:
-        - Estilo de Viaje: {travelStyle}
-        - Duración: {days} días
-        - Nivel de Energía: {energyLevel}
+        - Estilo de Viaje: ${style}
+        - Duración: ${days} días
+        - Nivel de Energía: ${energy}
 
         BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
         \`\`\`json
-        {knowledgeBase}
+        ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
         \`\`\`
 
         INSTRUCCIONES PARA CREAR EL ITINERARIO:
@@ -1848,6 +1846,7 @@ document.addEventListener('DOMContentLoaded', function() {
         - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
         - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
     `;
+    }
 
     //==============================================================
     //=============== LÓGICA DE BACKUP Y RESTORE ===================
@@ -2336,4 +2335,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+" selected as context.
+
+
 
