@@ -257,7 +257,7 @@
                 Añadir Nuevo Lugar
             </button>
             <button id="admin-manage-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium">
-                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 001 5.5v9A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0017.5 4h-15zM2 5.5a.5.5 0 01.5-.5h15a.5.5 0 01.5.5v9a.5.5 0 01-.5-.5h-15a.5.5 0 01-.5-.5v-9zM8 8a.75.75 0 000 1.5h4a.75.75 0 000-1.5H8z" clip-rule="evenodd" /></svg>
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 001 5.5v9A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0017.5 4h-15zM2 5.5a.5.5 0 01.5-.5h15a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-15a.5.5 0 01-.5-.5v-9zM8 8a.75.75 0 000 1.5h4a.75.75 0 000-1.5H8z" clip-rule="evenodd" /></svg>
                 Gestionar Contenido
             </button>
         </div>
@@ -573,6 +573,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
     <div id="ar-modal-content">
         </div>
 </div>
+
 <audio id="radio-player" preload="none"></audio>
 
 <script type="module">
@@ -601,51 +602,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminPanelModal = document.getElementById('admin-panel-modal');
     const plannerModal = document.getElementById('planner-modal');
     
-    // Botones para cerrar modales
-    const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
-    const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
-    const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
-    const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
-    const closeMapModalBtn = document.getElementById('close-map-modal-btn');
-    const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
-    const closeArModalBtn = document.getElementById('close-ar-modal-btn');
-    const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
-    const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
-    const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
+    // --- LÓGICA DE LOS MODALES Y BOTONES (NUEVA VERSIÓN CONVERSACIONAL) ---
 
-    // Elementos del panel de Admin
-    const passwordForm = document.getElementById('password-form');
-    const passwordInput = document.getElementById('password-input');
-    const adminAddBtn = document.getElementById('admin-add-btn');
-    const adminManageBtn = document.getElementById('admin-manage-btn');
-    
-    // --- LÓGICA DE LOS NUEVOS BOTONES DE ACCIÓN ---
+    // Botones de la nueva barra de acciones
     const actionMapBtn = document.getElementById('action-map-btn');
     const actionPlannerBtn = document.getElementById('action-planner-btn');
     const actionRinconBtn = document.getElementById('action-rincon-btn');
     const actionAdminBtn = document.getElementById('action-admin-btn');
-    
-    // Conexión del Botón del Mapa
+
+    // --- CONEXIONES DE LOS NUEVOS BOTONES ---
+
+    // Botón del Mapa
     actionMapBtn.addEventListener('click', () => {
         mapModal.classList.remove('hidden');
-        if (!mapInitialized) { initMap(); }
+        if (!mapInitialized) {
+            initMap();
+        }
         setTimeout(() => {
             map.invalidateSize();
-            if (isDataReady) { updateMapMarkers(); }
+            if (isDataReady) { 
+                updateMapMarkers();
+            }
         }, 100);
     });
 
-    // Conexión del Botón del Planificador
+    // Botón del Planificador
     actionPlannerBtn.addEventListener('click', () => {
         plannerModal.classList.remove('hidden');
     });
 
-    // Conexión del Botón del Rincón del Viajero
+    // Botón del Rincón del Viajero
     actionRinconBtn.addEventListener('click', () => {
         rinconModal.classList.remove('hidden');
     });
 
-    // Conexión del Botón de Admin
+    // Botón de Admin
     actionAdminBtn.addEventListener('click', () => {
         if (isAdmin) {
             adminPanelModal.classList.remove('hidden');
@@ -654,19 +645,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Lógica interna de los modales (cierres y panel de admin)
+    // --- Lógica interna de los modales (cierres y panel de admin) ---
+    const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
+    const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
+    const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
+    const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
+    const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
+    const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
+    const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
+    const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
+    const closeArModalBtn = document.getElementById('close-ar-modal-btn');
+    const closeMapModalBtn = document.getElementById('close-map-modal-btn');
+
+    closePlannerModalBtn.addEventListener('click', () => plannerModal.classList.add('hidden'));
+    closeRinconModalBtn.addEventListener('click', () => rinconModal.classList.add('hidden'));
+    closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
+    closeAdminPanelBtn.addEventListener('click', () => adminPanelModal.classList.add('hidden'));
+    closeManageModalBtn.addEventListener('click', () => manageModal.classList.add('hidden'));
+    closeContributionModalBtn.addEventListener('click', () => contributionModal.classList.add('hidden'));
+    closeRatingModalBtn.addEventListener('click', () => ratingModal.classList.add('hidden'));
+    closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
+    closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
+    closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
+
+    const passwordForm = document.getElementById('password-form');
+    const adminAddBtn = document.getElementById('admin-add-btn');
+    const adminManageBtn = document.getElementById('admin-manage-btn');
+    
     passwordForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (passwordInput.value === 'andesadmin') {
+        if (passwordForm.querySelector('input').value === 'andesadmin') {
             isAdmin = true;
             passwordModal.classList.add('hidden');
             adminPanelModal.classList.remove('hidden');
-            passwordInput.value = '';
+            passwordForm.querySelector('input').value = '';
         } else {
             alert('Contraseña incorrecta');
         }
     });
     adminAddBtn.addEventListener('click', () => {
+        contributionForm.reset();
+        editingPlaceId = null;
+        editingBulkIndex = null;
+        document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
         contributionModal.classList.remove('hidden');
         adminPanelModal.classList.add('hidden');
     });
@@ -675,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
         manageModal.classList.remove('hidden');
         adminPanelModal.classList.add('hidden');
     });
-    
+
     // (El resto de la lógica de la app, como Firebase, chat, clima, etc. iría aquí)
     // ... (código JavaScript completo que ya tienes)
     // Por favor, pega el resto del script que ya teníamos funcionando aquí.
