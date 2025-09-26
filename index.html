@@ -1494,7 +1494,64 @@ document.addEventListener('DOMContentLoaded', function() {
         }, (error) => console.error("Error listening for places:", error));
     }
 
+// ===============================================================
+    // ==================== MÓDULO DEL CLIMA =======================
+    // ===============================================================
 
+    const comarcaCoordinates = {
+        // Comarca Andina
+        "el bolsón": { lat: -41.96, lon: -71.53 },
+        "lago puelo": { lat: -42.06, lon: -71.60 },
+        "el hoyo": { lat: -42.06, lon: -71.51 },
+        "epuyén": { lat: -42.23, lon: -71.35 },
+        "el maitén": { lat: -42.05, lon: -71.16 },
+        "cholila": { lat: -42.51, lon: -71.45 },
+        
+        // Localidades Cercanas Agregadas
+        "san carlos de bariloche": { lat: -41.13, lon: -71.31 },
+        "bariloche": { lat: -41.13, lon: -71.31 }, // Alias para Bariloche
+        "el manso": { lat: -41.58, lon: -71.75 },
+        "esquel": { lat: -42.91, lon: -71.32 },
+        "trevelin": { lat: -43.08, lon: -71.46 },
+        "gualjaina": { lat: -42.77, lon: -70.45 },
+        "corcovado": { lat: -43.53, lon: -71.47 }
+    };
+
+    async function getRealTimeWeather(location) {
+        const locationKey = location.toLowerCase();
+        if (!comarcaCoordinates[locationKey]) {
+            return "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina.";
+        }
+
+        const coords = comarcaCoordinates[locationKey];
+        const apiKey = "a6200921f878ea692204d518fa54b6d9"; // Tu API Key
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric&lang=es`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                return "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde.";
+            }
+            const data = await response.json();
+            
+            const temp = Math.round(data.main.temp);
+            const description = data.weather[0].description;
+            const icon = data.weather[0].icon;
+            
+            let emoji = "☀️"; // Sol por defecto
+            if (icon.includes("02") || icon.includes("03") || icon.includes("04")) emoji = "☁️"; // Nubes
+            if (icon.includes("09") || icon.includes("10")) emoji = "🌧️"; // Lluvia
+            if (icon.includes("11")) emoji = "⛈️"; // Tormenta
+            if (icon.includes("13")) emoji = "❄️"; // Nieve
+            if (icon.includes("50")) emoji = "🌫️"; // Niebla
+
+            return `¡Claro! En ${location} ahora mismo tenemos ${temp}°C con ${description}. ${emoji}`;
+
+        } catch (error) {
+            console.error("Error fetching weather:", error);
+            return "Tuve un problema para conectarme con el servicio del clima.";
+        }
+    }
     // --- LÓGICA DEL CHAT ---
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1570,17 +1627,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const typingIndicator = showTypingIndicator();
         chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
-        // Enviar al AI
         const systemPrompt = generateSystemPrompt();
         const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-        chatWindow.removeChild(typingIndicator);
+        
+        // --- NUEVA LÓGICA DE INTERCEPCIÓN ---
+        const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?)\]/);
 
-        addMessage({
-            text: aiResponseData.text,
-            isHtml: aiResponseData.isHtml,
-            isSponsored: aiResponseData.isSponsored
-        }, 'ai');
-        chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
+        if (weatherMatch) {
+            const location = weatherMatch[1].trim();
+            const weatherText = await getRealTimeWeather(location);
+            chatWindow.removeChild(typingIndicator);
+            addMessage({ text: weatherText }, 'ai');
+            chatHistory.push({ role: "model", parts: [{ text: weatherText }] });
+        } else {
+            // Si no es un comando de clima, procede como siempre
+            chatWindow.removeChild(typingIndicator);
+            addMessage({
+                text: aiResponseData.text,
+                isHtml: aiResponseData.isHtml,
+                isSponsored: aiResponseData.isSponsored
+            }, 'ai');
+            chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
+        }
     }
 
     function showTypingIndicator() {
@@ -1728,23 +1796,21 @@ document.addEventListener('DOMContentLoaded', function() {
         Tu objetivo es ser el mejor guía turístico. Eres conversador, útil y un poco informal. Usas emojis para darle personalidad a tus respuestas.
 
         REGLAS FUNDAMENTALES:
-        1.  **USA TU CONOCIMIENTO INTERNO PRIMERO:** La siguiente base de datos es tu fuente principal y más confiable. Siempre que un usuario pregunte por lugares, busca en esta lista primero.
+        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:Nombre de la Localidad]. Por ejemplo, si preguntan "cómo está el tiempo en El Bolsón", tu respuesta debe ser exactamente: [CLIMA:El Bolsón]. No añadas nada más.
+        2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos. Siempre que un usuario pregunte por lugares, busca en esta lista primero.
             \`\`\`json
             ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
             \`\`\`
-        2.  **CÓMO RESPONDER SOBRE LUGARES:**
-            - Si encuentras un lugar EXACTO en tu base de datos, menciona su nombre entre corchetes dobles, así: [[Nombre Exacto del Lugar]]. NO inventes nombres. El nombre debe ser idéntico al de la base de datos. Esto lo convertirá en un enlace.
-            - Si el usuario pregunta por un tipo de lugar (ej. "restaurantes en El Bolsón"), dale una lista de 2 o 3 opciones de tu base de datos y menciónalos con [[Nombre Exacto]].
-            - Si el lugar es "esAuspiciante: true", menciónalo como un "lugar recomendado por la comunidad" o "un favorito de los viajeros" y ponle un emoji de estrella ⭐.
-        3.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no se puede responder con tu base de datos (ej. "clima", "historia del lúpulo", "horarios del colectivo"), puedes usar tu conocimiento general. Siempre aclara que la información puede variar.
-        4.  **SÉ BREVE Y AL GRANO:** No escribas párrafos largos. Usa listas con guiones (-) si es necesario.
-        5.  **NO DES INFORMACIÓN PRIVADA:** Nunca des la URL de una imagen o datos que no estén explícitamente en la descripción.
+        3.  **CÓMO RESPONDER SOBRE LUGARES:**
+            - Si encuentras un lugar EXACTO en tu base de datos, menciónalo entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
+            - Si el usuario pregunta por un tipo de lugar (ej. "restaurantes en El Bolsón"), dale una lista de 2 o 3 opciones de tu base de datos.
+            - Si el lugar es "esAuspiciante: true", menciónalo como un "lugar recomendado" y ponle un emoji de estrella ⭐.
+        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares de tu base de datos, puedes usar tu conocimiento general.
+        5.  **SÉ BREVE Y AL GRANO:** No escribas párrafos largos.
         
         EJEMPLOS DE RESPUESTA:
-        - Usuario: "busco un lugar para comer"
-        - Andes: "¡Claro! En El Bolsón te puedo recomendar [[Jauja]] que es un clásico, o si buscas algo más rústico, [[La Gorda]]. ¿Te gustaría saber más de alguno de ellos? 🍔"
-        - Usuario: "contame sobre el cerro piltriquitron"
-        - Andes: "El Piltriquitrón es el cerro guardián de El Bolsón. ¡Las vistas desde arriba son increíbles! 🤩 Puedes subir en auto una parte y luego hacer un trekking. Hay un bosque tallado muy famoso en el camino. ¡No te lo pierdas!"
+        - Usuario: "temperatura en lago puelo" -> Andes responde: "[CLIMA:Lago Puelo]"
+        - Usuario: "busco un lugar para comer" -> Andes responde: "¡Claro! En El Bolsón te puedo recomendar [[Jauja]] que es un clásico. ¿Te gustaría saber más? 🍔"
     `;
     }
     
@@ -2397,6 +2463,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
 
 
 
