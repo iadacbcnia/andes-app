@@ -637,20 +637,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES
     // Botón del Mapa
-actionMapBtn.addEventListener('click', () => {
-    mapModal.classList.remove('hidden');
+    actionMapBtn.addEventListener('click', () => {
+        mapModal.classList.remove('hidden');
+        
+        // Hacemos que la inicialización y el redibujado ocurran en momentos ligeramente distintos
+        // para darle tiempo al navegador de procesar todo.
+        setTimeout(() => {
+            if (!mapInitialized) {
+                initMap();
+            }
+        }, 50); // Un pequeño respiro para que el modal aparezca
 
-    setTimeout(() => {
-        console.log("Intentando inicializar y dibujar el mapa..."); // Mensaje de prueba
-        if (!mapInitialized) {
-            initMap();
+        setTimeout(() => {
+            if(map) {
+                map.invalidateSize();
+            }
+        }, 200); // Un segundo respiro para asegurar que el mapa se redibuje
+    });
+
+    // Botón del Planificador
+    actionPlannerBtn.addEventListener('click', () => {
+        plannerModal.classList.remove('hidden');
+    });
+
+    // Botón del Rincón del Viajero
+    actionRinconBtn.addEventListener('click', () => {
+        rinconModal.classList.remove('hidden');
+    });
+
+    // Botón de Admin
+    actionAdminBtn.addEventListener('click', () => {
+        if (isAdmin) {
+            adminPanelModal.classList.remove('hidden');
+        } else {
+            passwordModal.classList.remove('hidden');
         }
-        map.invalidateSize();
-        if (isDataReady) { 
-            updateMapMarkers();
-        }
-    }, 250); // Aumentamos el tiempo a 250ms por seguridad
-});
+    });
     actionPlannerBtn.addEventListener('click', () => plannerModal.classList.remove('hidden'));
     actionRinconBtn.addEventListener('click', () => rinconModal.classList.remove('hidden'));
     actionAdminBtn.addEventListener('click', () => {
@@ -761,4 +783,5 @@ actionMapBtn.addEventListener('click', () => {
 
 </body>
 </html>
+
 
