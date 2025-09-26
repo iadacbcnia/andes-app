@@ -1497,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const placeLink = e.target.closest('.place-link');
         const view360Button = e.target.closest('.view-360-btn');
         const ratePlaceButton = e.target.closest('.rate-place-btn');
-        const viewOnMapButton = e.target.closest('.view-on-map-btn'); // --- NUEVA LÍNEA AÑADIDA ---
+        const viewOnMapButton = e.target.closest('.view-on-map-btn');
 
         if (placeLink) {
             const placeId = placeLink.dataset.id;
@@ -1520,7 +1520,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const placeId = ratePlaceButton.dataset.id;
             openRatingModal(placeId);
         }
-        // --- NUEVO BLOQUE AÑADIDO ---
         if (viewOnMapButton) {
             const placeId = viewOnMapButton.dataset.id;
             const placeToShow = placesCache.find(p => p.id === placeId);
@@ -1529,60 +1528,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
-    function showPlaceOnMap(place) {
-        if (!place.latitud || !place.longitud) {
-            console.warn("Intento de mostrar en mapa un lugar sin coordenadas:", place.nombre);
-            return;
-        }
-
-        // Abrir el modal del mapa
-        mapModal.classList.remove('hidden');
-
-        // Asegurarse de que el mapa esté inicializado
-        if (!mapInitialized) {
-            initMap();
-        }
-
-        // Dar un pequeño tiempo para que el modal sea visible antes de manipular el mapa
-        setTimeout(() => {
-            map.invalidateSize(); // recalcula el tamaño del mapa
-            
-            if (highlightedMarkerLayer) {
-                highlightedMarkerLayer.clearLayers(); // Limpia el marcador anterior
-            }
-
-            const lat = parseFloat(place.latitud);
-            const lon = parseFloat(place.longitud);
-            
-            // Centrar el mapa en la ubicación del lugar con un buen nivel de zoom
-            map.setView([lat, lon], 16); // Usamos un zoom más cercano (16)
-
-            // Crear el marcador especial y añadirlo a su capa
-            const highlightMarker = L.marker([lat, lon]).addTo(highlightedMarkerLayer);
-
-            // Crear el contenido del Popup (duplicamos la lógica para asegurar consistencia)
-            const destination = `${place.latitud},${place.longitud}`;
-            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
-            let shortDescription = place.descripcion || '';
-            if (shortDescription.length > 100) {
-                shortDescription = shortDescription.substring(0, 100) + '...';
-            }
-            const popupContent = `
-                <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
-                    <strong style="font-size: 1.1em;">${place.nombre}</strong>
-                    <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
-                    <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
-                        Cómo llegar
-                    </a>
-                </div>
-            `;
-            
-            // Asignar el popup al marcador y abrirlo inmediatamente
-            highlightMarker.bindPopup(popupContent).openPopup();
-
-        }, 200); // Aumentamos un poco el tiempo de espera para asegurar que todo cargue bien
-    }
     
     function addMessage(message, sender) {
         const messageDiv = document.createElement('div');
@@ -1733,7 +1678,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
         
-        // --- NUEVA LÍNEA AÑADIDA ---
         if (place.latitud && place.longitud) {
             html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
         }
@@ -2118,7 +2062,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //==============================================================
     //===================== LÓGICA DEL MAPA ========================
     //==============================================================
-
     let highlightedMarkerLayer = null; // Variable para el marcador destacado
 
     function initMap() {
@@ -2165,7 +2108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // --- Creación del contenido del Popup ---
                     const destination = `${place.latitud},${place.longitud}`;
-                    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+                    const googleMapsUrl = `https://maps.google.com/?q=${destination}`;
                     
                     // Acortar descripción si es muy larga
                     let shortDescription = place.descripcion || '';
@@ -2195,6 +2138,60 @@ document.addEventListener('DOMContentLoaded', function() {
             // Ya no centramos el mapa aquí para que no interfiera con la vista del usuario
             // map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
         }
+    }
+
+    function showPlaceOnMap(place) {
+        if (!place.latitud || !place.longitud) {
+            console.warn("Intento de mostrar en mapa un lugar sin coordenadas:", place.nombre);
+            return;
+        }
+
+        // Abrir el modal del mapa
+        mapModal.classList.remove('hidden');
+
+        // Asegurarse de que el mapa esté inicializado
+        if (!mapInitialized) {
+            initMap();
+        }
+
+        // Dar un pequeño tiempo para que el modal sea visible antes de manipular el mapa
+        setTimeout(() => {
+            map.invalidateSize(); // recalcula el tamaño del mapa
+            
+            if (highlightedMarkerLayer) {
+                highlightedMarkerLayer.clearLayers(); // Limpia el marcador anterior
+            }
+
+            const lat = parseFloat(place.latitud);
+            const lon = parseFloat(place.longitud);
+            
+            // Centrar el mapa en la ubicación del lugar con un buen nivel de zoom
+            map.setView([lat, lon], 16); // Usamos un zoom más cercano (16)
+
+            // Crear el marcador especial y añadirlo a su capa
+            const highlightMarker = L.marker([lat, lon]).addTo(highlightedMarkerLayer);
+
+            // Crear el contenido del Popup (duplicamos la lógica para asegurar consistencia)
+            const destination = `${place.latitud},${place.longitud}`;
+            const googleMapsUrl = `https://maps.google.com/?q=${destination}`;
+            let shortDescription = place.descripcion || '';
+            if (shortDescription.length > 100) {
+                shortDescription = shortDescription.substring(0, 100) + '...';
+            }
+            const popupContent = `
+                <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
+                    <strong style="font-size: 1.1em;">${place.nombre}</strong>
+                    <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
+                    <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                        Cómo llegar
+                    </a>
+                </div>
+            `;
+            
+            // Asignar el popup al marcador y abrirlo inmediatamente
+            highlightMarker.bindPopup(popupContent).openPopup();
+
+        }, 200); // Aumentamos un poco el tiempo de espera para asegurar que todo cargue bien
     }
     
     //==============================================================
@@ -2398,3 +2395,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
