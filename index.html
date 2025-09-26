@@ -271,7 +271,7 @@
     </div>
 </div>
 
-<div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
+<div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[65] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="mt-3 text-center">
             <h3 id="contribution-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Añadir conocimiento a Andes</h3>
@@ -2106,35 +2106,38 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const lat = parseFloat(place.latitud);
                 const lon = parseFloat(place.longitud);
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    const marker = L.marker([lat, lon]).addTo(markersLayer);
-                    
-                    const destination = `${place.latitud},${place.longitud}`;
-                    const googleMapsUrl = `http://googleusercontent.com/maps/google.com/2{destination}`;
-                    
-                    let shortDescription = place.descripcion || '';
-                    if (shortDescription.length > 100) {
-                        shortDescription = shortDescription.substring(0, 100) + '...';
-                    }
 
-                    const popupContent = `
-                        <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
-                            <strong style="font-size: 1.1em;">${place.nombre}</strong>
-                            <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
-                            <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
-                                Cómo llegar
-                            </a>
-                        </div>
-                    `;
-
-                    marker.bindPopup(popupContent);
-                    markersById[place.id] = marker;
+                if (isNaN(lat) || isNaN(lon)) {
+                    console.warn(`Coordenadas inválidas para ${place.nombre}: Lat ${place.latitud}, Lon ${place.longitud}`);
+                    return; 
                 }
+
+                const marker = L.marker([lat, lon]).addTo(markersLayer);
+                
+                // --- URL CORREGIDA ---
+                const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+                
+                let shortDescription = place.descripcion || '';
+                if (shortDescription.length > 100) {
+                    shortDescription = shortDescription.substring(0, 100) + '...';
+                }
+
+                const popupContent = `
+                    <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
+                        <strong style="font-size: 1.1em;">${place.nombre}</strong>
+                        <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
+                        <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                            Cómo llegar
+                        </a>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+                markersById[place.id] = marker;
             } catch (e) {
-                console.warn(`Coordenadas inválidas para ${place.nombre}: ${place.latitud}, ${place.longitud}`);
+                console.error(`Error procesando el lugar ${place.nombre} para el mapa:`, e);
             }
         });
-        
     }
 
     function showPlaceOnMap(place) {
@@ -2383,5 +2386,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
 
 
