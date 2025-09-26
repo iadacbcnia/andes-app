@@ -636,18 +636,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA DE LOS MODALES Y BOTONES (VERSIÓN CORREGIDA) ---
 
     // CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES
-    actionMapBtn.addEventListener('click', () => {
-        mapModal.classList.remove('hidden');
-        setTimeout(() => {
-            if (!mapInitialized) {
-                initMap();
-            }
-            map.invalidateSize();
-            if (isDataReady) { 
-                updateMapMarkers();
-            }
-        }, 150);
-    });
+    // Botón del Mapa
+actionMapBtn.addEventListener('click', () => {
+    mapModal.classList.remove('hidden');
+
+    setTimeout(() => {
+        console.log("Intentando inicializar y dibujar el mapa..."); // Mensaje de prueba
+        if (!mapInitialized) {
+            initMap();
+        }
+        map.invalidateSize();
+        if (isDataReady) { 
+            updateMapMarkers();
+        }
+    }, 250); // Aumentamos el tiempo a 250ms por seguridad
+});
     actionPlannerBtn.addEventListener('click', () => plannerModal.classList.remove('hidden'));
     actionRinconBtn.addEventListener('click', () => rinconModal.classList.remove('hidden'));
     actionAdminBtn.addEventListener('click', () => {
@@ -758,3 +761,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
