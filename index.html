@@ -627,53 +627,59 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminAddBtn = document.getElementById('admin-add-btn');
     const adminManageBtn = document.getElementById('admin-manage-btn');
     const contributionForm = document.getElementById('contribution-form');
-    
-    let isAdmin = false; 
-    let isDataReady = false;
-    let mapInitialized = false;
-    let map = null;
+    const tipForm = document.getElementById('tip-form');
+    const tipInput = document.getElementById('tip-input');
+    const plannerForm = document.getElementById('planner-form');
+    const vrSky = document.getElementById('vr-sky');
+    const manageList = document.getElementById('manage-list');
+    const rinconList = document.getElementById('rincon-list');
+    const radioBtn = document.getElementById('radio-btn');
+    const radioPlayer = document.getElementById('radio-player');
+    const radioLogo = document.getElementById('radio-logo');
+    const radioIconOverlay = document.getElementById('radio-icon-overlay');
+    const radioStatusText = document.getElementById('radio-status-text');
+    const submitButton = chatForm.querySelector('button[type="submit"]');
 
-    // --- FUNCIÓN PARA CREAR EL MAPA ---
-    function initMap() {
-        if (mapInitialized) return;
-        map = L.map('map').setView([-41.96, -71.53], 10);
+    // --- VARIABLES GLOBALES ---
+    let db, auth, userId;
+    let lugaresCollectionRef, consejosCollectionRef;
+    let dynamicKnowledgeBase = {}, placesCache = [], chatHistory = [], tipsCache = [];
+    let isAdmin = false, isDataReady = false, mapInitialized = false, map = null;
+    let markersLayer = null, highlightedMarkerLayer = null, markersById = {};
+    let mainRecognition, isMainMicListening = false, activeSpeechInput = null;
+    const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
+    const apiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI"; 
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    // --- INICIALIZACIÓN DE LA APP ---
+    chatInput.disabled = true;
+    chatInput.placeholder = "Conectando...";
+    submitButton.disabled = true;
+    initializeFirebase();
 
-        markersLayer = L.layerGroup().addTo(map);
-        highlightedMarkerLayer = L.layerGroup().addTo(map);
+    // ===============================================================
+    // ================ LÓGICA DE EVENTOS Y CONEXIONES ===============
+    // ===============================================================
 
-        if (isDataReady) {
-            updateMapMarkers();
-        }
-
-        mapInitialized = true;
-    }
-
-    // --- CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES ---
+    // --- CONEXIONES DE LA BARRA DE ACCIONES ---
     actionMapBtn.addEventListener('click', () => {
         mapModal.classList.remove('hidden');
         setTimeout(() => {
-            if (!mapInitialized) {
-                initMap();
-            }
+            if (!mapInitialized) initMap();
         }, 50);
         setTimeout(() => {
-            if(map) {
-                map.invalidateSize();
-            }
+            if(map) map.invalidateSize();
         }, 200);
     });
     actionPlannerBtn.addEventListener('click', () => plannerModal.classList.remove('hidden'));
-    actionRinconBtn.addEventListener('click', () => rinconModal.classList.remove('hidden'));
+    actionRinconBtn.addEventListener('click', () => {
+        renderTipsList();
+        rinconModal.classList.remove('hidden');
+    });
     actionAdminBtn.addEventListener('click', () => {
-        if (isAdmin) {
-            adminPanelModal.classList.remove('hidden');
-        } else {
-            passwordModal.classList.remove('hidden');
-        }
+        if (isAdmin) adminPanelModal.classList.remove('hidden');
+        else passwordModal.classList.remove('hidden');
     });
 
     // --- CONEXIONES DE LOS BOTONES DE CERRAR (X) ---
@@ -688,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
     closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
 
-    // --- LÓGICA DEL PANEL DE ADMIN ---
+    // --- CONEXIONES DE FORMULARIOS Y OTROS BOTONES ---
     passwordForm.addEventListener('submit', (e) => {
         e.preventDefault();
         if (passwordInput.value === 'andesadmin') {
@@ -706,7 +712,6 @@ document.addEventListener('DOMContentLoaded', function() {
     adminAddBtn.addEventListener('click', () => {
         contributionForm.reset();
         editingPlaceId = null;
-        editingBulkIndex = null;
         document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
         contributionModal.classList.remove('hidden');
         adminPanelModal.classList.add('hidden');
@@ -716,8 +721,38 @@ document.addEventListener('DOMContentLoaded', function() {
         manageModal.classList.remove('hidden');
         adminPanelModal.classList.add('hidden');
     });
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+        addMessage({ text: userMessage }, 'user');
+        chatInput.value = '';
+        processUserMessage(userMessage);
+    });
+    tipForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const tipText = tipInput.value.trim();
+        if (tipText === '' || !consejosCollectionRef) return;
+        const submitBtn = tipForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+            await addDoc(consejosCollectionRef, { text: tipText, userId: userId, createdAt: serverTimestamp() });
+            tipInput.value = '';
+        } catch (error) { console.error("Error al añadir consejo:", error); }
+        finally { submitBtn.disabled = false; }
+    });
+    plannerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const style = document.querySelector('#planner-style-group .bg-emerald-500')?.dataset.value || 'Aventura';
+        const days = document.getElementById('planner-days').value;
+        const energy = document.querySelector('#planner-energy-group .bg-emerald-500')?.dataset.value || 'Medio';
+        plannerModal.classList.add('hidden');
+        const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+        addMessage({ text: userMessage }, 'user');
+        processUserMessage(userMessage);
+    });
 
-    // (El resto de la lógica de la app va aquí)
+    // (Aquí irían el resto de las funciones, que se autocontienen y no necesitan estar arriba)
 
 });
 </script>
