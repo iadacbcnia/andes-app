@@ -2111,7 +2111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const marker = L.marker([lat, lon]).addTo(markersLayer);
                     
                     const destination = `${place.latitud},${place.longitud}`;
-                    const googleMapsUrl = `https://maps.google.com/?q=${destination}`;
+                    const googleMapsUrl = `http://googleusercontent.com/maps/google.com/2{destination}`;
                     
                     let shortDescription = place.descripcion || '';
                     if (shortDescription.length > 100) {
@@ -2144,6 +2144,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const lat = parseFloat(place.latitud);
+        const lon = parseFloat(place.longitud);
+
+        // --- NUEVA VERIFICACIÓN AÑADIDA ---
+        if (isNaN(lat) || isNaN(lon)) {
+            addMessage({ text: `Lo siento, las coordenadas para "${place.nombre}" no son válidas y no se puede mostrar en el mapa.` }, 'ai');
+            return;
+        }
+
         mapModal.classList.remove('hidden');
 
         if (!mapInitialized) {
@@ -2156,15 +2165,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (highlightedMarkerLayer) {
                 highlightedMarkerLayer.clearLayers(); 
             }
-
-            const lat = parseFloat(place.latitud);
-            const lon = parseFloat(place.longitud);
             
             map.setView([lat, lon], 16); 
 
             const highlightMarker = L.marker([lat, lon]).addTo(highlightedMarkerLayer);
 
-            const destination = `${place.latitud},${place.longitud}`;
+            const destination = `${lat},${lon}`;
             const googleMapsUrl = `https://maps.google.com/?q=${destination}`;
             let shortDescription = place.descripcion || '';
             if (shortDescription.length > 100) {
@@ -2378,3 +2384,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
