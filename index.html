@@ -2149,7 +2149,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const lat = parseFloat(place.latitud);
         const lon = parseFloat(place.longitud);
 
-        // --- NUEVA VERIFICACIÓN AÑADIDA ---
         if (isNaN(lat) || isNaN(lon)) {
             addMessage({ text: `Lo siento, las coordenadas para "${place.nombre}" no son válidas y no se puede mostrar en el mapa.` }, 'ai');
             return;
@@ -2172,8 +2171,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const highlightMarker = L.marker([lat, lon]).addTo(highlightedMarkerLayer);
 
-            const destination = `${lat},${lon}`;
-            const googleMapsUrl = `https://maps.google.com/?q=${destination}`;
+            // --- URL CORREGIDA ---
+            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+            
             let shortDescription = place.descripcion || '';
             if (shortDescription.length > 100) {
                 shortDescription = shortDescription.substring(0, 100) + '...';
@@ -2386,6 +2386,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
 
 
 
