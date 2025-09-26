@@ -1127,10 +1127,22 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 contributionForm.reset();
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Añadir Lugar';
+                
                 submitBtn.classList.remove('bg-green-600');
                 submitBtn.classList.add('bg-emerald-500');
-                contributionModal.classList.add('hidden');
+                
+                // --- AQUÍ ESTÁ EL CAMBIO ---
+                if (editingPlaceId) {
+                    // Si estábamos editando, volvemos a la lista de gestión
+                    submitBtn.textContent = 'Actualizar Lugar';
+                    contributionModal.classList.add('hidden');
+                    manageModal.classList.remove('hidden');
+                } else {
+                    // Si estábamos creando, cerramos todo
+                    submitBtn.textContent = 'Añadir Lugar';
+                    contributionModal.classList.add('hidden');
+                }
+                
                 editingPlaceId = null; 
             }, 1500);
 
@@ -1147,7 +1159,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         }
     });
-
 
     // --- FUNCIONES DE RENDERIZADO Y FIREBASE (Listeners) ---
     function listenForTips() {
@@ -2386,6 +2397,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
 
 
 
