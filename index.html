@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Andes - Tu Guía en la Comarca</title>
     <script src="https://cdn.tailwindcss.com?v=2"></script>
-    <!-- Leaflet (Mapas) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- A-Frame (VR & AR) -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
 
     <style>
@@ -76,7 +74,6 @@
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
 
 <div class="flex h-screen">
-    <!-- Sidebar -->
     <aside class="w-16 md:w-64 bg-white dark:bg-slate-800 p-2 md:p-4 flex flex-col justify-between transition-all duration-300">
         <div>
             <div class="flex items-center justify-center md:justify-start mb-6">
@@ -87,7 +84,6 @@
                 <h1 class="hidden md:block text-2xl font-bold ml-2">Andes</h1>
             </div>
             <nav class="space-y-2">
-                <!-- BOTONES PÚBLICOS -->
                 <button id="planner-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
                     <span class="hidden md:block ml-3">Planificador de Viaje</span>
@@ -104,22 +100,19 @@
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
                     <span class="hidden md:block ml-3">Ver en AR</span>
                 </button>
-                <!-- BOTÓN ADMIN -->
                 <button id="admin-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                     <span class="hidden md:block ml-3">Admin</span>
                 </button>
             </nav>
         </div>
-        <!-- Radio Player -->
         <div class="mt-auto p-2">
             <div class="bg-gray-100 dark:bg-slate-700 rounded-lg p-2">
                 <button id="radio-btn" class="w-full flex items-center justify-center md:justify-start">
                     <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
                         <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
                         <div id="radio-icon-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white">
-                            <!-- Play/Pause SVG will be inserted here by JS -->
-                        </div>
+                            </div>
                     </div>
                     <div class="hidden md:block ml-2 overflow-hidden">
                         <p class="font-semibold text-sm truncate">FM Paraíso 42</p>
@@ -130,10 +123,8 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen">
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <!-- Mensaje de bienvenida inicial -->
             <div class="w-full flex justify-start">
                 <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
                     ¡Hola! Soy Andes, tu guía personal en la Comarca Andina. Estoy aquí para ayudarte a descubrir los mejores lugares, planificar tu día o simplemente contarte sobre el clima. ¿En qué puedo ayudarte hoy?
@@ -142,10 +133,8 @@
         </div>
 
         <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
-            <!-- Sugerencias -->
             <div id="suggestions" class="flex flex-wrap gap-2 mb-2">
-                <!-- Los botones de sugerencia se añaden aquí dinámicamente -->
-            </div>
+                </div>
             <form id="chat-form" class="flex items-center gap-2">
                 <div class="relative w-full">
                     <input type="text" id="chat-input" placeholder="Pregúntame algo..." class="w-full p-3 pr-20 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
@@ -161,11 +150,6 @@
     </main>
 </div>
 
-<!-- =============================================================== -->
-<!-- ======================= MODALES DE LA APP ===================== -->
-<!-- =============================================================== -->
-
-<!-- Planner Modal -->
 <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
         
@@ -186,7 +170,6 @@
         </button>
 
         <form id="planner-form" class="space-y-6">
-            <!-- Paso 1: Estilo de Viaje con Botones -->
             <div>
                 <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">1</span>
@@ -207,7 +190,6 @@
                     </button>
                 </div>
             </div>
-            <!-- Paso 2: Días -->
             <div>
                 <label for="planner-days" class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
@@ -215,7 +197,6 @@
                 </label>
                 <input type="number" id="planner-days" value="3" min="1" max="14" class="mt-1 block w-full p-3 border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-lg shadow-sm text-base text-center font-bold text-xl focus:border-emerald-500 focus:ring-emerald-500">
             </div>
-            <!-- Paso 3: Nivel de Energía con Botones -->
             <div>
                 <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
@@ -249,7 +230,6 @@
     </div>
 </div>
 
-<!-- Admin Password Modal -->
 <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
         <div class="mt-3 text-center">
@@ -269,7 +249,6 @@
     </div>
 </div>
 
-<!-- Admin Panel Modal -->
 <div id="admin-panel-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <div class="flex justify-between items-center pb-3 border-b dark:border-slate-600">
@@ -292,18 +271,11 @@
     </div>
 </div>
 
-<!-- =============================================================== -->
-<!-- ================== FIN MODALES DE ADMIN ======================= -->
-<!-- =============================================================== -->
-
-
-<!-- Contribution Modal -->
 <div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="mt-3 text-center">
             <h3 id="contribution-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Añadir conocimiento a Andes</h3>
             <div class="mt-2 flex-grow overflow-y-auto p-2">
-                <!-- Tabs -->
                 <div id="contribution-tabs" class="border-b border-gray-200 dark:border-slate-600">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <button id="tab-single" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-emerald-500 border-emerald-500">Añadir Uno</button>
@@ -311,7 +283,6 @@
                     </nav>
                 </div>
 
-                <!-- Single Entry Form -->
                 <form id="contribution-form" class="mt-4 space-y-4 text-left">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -421,7 +392,6 @@
                     </div>
                 </form>
 
-                <!-- Bulk Entry Form -->
                 <div id="bulk-entry-form-container" class="hidden mt-4 text-left">
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pega cada lugar en una nueva línea. Separa cada dato con una coma. <strong class="dark:text-gray-200">La descripción siempre debe ir al final.</strong></p>
                     <p class="text-xs text-gray-500 dark:text-gray-300 mb-2">Si no tienes un dato (ej: teléfono o coordenadas), deja el espacio vacío entre las comas.</p>
@@ -446,10 +416,8 @@
     </div>
 </div>
 
-<!-- Management Modal -->
 <div id="manage-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
-        <!-- Header del modal con botones de descarga y restauración -->
         <div class="flex flex-wrap justify-between items-center mb-4 pb-2 border-b dark:border-slate-600 gap-2">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Gestionar Contenido</h3>
             <div class="flex items-center gap-2">
@@ -468,15 +436,13 @@
             </div>
         </div>
         <div id="manage-list" class="flex-grow overflow-y-auto pr-2">
-            <!-- La lista agrupada se mostrará aquí -->
-        </div>
+            </div>
         <div class="items-center px-4 py-3 text-right mt-4 border-t dark:border-slate-600">
             <button id="close-manage-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
         </div>
     </div>
 </div>
 
-<!-- Nuevo modal para "El Rincón del Viajero" -->
 <div id="rincon-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
@@ -487,7 +453,6 @@
                 </svg>
             </button>
         </div>
-        <!-- Formulario para dejar un consejo -->
         <form id="tip-form" class="mb-4">
             <label for="tip-input" class="sr-only">Deja tu consejo</label>
             <textarea id="tip-input" rows="3" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md" placeholder="Comparte un dato, una recomendación o un consejo para otros viajeros..."></textarea>
@@ -495,17 +460,13 @@
                 <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Compartir Consejo</button>
             </div>
         </form>
-        <!-- Lista de consejos -->
         <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4">
-            <!-- Los consejos de los viajeros se mostrarán aquí -->
-        </div>
+            </div>
     </div>
 </div>
 
-<!-- Nuevo modal para Valoraciones y Comentarios -->
 <div id="rating-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
-        <!-- Header -->
         <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
             <h3 id="rating-modal-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Opiniones y Valoraciones</h3>
             <button id="close-rating-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
@@ -514,12 +475,10 @@
                 </svg>
             </button>
         </div>
-        <!-- Rating y Comentarios -->
         <div class="flex-grow overflow-y-auto pr-2">
             <div id="average-rating-container" class="text-center mb-4"></div>
             <div id="comments-list" class="space-y-4"></div>
         </div>
-        <!-- Formulario para valorar -->
         <form id="rating-form" class="mt-4 border-t dark:border-slate-600 pt-4">
             <h4 class="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Deja tu valoración</h4>
             <div class="star-rating mb-2">
@@ -537,11 +496,9 @@
     </div>
 </div>
 
-<!-- Input oculto para seleccionar el archivo de backup -->
 <input type="file" id="backup-file-input" accept=".csv" class="hidden">
 
 
-<!-- Confirm Delete Modal (Individual & Planner) -->
 <div id="confirm-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Confirmar Eliminación</h3>
@@ -553,7 +510,6 @@
     </div>
 </div>
 
-<!-- Confirm Restore Modal -->
 <div id="confirm-restore-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-red-600 dark:text-red-400">¡Acción Irreversible!</h3>
@@ -569,7 +525,6 @@
     </div>
 </div>
 
-<!-- Modal para confirmar borrado de rubro -->
 <div id="confirm-rubro-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-red-600 dark:text-red-400">Confirmar Eliminación de Rubro</h3>
@@ -581,7 +536,6 @@
     </div>
 </div>
 
-<!-- Modal para el Mapa Interactivo -->
 <div id="map-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full hidden z-[80] transition-opacity duration-300 flex flex-col">
     <div class="bg-white dark:bg-slate-800 p-3 flex justify-between items-center shadow-md">
         <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Mapa Interactivo de la Comarca</h3>
@@ -596,7 +550,6 @@
     </div>
 </div>
 
-<!-- Modal para la Vista de Realidad Virtual (360°) -->
 <div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
     <div class="absolute top-0 right-0 p-2 z-10">
         <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
@@ -611,7 +564,6 @@
 </div>
 
 
-<!-- Modal para Realidad Aumentada -->
 <div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
     <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
         <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
@@ -623,8 +575,7 @@
     </div>
     <div id="ar-status"></div>
     <div id="ar-modal-content">
-        <!-- La escena de A-Frame para AR se inyectará aquí dinámicamente -->
-    </div>
+        </div>
 </div>
 
 
@@ -1543,72 +1494,95 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     chatWindow.addEventListener('click', function(e) {
-    const placeLink = e.target.closest('.place-link');
-    const view360Button = e.target.closest('.view-360-btn');
-    const ratePlaceButton = e.target.closest('.rate-place-btn');
-    const viewOnMapButton = e.target.closest('.view-on-map-btn'); // --- NUEVA LÍNEA AÑADIDA ---
+        const placeLink = e.target.closest('.place-link');
+        const view360Button = e.target.closest('.view-360-btn');
+        const ratePlaceButton = e.target.closest('.rate-place-btn');
+        const viewOnMapButton = e.target.closest('.view-on-map-btn'); // --- NUEVA LÍNEA AÑADIDA ---
 
-    if (placeLink) {
-        const placeId = placeLink.dataset.id;
-        const place = placesCache.find(p => p.id === placeId);
-        if (place) {
-            const aiMessage = formatPlaceForAI(place);
-            addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
+        if (placeLink) {
+            const placeId = placeLink.dataset.id;
+            const place = placesCache.find(p => p.id === placeId);
+            if (place) {
+                const aiMessage = formatPlaceForAI(place);
+                addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
+            }
         }
-    }
-    if (view360Button) {
-        const imageUrl = view360Button.dataset.image;
-        if (imageUrl && vrSky) {
-            vrSky.setAttribute('src', imageUrl);
-            vrModal.classList.remove('hidden');
-        } else {
-            addMessage({text: "Lo siento, este lugar no tiene una imagen 360° disponible."}, 'ai');
+        if (view360Button) {
+            const imageUrl = view360Button.dataset.image;
+            if (imageUrl && vrSky) {
+                vrSky.setAttribute('src', imageUrl);
+                vrModal.classList.remove('hidden');
+            } else {
+                addMessage({text: "Lo siento, este lugar no tiene una imagen 360° disponible."}, 'ai');
+            }
         }
-    }
-    if (ratePlaceButton) {
-        const placeId = ratePlaceButton.dataset.id;
-        openRatingModal(placeId);
-    }
-    // --- NUEVO BLOQUE AÑADIDO ---
-    if (viewOnMapButton) {
-        const placeId = viewOnMapButton.dataset.id;
-        const placeToShow = placesCache.find(p => p.id === placeId);
-        if (placeToShow) {
-            showPlaceOnMap(placeToShow);
+        if (ratePlaceButton) {
+            const placeId = ratePlaceButton.dataset.id;
+            openRatingModal(placeId);
         }
-    }
-});
+        // --- NUEVO BLOQUE AÑADIDO ---
+        if (viewOnMapButton) {
+            const placeId = viewOnMapButton.dataset.id;
+            const placeToShow = placesCache.find(p => p.id === placeId);
+            if (placeToShow) {
+                showPlaceOnMap(placeToShow);
+            }
+        }
+    });
 
     function showPlaceOnMap(place) {
-    if (!place.latitud || !place.longitud) {
-        console.warn("Intento de mostrar en mapa un lugar sin coordenadas:", place.nombre);
-        return;
-    }
-
-    // Abrir el modal del mapa
-    mapModal.classList.remove('hidden');
-
-    // Asegurarse de que el mapa esté inicializado
-    if (!mapInitialized) {
-        initMap();
-    }
-
-    // Dar un pequeño tiempo para que el modal sea visible antes de manipular el mapa
-    setTimeout(() => {
-        map.invalidateSize(); // recalcula el tamaño del mapa
-        const lat = parseFloat(place.latitud);
-        const lon = parseFloat(place.longitud);
-
-        // Centrar el mapa en la ubicación del lugar con un buen nivel de zoom
-        map.setView([lat, lon], 15);
-
-        // Buscar el marcador existente y abrir su popup para destacarlo
-        const marker = markersById[place.id];
-        if (marker) {
-            marker.openPopup();
+        if (!place.latitud || !place.longitud) {
+            console.warn("Intento de mostrar en mapa un lugar sin coordenadas:", place.nombre);
+            return;
         }
-    }, 150); // 150 milisegundos de espera
-}
+
+        // Abrir el modal del mapa
+        mapModal.classList.remove('hidden');
+
+        // Asegurarse de que el mapa esté inicializado
+        if (!mapInitialized) {
+            initMap();
+        }
+
+        // Dar un pequeño tiempo para que el modal sea visible antes de manipular el mapa
+        setTimeout(() => {
+            map.invalidateSize(); // recalcula el tamaño del mapa
+            
+            if (highlightedMarkerLayer) {
+                highlightedMarkerLayer.clearLayers(); // Limpia el marcador anterior
+            }
+
+            const lat = parseFloat(place.latitud);
+            const lon = parseFloat(place.longitud);
+            
+            // Centrar el mapa en la ubicación del lugar con un buen nivel de zoom
+            map.setView([lat, lon], 16); // Usamos un zoom más cercano (16)
+
+            // Crear el marcador especial y añadirlo a su capa
+            const highlightMarker = L.marker([lat, lon]).addTo(highlightedMarkerLayer);
+
+            // Crear el contenido del Popup (duplicamos la lógica para asegurar consistencia)
+            const destination = `${place.latitud},${place.longitud}`;
+            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+            let shortDescription = place.descripcion || '';
+            if (shortDescription.length > 100) {
+                shortDescription = shortDescription.substring(0, 100) + '...';
+            }
+            const popupContent = `
+                <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
+                    <strong style="font-size: 1.1em;">${place.nombre}</strong>
+                    <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
+                    <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                        Cómo llegar
+                    </a>
+                </div>
+            `;
+            
+            // Asignar el popup al marcador y abrirlo inmediatamente
+            highlightMarker.bindPopup(popupContent).openPopup();
+
+        }, 200); // Aumentamos un poco el tiempo de espera para asegurar que todo cargue bien
+    }
     
     function addMessage(message, sender) {
         const messageDiv = document.createElement('div');
@@ -1735,37 +1709,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatPlaceForAI(place) {
-    let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
-    html += `<p class="text-sm">${place.descripcion}</p>`;
+        let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
+        html += `<p class="text-sm">${place.descripcion}</p>`;
 
-    if (place.datosClave) {
-        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
-    }
+        if (place.datosClave) {
+            html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+        }
+        
+        if (place.direccion || place.telefono) {
+            html += `<div class="mt-2 text-xs">`;
+            if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
+            if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+            html += `</div>`;
+        }
 
-    if (place.direccion || place.telefono) {
-        html += `<div class="mt-2 text-xs">`;
-        if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
-        if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+        if (place.imagenURL) {
+            html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
+        }
+
+        html += `<div class="mt-3 flex flex-wrap gap-2">`;
+        if (place.imagen360URL) {
+            html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
+        }
+        html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
+        
+        // --- NUEVA LÍNEA AÑADIDA ---
+        if (place.latitud && place.longitud) {
+            html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
+        }
         html += `</div>`;
-    }
 
-    if (place.imagenURL) {
-        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
+        return html;
     }
-
-    html += `<div class="mt-3 flex flex-wrap gap-2">`;
-    if (place.imagen360URL) {
-        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
-    }
-    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
-
-    if (place.latitud && place.longitud) {
-        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
-    }
-    html += `</div>`;
-
-    return html;
-}
     
     // --- LÓGICA DE SUGERENCIAS ---
     function updateSuggestions() {
@@ -2144,6 +2119,22 @@ document.addEventListener('DOMContentLoaded', function() {
     //===================== LÓGICA DEL MAPA ========================
     //==============================================================
 
+    let highlightedMarkerLayer = null; // Variable para el marcador destacado
+
+    function initMap() {
+        if (mapInitialized) return;
+        map = L.map('map').setView([-41.96, -71.53], 10); // Centrado en la comarca
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+        highlightedMarkerLayer = L.layerGroup().addTo(map); // Capa para el marcador especial
+
+        mapInitialized = true;
+    }
+
     mapBtn.addEventListener('click', () => {
         mapModal.classList.remove('hidden');
         if (!mapInitialized) {
@@ -2155,19 +2146,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMapMarkers();
         }, 100); 
     });
-
-    function initMap() {
-        if (mapInitialized) return;
-        map = L.map('map').setView([-41.96, -71.53], 10); // Centrado en la comarca
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        markersLayer = L.layerGroup().addTo(map);
-
-        mapInitialized = true;
-    }
     
     function updateMapMarkers() {
         if (!map || !markersLayer) return;
@@ -2184,7 +2162,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 const lon = parseFloat(place.longitud);
                 if (!isNaN(lat) && !isNaN(lon)) {
                     const marker = L.marker([lat, lon]).addTo(markersLayer);
-                    marker.bindPopup(`<b>${place.nombre}</b><br>${place.subtipo || place.tipo}`);
+                    
+                    // --- Creación del contenido del Popup ---
+                    const destination = `${place.latitud},${place.longitud}`;
+                    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+                    
+                    // Acortar descripción si es muy larga
+                    let shortDescription = place.descripcion || '';
+                    if (shortDescription.length > 100) {
+                        shortDescription = shortDescription.substring(0, 100) + '...';
+                    }
+
+                    const popupContent = `
+                        <div style="font-family: 'Inter', sans-serif; max-width: 200px;">
+                            <strong style="font-size: 1.1em;">${place.nombre}</strong>
+                            <p style="font-size: 0.9em; margin: 5px 0;">${shortDescription}</p>
+                            <a href="${googleMapsUrl}" target="_blank" style="display: block; width: 100%; padding: 8px; background-color: #10b981; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                                Cómo llegar
+                            </a>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
                     markersById[place.id] = marker;
                 }
             } catch (e) {
@@ -2193,7 +2192,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if(placesWithCoords.length > 0){
-            map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+            // Ya no centramos el mapa aquí para que no interfiera con la vista del usuario
+            // map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
         }
     }
     
@@ -2398,7 +2398,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-
-
-
-
