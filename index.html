@@ -2083,10 +2083,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!mapInitialized) {
             initMap();
         }
-        // Forzamos al mapa a recalcular su tamaño
+        // Forzamos al mapa a recalcular su tamaño y luego actualizamos los marcadores
+        // Es crucial que invalidateSize se complete antes de añadir/actualizar marcadores
         setTimeout(() => {
             map.invalidateSize();
-            updateMapMarkers();
+            // Asegurarse de que los marcadores se actualicen solo si la data ya está lista
+            if (isDataReady) { // <-- Agregamos esta verificación
+                updateMapMarkers();
+            }
         }, 100); 
     });
     
@@ -2395,4 +2399,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
 
