@@ -6,10 +6,6 @@
     <title>Andes - Tu Guía en la Comarca</title>
     <script src="https://cdn.tailwindcss.com?v=2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
 
@@ -289,8 +285,8 @@
                                 <option value="restaurantes" data-subtype="Restaurante">Restaurante</option>
                                 <option value="restaurantes" data-subtype="Bar">Bar</option>
                                 <option value="restaurantes" data-subtype="Confitería">Confitería</option>
-                                <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
                                 </option>
+                                <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
                                 <option value="alojamiento" data-subtype="Apart Hotel">Apart Hotel</option>
                                 <option value="alojamiento" data-subtype="Cabañas">Cabañas</option>
                                 <option value="alojamiento" data-subtype="Campings">Campings</option>
@@ -631,52 +627,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminAddBtn = document.getElementById('admin-add-btn');
     const adminManageBtn = document.getElementById('admin-manage-btn');
     const contributionForm = document.getElementById('contribution-form');
-    // ... (El resto de las variables globales se declaran más abajo)
-
-    let isAdmin = false; // Mover isAdmin aquí para que esté disponible globalmente en el script
+    
+    let isAdmin = false; 
     let isDataReady = false;
     let mapInitialized = false;
     let map = null;
 
-    // --- LÓGICA DE LOS MODALES Y BOTONES (VERSIÓN CORREGIDA) ---
+    // --- FUNCIÓN PARA CREAR EL MAPA ---
+    function initMap() {
+        if (mapInitialized) return;
+        map = L.map('map').setView([-41.96, -71.53], 10);
 
-    // CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES
-    // Botón del Mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+        highlightedMarkerLayer = L.layerGroup().addTo(map);
+
+        if (isDataReady) {
+            updateMapMarkers();
+        }
+
+        mapInitialized = true;
+    }
+
+    // --- CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES ---
     actionMapBtn.addEventListener('click', () => {
         mapModal.classList.remove('hidden');
-        
-        // Hacemos que la inicialización y el redibujado ocurran en momentos ligeramente distintos
-        // para darle tiempo al navegador de procesar todo.
         setTimeout(() => {
             if (!mapInitialized) {
                 initMap();
             }
-        }, 50); // Un pequeño respiro para que el modal aparezca
-
+        }, 50);
         setTimeout(() => {
             if(map) {
                 map.invalidateSize();
             }
-        }, 200); // Un segundo respiro para asegurar que el mapa se redibuje
-    });
-
-    // Botón del Planificador
-    actionPlannerBtn.addEventListener('click', () => {
-        plannerModal.classList.remove('hidden');
-    });
-
-    // Botón del Rincón del Viajero
-    actionRinconBtn.addEventListener('click', () => {
-        rinconModal.classList.remove('hidden');
-    });
-
-    // Botón de Admin
-    actionAdminBtn.addEventListener('click', () => {
-        if (isAdmin) {
-            adminPanelModal.classList.remove('hidden');
-        } else {
-            passwordModal.classList.remove('hidden');
-        }
+        }, 200);
     });
     actionPlannerBtn.addEventListener('click', () => plannerModal.classList.remove('hidden'));
     actionRinconBtn.addEventListener('click', () => rinconModal.classList.remove('hidden'));
@@ -688,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // CONEXIONES DE LOS BOTONES DE CERRAR (X)
+    // --- CONEXIONES DE LOS BOTONES DE CERRAR (X) ---
     closePlannerModalBtn.addEventListener('click', () => plannerModal.classList.add('hidden'));
     closeRinconModalBtn.addEventListener('click', () => rinconModal.classList.add('hidden'));
     closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
@@ -700,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
     closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
 
-    // LÓGICA DEL PANEL DE ADMIN
+    // --- LÓGICA DEL PANEL DE ADMIN ---
     passwordForm.addEventListener('submit', (e) => {
         e.preventDefault();
         if (passwordInput.value === 'andesadmin') {
@@ -729,68 +717,10 @@ document.addEventListener('DOMContentLoaded', function() {
         adminPanelModal.classList.add('hidden');
     });
 
-    // (Aquí comienza el resto del código: Firebase, Chat, Clima, etc. que ya funcionaba)
-    // ...
-    // --- VARIABLES GLOBALES Y CONFIGURACIÓN ---
-    const apiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI";
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-    let db;
-    let auth;
-    let userId;
-    let lugaresCollectionRef;
-    let consejosCollectionRef;
-    let dynamicKnowledgeBase = {};
-    let placesCache = [];
-    let chatHistory = [];
-    let tipsCache = [];
-    let parsedBulkData = []; 
-    let editingBulkIndex = null;
-    let editingPlaceId = null; 
-    let deleteAction = null; 
-    let currentPlaceIdForRating = null;
-    let currentPlaceCommentsUnsubscribe = null;
-    let markersLayer = null;
-    let markersById = {};
-    let mainRecognition;
-    let isMainMicListening = false;
-    let activeSpeechInput = null;
-    const radioBtn = document.getElementById('radio-btn');
-    const radioPlayer = document.getElementById('radio-player');
-    const radioLogo = document.getElementById('radio-logo');
-    const radioIconOverlay = document.getElementById('radio-icon-overlay');
-    const radioStatusText = document.getElementById('radio-status-text');
-    const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
-    const tipForm = document.getElementById('tip-form');
-    const tipInput = document.getElementById('tip-input');
-    const plannerForm = document.getElementById('planner-form');
-    const vrSky = document.getElementById('vr-sky');
-    const manageList = document.getElementById('manage-list');
-    const rinconList = document.getElementById('rincon-list');
-    const submitButton = chatForm.querySelector('button[type="submit"]');
-
-    chatInput.disabled = true;
-    chatInput.placeholder = "Conectando...";
-    submitButton.disabled = true;
-    
-    // ... (El resto de las funciones que ya teníamos)
-    
-    initializeFirebase();
-    
-    function initializeFirebase() { /* ...código de firebase... */ }
-    function getCollectionRef(name) { /* ...código de getCollectionRef... */ }
-    function listenForNewPlaces() { /* ...código de listenForNewPlaces... */ }
-    // ...y así con todas las funciones que ya teníamos...
+    // (El resto de la lógica de la app va aquí)
 
 });
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
