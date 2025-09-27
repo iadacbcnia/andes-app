@@ -131,7 +131,7 @@
     </main>
 </div>
 
-<!-- MODALES -->
+<!-- MODALES COMPLETOS -->
 <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
         <div class="text-center mb-8">
@@ -597,6 +597,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const plannerForm = document.getElementById('planner-form');
     const manageList = document.getElementById('manage-list');
     const rinconList = document.getElementById('rincon-list');
+    const ratingForm = document.getElementById('rating-form');
+    const commentInput = document.getElementById('comment-input');
     
     // Radio
     const radioPlayer = document.getElementById('radio-player');
@@ -611,6 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let editingPlaceId = null;
     const geminiApiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI";
     const appId = 'default-app-id';
+    const weatherApiKey = "a6200921f878ea692204d518fa54b6d9"; // OpenWeather API Key
     
     // --- ESTADO INICIAL ---
     const submitButton = chatForm.querySelector('button[type="submit"]');
@@ -978,6 +981,200 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     }
     
+    // --- PLANIFICADOR ---
+    plannerForm.addEventListener('click', (e) => {
+        const btn = e.target.closest('.planner-option-btn');
+        if (!btn) return;
+        const siblings = btn.parentElement.querySelectorAll('.planner-option-btn');
+        siblings.forEach(sibling => {
+            sibling.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+            sibling.classList.add('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
+        });
+        btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+        btn.classList.remove('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
+    });
+    
+    plannerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
+        const style = selectedStyleBtn ? selectedStyleBtn.dataset.value : 'Aventura';
+        const days = document.getElementById('planner-days').value;
+        const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
+        const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
+        plannerModal.classList.add('hidden');
+        const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+        addMessage({ text: userMessage }, 'user');
+        const typingIndicator = showTypingIndicator();
+        const plannerHistory = [{
+            role: "user",
+            parts: [{ text: `
+                - Estilo de Viaje: ${style}
+                - Duración: ${days} días
+                - Nivel de Energía: ${energy}
+            ` }]
+        }];
+        const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
+        const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
+        chatWindow.removeChild(typingIndicator);
+        addMessage({
+            text: aiResponseData.text,
+            isHtml: true
+        }, 'ai');
+    });
+    
+    function generatePlannerPrompt(style, days, energy) {
+        return `
+        Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
+        Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
+        PREFERENCIAS DEL USUARIO:
+        - Estilo de Viaje: ${style}
+        - Duración: ${days} días
+        - Nivel de Energía: ${energy}
+        BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
+        \`\`\`json
+        ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
+        \`\`\`
+        INSTRUCCIONES PARA CREAR EL ITINERARIO:
+        1.  **Formato Obligatorio:** Usa Markdown. Crea un título para cada día (ej: "**Día 1: Aventura y Sabores**"). Para cada día, sugiere 2 o 3 actividades/lugares. Usa listas con guiones.
+        2.  **Selección Inteligente:**
+            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
+            - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
+            - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
+        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1** del plan, enfócate en sugerir actividades y lugares para comer. **NO** sugieras un "alojamiento", ya que se asume que el viajero ya lo tiene resuelto para su llegada. La única excepción es que encuentres un alojamiento marcado como auspiciante de alta categoría (lo cual se indicará en el futuro).
+        4.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
+        5.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
+        6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
+        EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
+        **Día 1: Montaña y Cerveza Artesanal**
+        - Comienza el día con el trekking al [[Cajón del Azul]]. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
+        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]]. Tienen una vista espectacular.
+        **Día 2: Cultura y Sabor Local**
+        - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
+        - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
+    `;
+    }
+    
+    // --- RINCÓN DEL VIAJERO ---
+    tipForm.addEventListener('submit', async(e) => {
+        e.preventDefault();
+        const tipText = tipInput.value.trim();
+        if (tipText === '' || !consejosCollectionRef) return;
+        const submitBtn = tipForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+            await addDoc(consejosCollectionRef, {
+                text: tipText,
+                userId: userId,
+                createdAt: serverTimestamp()
+            });
+            tipInput.value = '';
+            rinconModal.classList.add('hidden');
+        } catch (error) {
+            console.error("Error al añadir consejo:", error);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // --- ADMIN GESTIÓN ---
+    manageList.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.edit-place-btn');
+        const deleteBtn = e.target.closest('.delete-place-btn');
+        if (editBtn) {
+            const placeId = editBtn.dataset.id;
+            const place = placesCache.find(p => p.id === placeId);
+            if (place) {
+                editingPlaceId = placeId;
+                document.getElementById('lugar-nombre').value = place.nombre || '';
+                document.getElementById('lugar-localidad').value = place.localidad || 'El Bolsón';
+                document.getElementById('lugar-direccion').value = place.direccion || '';
+                document.getElementById('lugar-telefono').value = place.telefono || '';
+                document.getElementById('lugar-latitud').value = place.latitud || '';
+                document.getElementById('lugar-longitud').value = place.longitud || '';
+                document.getElementById('lugar-descripcion').value = place.descripcion || '';
+                document.getElementById('lugar-datos-clave').value = place.datosClave || '';
+                document.getElementById('lugar-imagen').value = place.imagenURL || '';
+                document.getElementById('lugar-imagen360').value = place.imagen360URL || '';
+                document.getElementById('lugar-sponsor').checked = place.esAuspiciante || false;
+                const tipoSelect = document.getElementById('lugar-tipo');
+                for(let i=0; i < tipoSelect.options.length; i++) {
+                    const option = tipoSelect.options[i];
+                    if(option.value === place.tipo && (option.dataset.subtype || '') === place.subtipo) {
+                        tipoSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                document.getElementById('contribution-title').textContent = 'Editar Lugar';
+                document.getElementById('contribution-submit-btn').textContent = 'Actualizar Lugar';
+                manageModal.classList.add('hidden');
+                contributionModal.classList.remove('hidden');
+            }
+        }
+        if (deleteBtn) {
+            if (confirm(`¿Eliminar "${deleteBtn.dataset.name}"?`)) {
+                deleteDoc(doc(lugaresCollectionRef, deleteBtn.dataset.id));
+            }
+        }
+    });
+    
+    // --- CLIMA ---
+    function getWeather() {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=El%20Bols%C3%B3n&appid=${weatherApiKey}&units=metric&lang=es`)
+            .then(response => response.json())
+            .then(data => {
+                const temp = Math.round(data.main.temp);
+                const desc = data.weather[0].description;
+                addMessage({ text: `🌤️ El clima en El Bolsón es de ${temp}°C y ${desc}.` }, 'ai');
+            })
+            .catch(error => {
+                console.error('Error al obtener el clima:', error);
+                addMessage({ text: "No pude obtener el clima en este momento. ¿Quieres preguntar por algo más?" }, 'ai');
+            });
+    }
+    
+    // Detectar si el usuario pregunta por el clima
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim().toLowerCase();
+        if (userMessage.includes('clima') || userMessage.includes('tiempo') || userMessage.includes('temperatura')) {
+            addMessage({ text: userMessage }, 'user');
+            chatInput.value = '';
+            const typingIndicator = showTypingIndicator();
+            setTimeout(() => {
+                chatWindow.removeChild(typingIndicator);
+                getWeather();
+            }, 1000);
+        } else {
+            // Procesar mensaje normal
+            const originalEvent = new Event('submit', { bubbles: true });
+            chatForm.dispatchEvent(originalEvent);
+        }
+    });
+    
+    // --- CIERRE DE MODALES ---
+    closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
+    closeRinconModalBtn.addEventListener('click', () => rinconModal.classList.add('hidden'));
+    closePlannerModalBtn.addEventListener('click', () => plannerModal.classList.add('hidden'));
+    closeAdminPanelBtn.addEventListener('click', () => adminPanelModal.classList.add('hidden'));
+    closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
+    closeManageModalBtn.addEventListener('click', () => manageModal.classList.add('hidden'));
+    
+    // --- ADMIN PASSWORD ---
+    passwordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (passwordInput.value === 'andesadmin') {
+            isAdmin = true;
+            passwordModal.classList.add('hidden');
+            adminPanelModal.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+            passwordInput.classList.remove('border-red-500');
+        } else {
+            passwordError.classList.remove('hidden');
+            passwordInput.classList.add('border-red-500');
+        }
+    });
+    
     // --- SUGERENCIAS ---
     function updateSuggestions() {
         suggestionsContainer.innerHTML = '';
@@ -1045,24 +1242,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // --- CIERRE DEL MAPA Y ADMIN ---
-    closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
-    
-    passwordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (passwordInput.value === 'andesadmin') {
-            isAdmin = true;
-            passwordModal.classList.add('hidden');
-            adminPanelModal.classList.remove('hidden');
-            passwordInput.value = '';
-            passwordError.classList.add('hidden');
-            passwordInput.classList.remove('border-red-500');
-        } else {
-            passwordError.classList.remove('hidden');
-            passwordInput.classList.add('border-red-500');
-        }
-    });
     
     // --- INICIALIZAR ---
     initializeFirebase();
