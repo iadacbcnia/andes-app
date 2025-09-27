@@ -133,16 +133,261 @@
 
 <!-- MODALES -->
 <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-    <!-- ... contenido del modal planner ... -->
+    <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
+        <div class="text-center mb-8">
+            <div class="inline-block bg-emerald-100 dark:bg-emerald-900/50 p-3 rounded-full mb-3">
+                <svg class="h-10 w-10 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.5-13.5-3.432 3.432-3.432-3.432s.5-1.5 1.5-1.5 2.432 1.5 3.432 1.5 1.932-1.5 1.932-1.5ZM8.25 18.75h7.5" />
+                </svg>
+            </div>
+            <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100">Crea tu Aventura Perfecta</h3>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 3 datos para diseñarte un plan a medida.</p>
+        </div>
+        <button id="close-planner-modal-btn" class="absolute top-4 left-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-gray-200">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+           </svg>
+        </button>
+        <form id="planner-form" class="space-y-6">
+            <div>
+                <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">1</span>
+                    Tu estilo de viaje
+                </label>
+                <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
+                    <button type="button" data-value="Aventura" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-emerald-500 text-white border-emerald-500">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
+                        <span class="font-semibold">Aventura</span>
+                    </button>
+                    <button type="button" data-value="Relax" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>
+                        <span class="font-semibold">Relax</span>
+                    </button>
+                    <button type="button" data-value="Familiar" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3.75 3.75 0 0115 12a3.75 3.75 0 01-2.25 3.512m-9.75-2.962c0-.552.246-1.631 1.25-2.262a25.814 25.814 0 017.5 0c1.004.631 1.25 1.71 1.25 2.262m-9.75 1.068c0 .551.246 1.631 1.25 2.261a25.814 25.814 0 007.5 0c1.004-.63 1.25-1.71 1.25-2.261M12 6a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z" /></svg>
+                        <span class="font-semibold">Familiar</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label for="planner-days" class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
+                    ¿Cuántos días te quedas?
+                </label>
+                <input type="number" id="planner-days" value="3" min="1" max="14" class="mt-1 block w-full p-3 border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-lg shadow-sm text-base text-center font-bold text-xl focus:border-emerald-500 focus:ring-emerald-500">
+            </div>
+            <div>
+                <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
+                    Tu nivel de energía
+                </label>
+                <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
+                    <button type="button" data-value="Bajo" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <span class="text-2xl">🐢</span>
+                        <span class="font-semibold">Bajo</span>
+                    </button>
+                    <button type="button" data-value="Medio" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-emerald-500 text-white border-emerald-500">
+                        <span class="text-2xl">🚶‍♂️</span>
+                        <span class="font-semibold">Medio</span>
+                    </button>
+                    <button type="button" data-value="Alto" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        <span class="text-2xl">⚡</span>
+                        <span class="font-semibold">Alto</span>
+                    </button>
+                </div>
+            </div>
+            <div class="pt-6">
+                <button type="submit" class="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:bg-emerald-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M3.5 2.75a.75.75 0 00-1.5 0v14.5a.75.75 0 001.5 0v-4.392l1.657-.348a6.44 6.44 0 014.231.575l.256.102a.75.75 0 00.868-.133l4.25-4.25a.75.75 0 00-.133-.868l-.102-.256a6.44 6.44 0 01-.575-4.231l.348-1.657V2.75z" />
+                    </svg>
+                    Generar Mi Plan
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-    <!-- ... contenido del modal de contraseña ... -->
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Acceso de Administrador</h3>
+            <form id="password-form" class="mt-4 space-y-4">
+                <div>
+                    <label for="password-input" class="sr-only">Contraseña</label>
+                    <input type="password" id="password-input" placeholder="Ingresa la contraseña" class="w-full p-2 rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700">
+                    <p id="password-error" class="text-red-500 text-xs mt-1 hidden">Contraseña incorrecta.</p>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="close-password-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-emerald-600">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <div id="admin-panel-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-    <!-- ... contenido del panel de admin ... -->
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="flex justify-between items-center pb-3 border-b dark:border-slate-600">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Panel de Administración</h3>
+            <button id="close-admin-panel-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <div class="mt-4 space-y-3">
+            <p class="text-sm text-gray-600 dark:text-gray-300">Desde aquí puedes añadir nuevo contenido y gestionar la información existente.</p>
+            <button id="admin-add-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                Añadir Nuevo Lugar
+            </button>
+            <button id="admin-manage-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 001 5.5v9A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0017.5 4h-15zM2 5.5a.5.5 0 01.5-.5h15a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-15a.5.5 0 01-.5-.5v-9zM8 8a.75.75 0 000 1.5h4a.75.75 0 000-1.5H8z" clip-rule="evenodd" /></svg>
+                Gestionar Contenido
+            </button>
+        </div>
+    </div>
 </div>
 <div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[65] transition-opacity duration-300">
-    <!-- ... formulario de contribución ... -->
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="mt-3 text-center">
+            <h3 id="contribution-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Añadir conocimiento a Andes</h3>
+            <div class="mt-2 flex-grow overflow-y-auto p-2">
+                <div id="contribution-tabs" class="border-b border-gray-200 dark:border-slate-600">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button id="tab-single" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-emerald-500 border-emerald-500">Añadir Uno</button>
+                        <button id="tab-bulk" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200">Carga Rápida</button>
+                    </nav>
+                </div>
+                <form id="contribution-form" class="mt-4 space-y-4 text-left">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="lugar-tipo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Lugar</label>
+                            <select id="lugar-tipo" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option value="restaurantes" data-subtype="Restaurante">Restaurante</option>
+                                <option value="restaurantes" data-subtype="Bar">Bar</option>
+                                <option value="restaurantes" data-subtype="Confitería">Confitería</option>
+                                <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
+                                <option value="alojamiento" data-subtype="Apart Hotel">Apart Hotel</option>
+                                <option value="alojamiento" data-subtype="Cabañas">Cabañas</option>
+                                <option value="alojamiento" data-subtype="Campings">Campings</option>
+                                <option value="alojamiento" data-subtype="Hoteles">Hoteles</option>
+                                <option value="alojamiento" data-subtype="Hosterias">Hosterias</option>
+                                <option value="alojamiento" data-subtype="Hospedajes">Hospedajes</option>
+                                <option value="alojamiento" data-subtype="Hostels">Hostels</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Casas">Alquiler de Casas</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Departamentos">Alquiler de Departamentos</option>
+                                <option value="alojamiento" data-subtype="Bread & Breakfast">Bread & Breakfast</option>
+                                <option value="actividades">Actividades</option>
+                                <option value="lugaresParaVisitar">Lugar para Visitar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lugar-localidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Localidad</label>
+                            <select id="lugar-localidad" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option>El Bolsón</option>
+                                <option>Lago Puelo</option>
+                                <option>El Hoyo</option>
+                                <option>Epuyén</option>
+                                <option>El Maitén</option>
+                                <option>Cholila</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Lugar</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-nombre" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-direccion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirección (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-direccion" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-telefono" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="lugar-latitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Latitud (Opcional)</label>
+                            <input type="text" id="lugar-latitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-41.9669">
+                        </div>
+                        <div>
+                            <label for="lugar-longitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Longitud (Opcional)</label>
+                            <input type="text" id="lugar-longitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-71.5333">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Busca el lugar en Google Maps, haz clic derecho y copia las coordenadas (ej: -41.96, -71.53).</p>
+                    <div>
+                        <label for="lugar-imagen" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen (Opcional)</label>
+                        <input type="url" id="lugar-imagen" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto.jpg">
+                    </div>
+                    <div>
+                        <label for="lugar-imagen360" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen 360° (Opcional)</label>
+                        <input type="url" id="lugar-imagen360" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto_360.jpg">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pega aquí el link a una foto equirectangular (formato 360°).</p>
+                    </div>
+                    <div>
+                        <label for="lugar-descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Principal</label>
+                        <div class="relative w-full mt-1">
+                           <textarea id="lugar-descripcion" rows="3" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
+                           <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                       </div>
+                    </div>
+                    <div>
+                        <label for="lugar-datos-clave" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Datos Clave / Puntos a Destacar (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <textarea id="lugar-datos-clave" rows="3" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="Ej: Horario: 9 a 18hs.
+No se aceptan mascotas.
+Aclaración: No hay un laberinto para niños."></textarea>
+                            <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="lugar-sponsor" type="checkbox" class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                        <label for="lugar-sponsor" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">⭐ Es un lugar recomendado</label>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px]">Añadir Lugar</button>
+                    </div>
+                </form>
+                <div id="bulk-entry-form-container" class="hidden mt-4 text-left">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pega cada lugar en una nueva línea. Separa cada dato con una coma. <strong class="dark:text-gray-200">La descripción siempre debe ir al final.</strong></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 mb-2">Si no tienes un dato (ej: teléfono o coordenadas), deja el espacio vacío entre las comas.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 p-2 rounded-md mb-4"><code>Tipo: Cabañas, Nombre: Mi Cabaña, Localidad: El Bolsón, ... , Descripción completa...: Texto libre.</code></p>
+                    <div class="relative w-full mt-1">
+                        <textarea id="bulk-input" rows="8" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md" placeholder="Tipo: Cabañas, Nombre: Cabaña La Escondida, Localidad: El Hoyo, Dirección: Curva de fin de la recta de El Pedregoso, Teléfono: +54 (294) 459-7157, Latitud: -42.007621, Longitud: -71.522818, Descripción completa...: Cabaña con capacidad para 4 personas, ideal para el descanso"></textarea>
+                        <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                        </button>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button type="button" id="process-bulk-btn" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Procesar</button>
+                    </div>
+                    <div id="bulk-review-container" class="mt-4"></div>
+                </div>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="close-contribution-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="manage-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
@@ -170,20 +415,89 @@
     </div>
 </div>
 <div id="rincon-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-    <!-- ... rincón del viajero ... -->
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">El Rincón del Viajero</h3>
+            <button id="close-rincon-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <form id="tip-form" class="mb-4">
+            <label for="tip-input" class="sr-only">Deja tu consejo</label>
+            <textarea id="tip-input" rows="3" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md" placeholder="Comparte un dato, una recomendación o un consejo para otros viajeros..."></textarea>
+            <div class="text-right mt-2">
+                <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Compartir Consejo</button>
+            </div>
+        </form>
+        <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4"></div>
+    </div>
 </div>
 <div id="rating-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
-    <!-- ... valoraciones ... -->
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
+            <h3 id="rating-modal-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Opiniones y Valoraciones</h3>
+            <button id="close-rating-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex-grow overflow-y-auto pr-2">
+            <div id="average-rating-container" class="text-center mb-4"></div>
+            <div id="comments-list" class="space-y-4"></div>
+        </div>
+        <form id="rating-form" class="mt-4 border-t dark:border-slate-600 pt-4">
+            <h4 class="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Deja tu valoración</h4>
+            <div class="star-rating mb-2">
+                <input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars">★</label>
+                <input type="radio" id="4-stars" name="rating" value="4" /><label for="4-stars">★</label>
+                <input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars">★</label>
+                <input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars">★</label>
+                <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star">★</label>
+            </div>
+            <textarea id="comment-input" rows="3" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md" placeholder="Escribe tu comentario aquí..."></textarea>
+            <div class="text-right mt-2">
+                <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Enviar Opinión</button>
+            </div>
+        </form>
+    </div>
 </div>
 <input type="file" id="backup-file-input" accept=".csv" class="hidden">
 <div id="confirm-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
-    <!-- ... confirmar eliminación ... -->
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Confirmar Eliminación</h3>
+        <p id="delete-confirmation-text" class="mt-2 text-sm text-gray-600 dark:text-gray-300">¿Estás seguro de que quieres eliminar este elemento?</p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Eliminar</button>
+        </div>
+    </div>
 </div>
 <div id="confirm-restore-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-    <!-- ... confirmar restauración ... -->
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-red-600 dark:text-red-400">¡Acción Irreversible!</h3>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            Estás a punto de <strong class="font-bold">BORRAR TODOS</strong> los datos actuales y reemplazarlos por el contenido del archivo de backup.
+            <br><br>
+            ¿Estás completamente seguro?
+        </p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-restore-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-restore-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Sí, restaurar</button>
+        </div>
+    </div>
 </div>
 <div id="confirm-rubro-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
-    <!-- ... confirmar borrado de rubro ... -->
+    <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <h3 class="text-lg font-medium text-red-600 dark:text-red-400">Confirmar Eliminación de Rubro</h3>
+        <p id="rubro-delete-confirmation-text" class="mt-2 text-sm text-gray-600 dark:text-gray-300"></p>
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="cancel-rubro-delete-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
+            <button id="confirm-rubro-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Sí, eliminar rubro</button>
+        </div>
+    </div>
 </div>
 <div id="map-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full hidden z-[80] transition-opacity duration-300 flex flex-col">
     <div class="bg-white dark:bg-slate-800 p-3 flex justify-between items-center shadow-md">
@@ -199,10 +513,28 @@
     </div>
 </div>
 <div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
-    <!-- ... VR ... -->
+    <div class="absolute top-0 right-0 p-2 z-10">
+        <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+    <a-scene id="vr-scene" embedded>
+        <a-sky id="vr-sky" radius="100"></a-sky>
+    </a-scene>
 </div>
 <div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
-    <!-- ... AR ... -->
+    <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
+        <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div id="ar-permissions-pill" class="ar-pill"></div>
+    </div>
+    <div id="ar-status"></div>
+    <div id="ar-modal-content"></div>
 </div>
 <audio id="radio-player" preload="none"></audio>
 
