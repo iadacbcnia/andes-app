@@ -148,6 +148,103 @@
     padding: 0.75rem 1rem !important;
   }
 }
+  /* === Estilo para tarjetas de lugares en el chat === */
+.place-card {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: var(--card-bg, #f8fafc);
+  border: 1px solid var(--gray-200, #e2e8f0);
+}
+
+.dark .place-card {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.place-card.sponsored-place {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.dark .place-card.sponsored-place {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2200 100%);
+  border-color: #d97706;
+}
+
+.place-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.dark .place-name {
+  color: #f1f5f9;
+}
+
+.place-description {
+  margin: 0 0 10px 0;
+  color: #475569;
+}
+
+.dark .place-description {
+  color: #cbd5e1;
+}
+
+.place-key-data {
+  background: #f1f5f9;
+  padding: 8px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.dark .place-key-data {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.place-contact {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.dark .place-contact {
+  color: #cbd5e1;
+}
+
+.place-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.place-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-rate, .btn-map, .btn-360 {
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-rate:hover, .btn-map:hover, .btn-360:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
   </style>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
@@ -1782,31 +1879,71 @@ w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
       }
 
       function formatPlaceForAI(place) {
-        let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐' : ''}${place.nombre}</h3>`;
-        html += `<p class="text-sm">${place.descripcion}</p>`;
-        if (place.datosClave) {
-          html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
-        }
-        if (place.direccion || place.telefono) {
-          html += `<div class="mt-2 text-xs">`;
-          if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
-          if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
-          html += `</div>`;
-        }
-        if (place.imagenURL) {
-          html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
-        }
-        html += `<div class="mt-3 flex flex-wrap gap-2">`;
-        if (place.imagen360URL) {
-          html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
-        }
-        html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
-        if (place.latitud && place.longitud) {
-          html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
-        }
-        html += `</div>`;
-        return html;
-      }
+  // Clase base para el contenedor
+  const isSponsored = place.esAuspiciante;
+  const containerClass = isSponsored 
+    ? 'place-card sponsored-place' 
+    : 'place-card regular-place';
+
+  let html = `<div class="${containerClass}">`;
+
+  // Nombre (con ícono si es auspiciante)
+  html += `<h3 class="place-name">${isSponsored ? '⭐ ' : ''}${place.nombre}</h3>`;
+
+  // Descripción
+  if (place.descripcion) {
+    html += `<p class="place-description">${place.descripcion}</p>`;
+  }
+
+  // Datos clave (si existen)
+  if (place.datosClave) {
+    html += `
+      <div class="place-key-data">
+        <strong>Datos clave:</strong><br>
+        ${place.datosClave.replace(/\n/g, '<br>')}
+      </div>
+    `;
+  }
+
+  // Dirección y teléfono
+  const contactInfo = [];
+  if (place.direccion) contactInfo.push(`<strong>Dirección:</strong> ${place.direccion}`);
+  if (place.telefono) contactInfo.push(`<strong>Teléfono:</strong> ${place.telefono}`);
+  if (contactInfo.length > 0) {
+    html += `<div class="place-contact">${contactInfo.join('<br>')}</div>`;
+  }
+
+  // Imagen principal (si existe)
+  if (place.imagenURL) {
+    html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="place-image">`;
+  }
+
+  // Botones (siempre visibles)
+  html += `
+    <div class="place-actions">
+      <button class="btn-rate text-xs bg-amber-500 text-white py-1.5 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">
+        Valoraciones / Opiniones
+      </button>
+      ${place.latitud && place.longitud ? `
+        <button class="btn-map text-xs bg-sky-500 text-white py-1.5 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">
+          Ver en el Mapa
+        </button>
+      ` : ''}
+    </div>
+  `;
+
+  // Imagen 360° (solo si es auspiciante y tiene imagen)
+  if (isSponsored && place.imagen360URL) {
+    html += `
+      <button class="btn-360 text-xs bg-blue-500 text-white py-1.5 px-3 rounded-full hover:bg-blue-600 mt-2" data-image="${place.imagen360URL}">
+        Ver en 360°
+      </button>
+    `;
+  }
+
+  html += `</div>`;
+  return html;
+}
 
       //--- LÓGICA DE SUGERENCIAS---
       function updateSuggestions() {
@@ -2399,6 +2536,7 @@ EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
 
 </body>
 </html>
+
 
 
 
