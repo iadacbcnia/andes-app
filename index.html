@@ -29,11 +29,17 @@
       margin: 0;
       padding: 0;
     }
-    @media (max-width: 640px) {
-  .user-message, .ai-message {
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
+    .user-message {
+  background-color: var(--emerald-500);
+  color: white !important;
+  border-radius: 20px 20px 5px 20px;
+  font-weight: 500;
+}
+.ai-message {
+  background-color: var(--card-bg, var(--gray-100));
+  color: var(--text-color, #1e293b) !important;
+  border-radius: 20px 20px 20px 5px;
+  font-weight: 500;
 }
 .dark .ai-message {
   background-color: #334155; /* slate-700, pero un toque más claro que el fondo */
@@ -121,6 +127,27 @@
       height: 1.5rem;
       margin-bottom: 0.25rem;
     }
+    /* --- Mejoras de legibilidad para el chat --- */
+.user-message {
+  color: white !important;
+}
+.ai-message {
+  color: #1e293b !important;
+}
+.dark .ai-message {
+  background-color: #334155;
+  color: #f1f5f9 !important;
+}
+
+/* Tamaño de letra en móviles */
+@media (max-width: 640px) {
+  .user-message,
+  .ai-message {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0.75rem 1rem !important;
+  }
+}
   </style>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
@@ -2373,5 +2400,6 @@ EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
 
 </body>
 </html>
+
 
 
