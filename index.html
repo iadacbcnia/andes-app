@@ -29,17 +29,11 @@
       margin: 0;
       padding: 0;
     }
-    .user-message {
-  background-color: var(--emerald-500);
-  color: white !important;
-  border-radius: 20px 20px 5px 20px;
-  font-weight: 500;
-}
-.ai-message {
-  background-color: var(--card-bg, var(--gray-100));
-  color: var(--text-color, #1e293b) !important;
-  border-radius: 20px 20px 20px 5px;
-  font-weight: 500;
+    @media (max-width: 640px) {
+  .user-message, .ai-message {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
 }
 .dark .ai-message {
   background-color: #334155; /* slate-700, pero un toque más claro que el fondo */
@@ -2379,4 +2373,5 @@ EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
 
 </body>
 </html>
+
 
