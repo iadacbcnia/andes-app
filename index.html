@@ -20,17 +20,70 @@
             --white: #ffffff;
         }
         .dark {
-            --bg-color: var(--slate-800); /* Fondo principal un poco más claro */
-            --text-color: var(--gray-100);
-            --card-bg: var(--slate-700); /* Globos de chat y tarjetas más claras */
-        }
+    --bg-color: var(--gray-100); /* Fondo claro */
+    --text-color: var(--white); /* Letras blancas */
+    --card-bg: var(--white); /* Globos de chat blancos */
+}
+        <!-- Barra inferior -->
+<footer class="bottom-nav">
+    <!-- Reproductor de radio -->
+    <div class="radio-container">
+        <button id="radio-btn" class="w-full flex items-center justify-start">
+            <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
+                <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
+                <div id="radio-icon-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white"></div>
+            </div>
+            <div class="ml-2 overflow-hidden">
+                <p class="font-semibold text-sm truncate">FM Paraíso 42</p>
+                <p id="radio-status-text" class="text-xs text-gray-500 dark:text-gray-400">Click para escuchar</p>
+            </div>
+        </button>
+    </div>
+    <!-- Botones de navegación -->
+    <div class="nav-buttons">
+        <button id="planner-btn" class="nav-btn">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0.414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd"/></svg>
+            <span>Planificador</span>
+        </button>
+        <button id="rincon-btn" class="nav-btn">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.028.658a.78.78 0 01-.357.443 3.377 3.377 0 01-2.924.001zM18 8a2 2 0 11-4 0 2 2 0 014 0zm-1.808 1.054a6.458 6.458 0 00-1.905-3.959 3 3 0 014.308 3.516.78.78 0 01-.357-.443c.042-.216.051-.436.028-.658a.78.78 0 01-.358.442 3.377 3.377 0 01-2.924-.001zM10 18a3 3 0 100-6 3 3 0 000 6z"/></svg>
+            <span>Rincón</span>
+        </button>
+        <button id="map-btn" class="nav-btn">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd"/><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z"/></svg>
+            <span>Mapa</span>
+        </button>
+        <button id="ar-btn" class="nav-btn">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd"/></svg>
+            <span>Ver en AR</span>
+        </button>
+        <button id="admin-btn" class="nav-btn">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/></svg>
+            <span>Admin</span>
+        </button>
+    </div>
+</footer>
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color, var(--gray-100));
             color: var(--text-color, var(--slate-900));
         }
-        .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
-        .ai-message { background-color: var(--card-bg, var(--white)); border-radius: 20px 20px 20px 5px; }
+        .user-message {
+    background-color: var(--emerald-500);
+    color: white !important;
+    border-radius: 20px 20px 5px 20px;
+    font-size: 1.05rem; /* Letras más grandes */
+    line-height: 1.5;
+    padding: 0.75rem 1rem;
+}
+.ai-message {
+    background-color: var(--card-bg, var(--white));
+    color: var(--slate-900) !important; /* Texto oscuro sobre fondo blanco */
+    border-radius: 20px 20px 20px 5px;
+    font-size: 1.05rem; /* Letras más grandes */
+    line-height: 1.5;
+    padding: 0.75rem 1rem;
+}}
         .sponsored-message {
             background-color: var(--card-bg, var(--white));
             border: 2px solid #facc15; /* yellow-400 */
@@ -68,7 +121,57 @@
             animation: pulse-red 1.5s infinite;
             border-radius: 50%;
         }
-
+/* === Barra inferior para móviles === */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--slate-800);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+.radio-container {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--slate-700);
+    border-top: 1px solid var(--slate-600);
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 0.5rem 0;
+    background-color: var(--slate-800);
+}
+.nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    color: var(--gray-100);
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: background-color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+.nav-btn:hover,
+.nav-btn.active {
+    background-color: var(--slate-700);
+}
+.nav-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.25rem;
+}
 
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
@@ -77,57 +180,8 @@
 
 
 <div class="flex h-screen">
-    <aside class="w-16 md:w-64 bg-white dark:bg-slate-800 p-2 md:p-4 flex flex-col justify-between transition-all duration-300">
-        <div>
-            <div class="flex items-center justify-center md:justify-start mb-6">
-                <svg class="h-10 w-10 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 2a.75.75 0 01.75.75v.512c3.344.254 6.133 2.37 7.426 5.234a.75.75 0 01-1.352.648A6.388 6.388 0 0010.75 4.512V14.75a.75.75 0 01-1.5 0V4.512A6.388 6.388 0 003.176 8.496a.75.75 0 01-1.352-.648C3.114 5.132 5.903 3.016 9.25 2.762V2.75A.75.75 0 0110 2z" />
-                    <path d="M10 18a2 2 0 100-4 2 2 0 000 4zM2.5 10a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H3.25a.75.75 0 01-.75-.75z" />
-                </svg>
-                <h1 class="hidden md:block text-2xl font-bold ml-2">Andes</h1>
-            </div>
-            <nav class="space-y-2">
-                <button id="planner-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
-                    <span class="hidden md:block ml-3">Planificador de Viaje</span>
-                </button>
-                <button id="rincon-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.028.658a.78.78 0 01-.357.443 3.377 3.377 0 01-2.924.001zM18 8a2 2 0 11-4 0 2 2 0 014 0zm-1.808 1.054a6.458 6.458 0 00-1.905-3.959 3 3 0 014.308 3.516.78.78 0 01-.357-.443c.042-.216.051-.436.028-.658a.78.78 0 01-.358.442 3.377 3.377 0 01-2.924-.001zM10 18a3 3 0 100-6 3 3 0 000 6z" /></svg>
-                    <span class="hidden md:block ml-3">Rincón del Viajero</span>
-                </button>
-                <button id="map-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
-                    <span class="hidden md:block ml-3">Mapa Interactivo</span>
-                </button>
-                <button id="ar-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
-                    <span class="hidden md:block ml-3">Ver en AR</span>
-                </button>
-                <button id="admin-btn" class="w-full flex items-center justify-center md:justify-start p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
-                    <span class="hidden md:block ml-3">Admin</span>
-                </button>
-            </nav>
-        </div>
-        <div class="mt-auto p-2">
-            <div class="bg-gray-100 dark:bg-slate-700 rounded-lg p-2">
-                <button id="radio-btn" class="w-full flex items-center justify-center md:justify-start">
-                    <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
-                        <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
-                        <div id="radio-icon-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white">
-                            </div>
-                    </div>
-                    <div class="hidden md:block ml-2 overflow-hidden">
-                        <p class="font-semibold text-sm truncate">FM Paraíso 42</p>
-                        <p id="radio-status-text" class="text-xs text-gray-500 dark:text-gray-400">Click para escuchar</p>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </aside>
 
-
-    <main class="flex-1 flex flex-col h-screen">
+<main class="flex-1 flex flex-col h-screen">
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
             <div class="w-full flex justify-start">
                 <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
@@ -2721,3 +2775,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
