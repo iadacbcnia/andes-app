@@ -19,9 +19,9 @@
             --white: #ffffff;
         }
         .dark {
-            --bg-color: var(--slate-800); /* Fondo principal un poco más claro */
+            --bg-color: var(--slate-800);
             --text-color: var(--gray-100);
-            --card-bg: var(--slate-700); /* Globos de chat y tarjetas más claras */
+            --card-bg: var(--slate-700);
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -32,7 +32,7 @@
         .ai-message { background-color: var(--card-bg, var(--white)); border-radius: 20px 20px 20px 5px; }
         .sponsored-message {
             background-color: var(--card-bg, var(--white));
-            border: 2px solid #facc15; /* yellow-400 */
+            border: 2px solid #facc15;
             box-shadow: 0 4px 14px 0 rgba(250, 204, 21, 0.3);
         }
         .place-link { color: var(--emerald-500); font-weight: 500; cursor: pointer; }
@@ -150,6 +150,7 @@
         </div>
     </main>
 </div>
+
 <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
         
@@ -230,9 +231,198 @@
     </div>
 </div>
 
+<div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Acceso de Administrador</h3>
+            <form id="password-form" class="mt-4 space-y-4">
+                <div>
+                    <label for="password-input" class="sr-only">Contraseña</label>
+                    <input type="password" id="password-input" placeholder="Ingresa la contraseña" class="w-full p-2 rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700">
+                    <p id="password-error" class="text-red-500 text-xs mt-1 hidden">Contraseña incorrecta.</p>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="close-password-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-emerald-600">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="admin-panel-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
+        <div class="flex justify-between items-center pb-3 border-b dark:border-slate-600">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Panel de Administración</h3>
+            <button id="close-admin-panel-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <div class="mt-4 space-y-3">
+            <p class="text-sm text-gray-600 dark:text-gray-300">Desde aquí puedes añadir nuevo contenido y gestionar la información existente.</p>
+            <button id="admin-add-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                Añadir Nuevo Lugar
+            </button>
+            <button id="admin-manage-btn" class="w-full flex items-center justify-center text-left p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium">
+                <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.5 4A1.5 1.5 0 001 5.5v9A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0017.5 4h-15zM2 5.5a.5.5 0 01.5-.5h15a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-15a.5.5 0 01-.5-.5v-9zM8 8a.75.75 0 000 1.5h4a.75.75 0 000-1.5H8z" clip-rule="evenodd" /></svg>
+                Gestionar Contenido
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[65] transition-opacity duration-300">
+    <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
+        <div class="mt-3 text-center">
+            <h3 id="contribution-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Añadir conocimiento a Andes</h3>
+            <div class="mt-2 flex-grow overflow-y-auto p-2">
+                <div id="contribution-tabs" class="border-b border-gray-200 dark:border-slate-600">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button id="tab-single" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-emerald-500 border-emerald-500">Añadir Uno</button>
+                        <button id="tab-bulk" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200">Carga Rápida</button>
+                    </nav>
+                </div>
+
+                <form id="contribution-form" class="mt-4 space-y-4 text-left">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="lugar-tipo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Lugar</label>
+                            <select id="lugar-tipo" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option value="restaurantes" data-subtype="Restaurante">Restaurante</option>
+                                <option value="restaurantes" data-subtype="Bar">Bar</option>
+                                <option value="restaurantes" data-subtype="Confitería">Confitería</option>
+                                </option>
+                                <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
+                                <option value="alojamiento" data-subtype="Apart Hotel">Apart Hotel</option>
+                                <option value="alojamiento" data-subtype="Cabañas">Cabañas</option>
+                                <option value="alojamiento" data-subtype="Campings">Campings</option>
+                                <option value="alojamiento" data-subtype="Hoteles">Hoteles</option>
+                                <option value="alojamiento" data-subtype="Hosterias">Hosterias</option>
+                                <option value="alojamiento" data-subtype="Hospedajes">Hospedajes</option>
+                                <option value="alojamiento" data-subtype="Hostels">Hostels</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Casas">Alquiler de Casas</option>
+                                <option value="alojamiento" data-subtype="Alquiler de Departamentos">Alquiler de Departamentos</option>
+                                <option value="alojamiento" data-subtype="Bread & Breakfast">Bread & Breakfast</option>
+                                <option value="actividades">Actividades</option>
+                                <option value="lugaresParaVisitar">Lugar para Visitar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lugar-localidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Localidad</label>
+                            <select id="lugar-localidad" required class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                                <option>El Bolsón</option>
+                                <option>Lago Puelo</option>
+                                <option>El Hoyo</option>
+                                <option>Epuyén</option>
+                                <option>El Maitén</option>
+                                <option>Cholila</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Lugar</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-nombre" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-direccion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirección (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-direccion" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lugar-telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <input type="text" id="lugar-telefono" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="lugar-latitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Latitud (Opcional)</label>
+                            <input type="text" id="lugar-latitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-41.9669">
+                        </div>
+                        <div>
+                            <label for="lugar-longitud" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Longitud (Opcional)</label>
+                            <input type="text" id="lugar-longitud" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="-71.5333">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Busca el lugar en Google Maps, haz clic derecho y copia las coordenadas (ej: -41.96, -71.53).</p>
+                    <div>
+                        <label for="lugar-imagen" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen (Opcional)</label>
+                        <input type="url" id="lugar-imagen" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto.jpg">
+                    </div>
+                    <div>
+                        <label for="lugar-imagen360" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen 360° (Opcional)</label>
+                        <input type="url" id="lugar-imagen360" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto_360.jpg">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pega aquí el link a una foto equirectangular (formato 360°).</p>
+                    </div>
+                    <div>
+                        <label for="lugar-descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Principal</label>
+                        <div class="relative w-full mt-1">
+                           <textarea id="lugar-descripcion" rows="3" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
+                           <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                       </div>
+                    </div>
+                    <div>
+                        <label for="lugar-datos-clave" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Datos Clave / Puntos a Destacar (Opcional)</label>
+                        <div class="relative w-full mt-1">
+                            <textarea id="lugar-datos-clave" rows="3" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="Ej: Horario: 9 a 18hs.
+No se aceptan mascotas.
+Aclaración: No hay un laberinto para niños."></textarea>
+                            <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                           </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="lugar-sponsor" type="checkbox" class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                        <label for="lugar-sponsor" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">⭐ Es un lugar recomendado</label>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px]">Añadir Lugar</button>
+                    </div>
+                </form>
+
+                <div id="bulk-entry-form-container" class="hidden mt-4 text-left">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pega cada lugar en una nueva línea. Separa cada dato con una coma. <strong class="dark:text-gray-200">La descripción siempre debe ir al final.</strong></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 mb-2">Si no tienes un dato (ej: teléfono o coordenadas), deja el espacio vacío entre las comas.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 p-2 rounded-md mb-4"><code>Tipo: Cabañas, Nombre: Mi Cabaña, Localidad: El Bolsón, ... , Descripción completa...: Texto libre.</code></p>
+                    <div class="relative w-full mt-1">
+                        <textarea id="bulk-input" rows="8" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md" placeholder="Tipo: Cabañas, Nombre: Cabaña La Escondida, Localidad: El Hoyo, Dirección: Curva de fin de la recta de El Pedregoso, Teléfono: +54 (294) 459-7157, Latitud: -42.007621, Longitud: -71.522818, Descripción completa...: Cabaña con capacidad para 4 personas, ideal para el descanso"></textarea>
+                        <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                        </button>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button type="button" id="process-bulk-btn" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Procesar</button>
+                    </div>
+                    <div id="bulk-review-container" class="mt-4"></div>
+                </div>
+
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="close-contribution-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <audio id="radio-player" preload="none"></audio>
 <script type="module">
-    // (Aquí va el código JavaScript completo)
+    // (Aquí va todo el JavaScript)
 </script>
 </body>
 </html>
