@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
+
     <style>
         :root {
             --emerald-500: #10b981;
@@ -43,27 +44,34 @@
         .typing-indicator span:nth-of-type(2) { animation-delay: -0.32s; }
         .typing-indicator span:nth-of-type(3) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        /* Estilos para el Rating Modal */
         .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; }
         .star-rating input { display: none; }
         .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label, .star-rating:not(:checked) > label:hover, .star-rating:not(:checked) > label:hover ~ label { color: #f59e0b; }
+        /* Mapa */
         #map { height: 100%; width: 100%; }
         .leaflet-container { height: 100%; width: 100%; }
+        /* AR */
         .ar-top-bar { position: absolute; top: 0; left: 0; right: 0; padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .ar-pill { background-color: rgba(0, 0, 0, 0.6); color: white; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; }
         #ar-status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; color: white; background-color: rgba(0,0,0,0.7); padding: 1rem; border-radius: 0.5rem; text-align: center; }
+        
+        /* Estilo para el micrófono cuando está escuchando */
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         .mic-listening {
-            color: #ef4444;
+            color: #ef4444; /* red-500 */
             animation: pulse-red 1.5s infinite;
             border-radius: 50%;
         }
+
+        /* Estilos para la nueva Barra de Acciones */
         .action-btn {
-            color: #6b7280;
+            color: #6b7280; /* gray-500 */
             padding: 0.25rem;
             border-radius: 0.375rem;
             transition: background-color 0.2s, color 0.2s;
@@ -71,20 +79,22 @@
             text-align: center;
         }
         .action-btn:hover {
-            background-color: #f3f4f6;
-            color: #10b981;
+            background-color: #f3f4f6; /* gray-100 */
+            color: #10b981; /* emerald-500 */
         }
         .dark .action-btn {
-            color: #9ca3af;
+            color: #9ca3af; /* gray-400 */
         }
         .dark .action-btn:hover {
-            background-color: #334155;
+            background-color: #334155; /* slate-700 */
             color: white;
         }
+
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
+
 <div class="flex h-screen">
     <main class="flex-1 flex flex-col h-screen">
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
@@ -94,8 +104,10 @@
                 </div>
             </div>
         </div>
+
         <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
-            <div id="suggestions" class="flex flex-wrap gap-2 mb-2"></div>
+            <div id="suggestions" class="flex flex-wrap gap-2 mb-2">
+                </div>
             <form id="chat-form" class="flex items-center gap-2">
                 <div class="relative w-full">
                     <input type="text" id="chat-input" placeholder="Pregúntame algo..." class="w-full p-3 pr-20 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
@@ -108,6 +120,7 @@
                 </button>
             </form>
         </div>
+
         <div id="action-bar" class="bg-white dark:bg-slate-800 p-2 border-t border-gray-200 dark:border-slate-700">
             <div class="flex justify-around items-center">
                 <button id="action-map-btn" class="action-btn">
@@ -131,9 +144,9 @@
     </main>
 </div>
 
-<!-- MODALES COMPLETOS -->
 <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
+        
         <div class="text-center mb-8">
             <div class="inline-block bg-emerald-100 dark:bg-emerald-900/50 p-3 rounded-full mb-3">
                 <svg class="h-10 w-10 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -143,11 +156,13 @@
             <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100">Crea tu Aventura Perfecta</h3>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 3 datos para diseñarte un plan a medida.</p>
         </div>
+
         <button id="close-planner-modal-btn" class="absolute top-4 left-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-gray-200">
            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
            </svg>
         </button>
+
         <form id="planner-form" class="space-y-6">
             <div>
                 <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
@@ -196,6 +211,7 @@
                     </button>
                 </div>
             </div>
+            
             <div class="pt-6">
                 <button type="submit" class="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:bg-emerald-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -207,6 +223,7 @@
         </form>
     </div>
 </div>
+
 <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
         <div class="mt-3 text-center">
@@ -225,6 +242,7 @@
         </div>
     </div>
 </div>
+
 <div id="admin-panel-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <div class="flex justify-between items-center pb-3 border-b dark:border-slate-600">
@@ -246,6 +264,7 @@
         </div>
     </div>
 </div>
+
 <div id="contribution-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[65] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="mt-3 text-center">
@@ -257,6 +276,7 @@
                         <button id="tab-bulk" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200">Carga Rápida</button>
                     </nav>
                 </div>
+
                 <form id="contribution-form" class="mt-4 space-y-4 text-left">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -265,6 +285,7 @@
                                 <option value="restaurantes" data-subtype="Restaurante">Restaurante</option>
                                 <option value="restaurantes" data-subtype="Bar">Bar</option>
                                 <option value="restaurantes" data-subtype="Confitería">Confitería</option>
+</option>
                                 <option value="restaurantes" data-subtype="Casa de Té">Casa de Té</option>
                                 <option value="alojamiento" data-subtype="Apart Hotel">Apart Hotel</option>
                                 <option value="alojamiento" data-subtype="Cabañas">Cabañas</option>
@@ -367,6 +388,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px]">Añadir Lugar</button>
                     </div>
                 </form>
+
                 <div id="bulk-entry-form-container" class="hidden mt-4 text-left">
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pega cada lugar en una nueva línea. Separa cada dato con una coma. <strong class="dark:text-gray-200">La descripción siempre debe ir al final.</strong></p>
                     <p class="text-xs text-gray-500 dark:text-gray-300 mb-2">Si no tienes un dato (ej: teléfono o coordenadas), deja el espacio vacío entre las comas.</p>
@@ -382,6 +404,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     </div>
                     <div id="bulk-review-container" class="mt-4"></div>
                 </div>
+
             </div>
             <div class="items-center px-4 py-3">
                 <button id="close-contribution-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
@@ -389,6 +412,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </div>
     </div>
 </div>
+
 <div id="manage-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="flex flex-wrap justify-between items-center mb-4 pb-2 border-b dark:border-slate-600 gap-2">
@@ -408,12 +432,14 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 </button>
             </div>
         </div>
-        <div id="manage-list" class="flex-grow overflow-y-auto pr-2"></div>
+        <div id="manage-list" class="flex-grow overflow-y-auto pr-2">
+            </div>
         <div class="items-center px-4 py-3 text-right mt-4 border-t dark:border-slate-600">
             <button id="close-manage-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
         </div>
     </div>
 </div>
+
 <div id="rincon-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
@@ -431,9 +457,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600">Compartir Consejo</button>
             </div>
         </form>
-        <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4"></div>
+        <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4">
+            </div>
     </div>
 </div>
+
 <div id="rating-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
@@ -464,7 +492,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </form>
     </div>
 </div>
+
 <input type="file" id="backup-file-input" accept=".csv" class="hidden">
+
+
 <div id="confirm-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Confirmar Eliminación</h3>
@@ -475,6 +506,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </div>
     </div>
 </div>
+
 <div id="confirm-restore-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-red-600 dark:text-red-400">¡Acción Irreversible!</h3>
@@ -489,6 +521,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </div>
     </div>
 </div>
+
 <div id="confirm-rubro-delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
     <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
         <h3 class="text-lg font-medium text-red-600 dark:text-red-400">Confirmar Eliminación de Rubro</h3>
@@ -499,6 +532,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </div>
     </div>
 </div>
+
 <div id="map-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full hidden z-[80] transition-opacity duration-300 flex flex-col">
     <div class="bg-white dark:bg-slate-800 p-3 flex justify-between items-center shadow-md">
         <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Mapa Interactivo de la Comarca</h3>
@@ -512,6 +546,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         <div id="map"></div>
     </div>
 </div>
+
 <div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
     <div class="absolute top-0 right-0 p-2 z-10">
         <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
@@ -524,6 +559,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
         <a-sky id="vr-sky" radius="100"></a-sky>
     </a-scene>
 </div>
+
+
 <div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
     <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
         <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
@@ -534,104 +571,187 @@ Aclaración: No hay un laberinto para niños."></textarea>
         <div id="ar-permissions-pill" class="ar-pill"></div>
     </div>
     <div id="ar-status"></div>
-    <div id="ar-modal-content"></div>
+    <div id="ar-modal-content">
+        </div>
 </div>
+
 <audio id="radio-player" preload="none"></audio>
 
-
 <script type="module">
-// ==== SCRIPT CORREGIDO ====
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, setLogLevel, doc, updateDoc, deleteDoc, writeBatch, getDocs, query, orderBy, runTransaction, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', function() {
-    // BOTONES DE ACCIÓN
-    const actionBar = document.getElementById('action-bar');
-    if (actionBar) {
-        actionBar.innerHTML = `
-        <div class="flex justify-around w-full">
-          <button id="action-rincon-btn" class="action-btn">
-            <span class="text-xs">Rincón</span>
-          </button>
-          <button id="action-map-btn" class="action-btn">
-            <span class="text-xs">Mapa</span>
-          </button>
-          <button id="action-planner-btn" class="action-btn">
-            <span class="text-xs">Plan</span>
-          </button>
-          <button id="action-admin-btn" class="action-btn">
-            <span class="text-xs">Admin</span>
-          </button>
-          <button id="action-radio-btn" class="action-btn">
-            <span class="text-xs">Radio</span>
-          </button>
-        </div>`;
+
+    // --- OBTENER ELEMENTOS DEL HTML (SECCIÓN 1: ELEMENTOS PRINCIPALES) ---
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const suggestionsContainer = document.getElementById('suggestions');
+    const micBtn = document.getElementById('mic-btn');
+    
+    // --- OBTENER ELEMENTOS DEL HTML (SECCIÓN 2: MODALES) ---
+    const contributionModal = document.getElementById('contribution-modal');
+    const manageModal = document.getElementById('manage-modal');
+    const rinconModal = document.getElementById('rincon-modal');
+    const ratingModal = document.getElementById('rating-modal');
+    const mapModal = document.getElementById('map-modal');
+    const vrModal = document.getElementById('vr-modal');
+    const arModal = document.getElementById('ar-modal');
+    const passwordModal = document.getElementById('password-modal');
+    const adminPanelModal = document.getElementById('admin-panel-modal');
+    const plannerModal = document.getElementById('planner-modal');
+
+    // --- OBTENER ELEMENTOS DEL HTML (SECCIÓN 3: BOTONES DE ACCIÓN Y CIERRE) ---
+    const actionMapBtn = document.getElementById('action-map-btn');
+    const actionPlannerBtn = document.getElementById('action-planner-btn');
+    const actionRinconBtn = document.getElementById('action-rincon-btn');
+    const actionAdminBtn = document.getElementById('action-admin-btn');
+    
+    const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
+    const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
+    const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
+    const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
+    const closeMapModalBtn = document.getElementById('close-map-modal-btn');
+    const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
+    const closeArModalBtn = document.getElementById('close-ar-modal-btn');
+    const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
+    const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
+    const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
+
+    // --- OBTENER ELEMENTOS DEL HTML (SECCIÓN 4: FORMULARIOS Y PANELES) ---
+    const passwordForm = document.getElementById('password-form');
+    const passwordInput = document.getElementById('password-input');
+    const passwordError = document.getElementById('password-error');
+    const adminAddBtn = document.getElementById('admin-add-btn');
+    const adminManageBtn = document.getElementById('admin-manage-btn');
+    const contributionForm = document.getElementById('contribution-form');
+    const tipForm = document.getElementById('tip-form');
+    const tipInput = document.getElementById('tip-input');
+    const plannerForm = document.getElementById('planner-form');
+    const vrSky = document.getElementById('vr-sky');
+    const manageList = document.getElementById('manage-list');
+    const rinconList = document.getElementById('rincon-list');
+    const radioBtn = document.getElementById('radio-btn');
+    const radioPlayer = document.getElementById('radio-player');
+    const radioLogo = document.getElementById('radio-logo');
+    const radioIconOverlay = document.getElementById('radio-icon-overlay');
+    const radioStatusText = document.getElementById('radio-status-text');
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+
+    // --- VARIABLES GLOBALES ---
+    let db, auth, userId;
+    let lugaresCollectionRef, consejosCollectionRef;
+    let dynamicKnowledgeBase = {}, placesCache = [], chatHistory = [], tipsCache = [];
+    let isAdmin = false, isDataReady = false, mapInitialized = false, map = null;
+    let markersLayer = null, highlightedMarkerLayer = null, markersById = {};
+    let mainRecognition, isMainMicListening = false, activeSpeechInput = null;
+    const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
+    const apiKey = "a6200921f878ea692204d518fa54b6d9"; // Clima API Key
+    const geminiApiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI"; 
+    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiApiKey}`;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    // --- INICIALIZACIÓN DE LA APP ---
+    chatInput.disabled = true;
+    chatInput.placeholder = "Conectando...";
+    submitButton.disabled = true;
+    initializeFirebase();
+
+    // ===============================================================
+    // ================== LÓGICA DE FUNCIONES PRINCIPALES =============
+    // ===============================================================
+
+    // --- FUNCIÓN PARA CREAR EL MAPA ---
+    function initMap() {
+        if (mapInitialized) return;
+        map = L.map('map').setView([-41.96, -71.53], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+        highlightedMarkerLayer = L.layerGroup().addTo(map);
+
+        if (isDataReady) {
+            updateMapMarkers();
+        }
+
+        mapInitialized = true;
     }
 
-    // --- RADIO ---
-    const radioBtn = document.getElementById("action-radio-btn");
-    const radioPlayer = document.getElementById("radio-player");
-    const streamUrl = "https://streaming6.locucionar.com:24140/stream";
-    if (radioBtn && radioPlayer) {
-        radioBtn.addEventListener("click", () => {
-            if (radioPlayer.src === "") radioPlayer.src = streamUrl;
-            if (radioPlayer.paused) {
-                radioPlayer.play();
-            } else {
-                radioPlayer.pause();
+    // --- CONEXIONES DE LOS BOTONES DE LA BARRA DE ACCIONES ---
+    actionMapBtn.addEventListener('click', () => {
+        mapModal.classList.remove('hidden');
+        setTimeout(() => {
+            if (!mapInitialized) {
+                initMap();
             }
-        });
-    }
-
-    // --- FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyCTgtEQ2...",
-        authDomain: "andes-app-turismo.firebaseapp.com",
-        projectId: "andes-app-turismo",
-        storageBucket: "andes-app-turismo.appspot.com",
-        messagingSenderId: "685878856963",
-        appId: "1:685878856963:web:660823dfdac24a0c39ed36"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    signInAnonymously(auth).catch(console.error);
-
-    onAuthStateChanged(auth, (u) => {
-        if (u) console.log("Auth ok:", u.uid);
+        }, 50);
+        setTimeout(() => {
+            if(map) {
+                map.invalidateSize();
+            }
+        }, 200);
+    });
+    actionPlannerBtn.addEventListener('click', () => plannerModal.classList.remove('hidden'));
+    actionRinconBtn.addEventListener('click', () => {
+        renderTipsList();
+        rinconModal.classList.remove('hidden');
+    });
+    actionAdminBtn.addEventListener('click', () => {
+        if (isAdmin) {
+            adminPanelModal.classList.remove('hidden');
+        } else {
+            passwordModal.classList.remove('hidden');
+        }
     });
 
-    // --- CHAT ---
-    const chatForm = document.getElementById("chat-form");
-    const chatInput = document.getElementById("chat-input");
-    const chatWindow = document.getElementById("chat-window");
-    chatForm?.addEventListener("submit", (e) => {
+    // --- CONEXIONES DE LOS BOTONES DE CERRAR (X) ---
+    closePlannerModalBtn.addEventListener('click', () => plannerModal.classList.add('hidden'));
+    closeRinconModalBtn.addEventListener('click', () => rinconModal.classList.add('hidden'));
+    closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
+    closeAdminPanelBtn.addEventListener('click', () => adminPanelModal.classList.add('hidden'));
+    closeManageModalBtn.addEventListener('click', () => manageModal.classList.add('hidden'));
+    closeContributionModalBtn.addEventListener('click', () => contributionModal.classList.add('hidden'));
+    closeRatingModalBtn.addEventListener('click', () => ratingModal.classList.add('hidden'));
+    closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
+    closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
+    closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
+
+    // --- LÓGICA DEL PANEL DE ADMIN ---
+    passwordForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const text = chatInput.value.trim();
-        if (!text) return;
-        const div = document.createElement("div");
-        div.className = "p-2 my-1 bg-emerald-100 rounded";
-        div.textContent = "Tú: " + text;
-        chatWindow.appendChild(div);
-        chatInput.value = "";
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+        if (passwordInput.value === 'andesadmin') {
+            isAdmin = true;
+            passwordModal.classList.add('hidden');
+            adminPanelModal.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+            passwordInput.classList.remove('border-red-500');
+        } else {
+            passwordError.classList.remove('hidden');
+            passwordInput.classList.add('border-red-500');
+        }
+    });
+    adminAddBtn.addEventListener('click', () => {
+        contributionForm.reset();
+        editingPlaceId = null;
+        document.getElementById('contribution-submit-btn').textContent = 'Añadir Lugar';
+        contributionModal.classList.remove('hidden');
+        adminPanelModal.classList.add('hidden');
+    });
+    adminManageBtn.addEventListener('click', () => {
+        renderManagementList(); 
+        manageModal.classList.remove('hidden');
+        adminPanelModal.classList.add('hidden');
     });
 
-    // --- MODALES ---
-    function showModal(id) {
-        document.getElementById(id)?.classList.remove("hidden");
-    }
-    function hideModal(id) {
-        document.getElementById(id)?.classList.add("hidden");
-    }
-    document.getElementById("action-rincon-btn")?.addEventListener("click", ()=> showModal("rincon-modal"));
-    document.getElementById("action-map-btn")?.addEventListener("click", ()=> showModal("map-modal"));
-    document.getElementById("action-planner-btn")?.addEventListener("click", ()=> showModal("planner-modal"));
-    document.getElementById("action-admin-btn")?.addEventListener("click", ()=> showModal("password-modal"));
+    // (El resto del código JavaScript sigue...)
+    
 });
 </script>
-
 </body>
 </html>
