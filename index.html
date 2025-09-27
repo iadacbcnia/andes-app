@@ -8,6 +8,104 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
+  /* === Estilo para tarjetas de lugares en el chat === */
+.place-card {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: var(--card-bg, #f8fafc);
+  border: 1px solid var(--gray-200, #e2e8f0);
+  margin: 8px 0;
+}
+
+.dark .place-card {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.place-card.sponsored-place {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.dark .place-card.sponsored-place {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2200 100%);
+  border-color: #d97706;
+}
+
+.place-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.dark .place-name {
+  color: #f1f5f9;
+}
+
+.place-description {
+  margin: 0 0 10px 0;
+  color: #475569;
+}
+
+.dark .place-description {
+  color: #cbd5e1;
+}
+
+.place-key-data {
+  background: #f1f5f9;
+  padding: 8px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.dark .place-key-data {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.place-contact {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.dark .place-contact {
+  color: #cbd5e1;
+}
+
+.place-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.place-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-rate, .btn-map, .btn-360 {
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-rate:hover, .btn-map:hover, .btn-360:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
   <style>
     :root{
       --emerald-500:#10b981;
@@ -1850,29 +1948,98 @@ w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
       }
 
       function processAIResponseText(text) {
-        let isHtml = false;
-        let isSponsored = false;
-        const linkRegex = /\[\[(.*?)\]\]/g;
-        let processedText = text.replace(linkRegex, (match, placeName) => {
-          const foundPlace = findPlaceByName(placeName.trim());
-          if (foundPlace) {
-            isHtml = true;
-            if (foundPlace.esAuspiciante) isSponsored = true;
-            return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
-          }
-          return placeName;
-        });
+  let isHtml = false;
+  let isSponsored = false;
 
-        if (processedText.includes('*') || processedText.includes('\n-')) {
-          isHtml = true;
-          processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
-          if (processedText.includes('<li>')) {
-            processedText = `<ul>${processedText}</ul>`;
-          }
-        }
-        return { text: processedText, isHtml, isSponsored };
+  // Primero, identificamos todos los lugares en formato [[Nombre]]
+  const linkRegex = /\[\[(.*?)\]\]/g;
+  const matches = [...text.matchAll(linkRegex)];
+  
+  // Si no hay ningún lugar, procesamos normalmente
+  if (matches.length === 0) {
+    // Procesamiento original para negritas y listas
+    if (text.includes('*') || text.includes('\n-')) {
+      isHtml = true;
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
+      if (text.includes('<li>')) {
+        text = `<ul>${text}</ul>`;
       }
+    }
+    return { text, isHtml, isSponsored };
+  }
+
+  // Si hay lugares, vamos a crear un array de mensajes separados
+  let parts = [];
+  let lastIndex = 0;
+
+  matches.forEach((match, index) => {
+    const placeName = match[1].trim();
+    const place = findPlaceByName(placeName);
+    
+    // Parte de texto antes del enlace
+    if (match.index > lastIndex) {
+      const beforeText = text.substring(lastIndex, match.index);
+      if (beforeText.trim() !== '') {
+        parts.push({
+          type: 'text',
+          content: beforeText
+        });
+      }
+    }
+
+    // Parte del lugar (lo convertimos en una tarjeta)
+    if (place) {
+      isHtml = true;
+      if (place.esAuspiciante) isSponsored = true;
+      parts.push({
+        type: 'place',
+        content: place
+      });
+    } else {
+      // Si no se encontró el lugar, dejamos el texto sin formato
+      parts.push({
+        type: 'text',
+        content: `[[${placeName}]]`
+      });
+    }
+
+    lastIndex = match.index + match[0].length;
+  });
+
+  // Texto final después del último enlace
+  if (lastIndex < text.length) {
+    const remainingText = text.substring(lastIndex);
+    if (remainingText.trim() !== '') {
+      parts.push({
+        type: 'text',
+        content: remainingText
+      });
+    }
+  }
+
+  // Construimos el resultado final
+  let resultText = '';
+  for (let part of parts) {
+    if (part.type === 'text') {
+      // Procesar negritas y listas en este fragmento
+      let processedPart = part.content;
+      if (processedPart.includes('*') || processedPart.includes('\n-')) {
+        processedPart = processedPart.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        processedPart = processedPart.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
+        if (processedPart.includes('<li>')) {
+          processedPart = `<ul>${processedPart}</ul>`;
+        }
+      }
+      resultText += processedPart;
+    } else if (part.type === 'place') {
+      // Aquí generamos la tarjeta completa
+      resultText += formatPlaceForAI(part.content);
+    }
+  }
+
+  return { text: resultText, isHtml, isSponsored };
+}}
 
       function findPlaceByName(name) {
         return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
@@ -2536,6 +2703,7 @@ EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
 
 </body>
 </html>
+
 
 
 
