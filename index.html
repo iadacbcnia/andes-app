@@ -540,460 +540,97 @@ Aclaración: No hay un laberinto para niños."></textarea>
 
 
 <script type="module">
-    // ---------------------------
-    // Andes - Script corregido (versión completa embebida)
-    // Reemplazado por ChatGPT - mantiene funcionalidades: micrófono, radio, Firestore basic listeners, edición/guardado.
-    // NOTA: Reemplaza claves sensibles por placeholders. Usa Vercel env vars y serverless functions para seguridad.
-    // ---------------------------
+// ==== SCRIPT CORREGIDO ====
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- ELEMENTOS HTML ---
-        const chatWindow = document.getElementById('chat-window');
-        const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const suggestionsContainer = document.getElementById('suggestions');
-        const micBtn = document.getElementById('mic-btn');
+document.addEventListener('DOMContentLoaded', function() {
+    // BOTONES DE ACCIÓN
+    const actionBar = document.getElementById('action-bar');
+    if (actionBar) {
+        actionBar.innerHTML = `
+        <div class="flex justify-around w-full">
+          <button id="action-rincon-btn" class="action-btn">
+            <span class="text-xs">Rincón</span>
+          </button>
+          <button id="action-map-btn" class="action-btn">
+            <span class="text-xs">Mapa</span>
+          </button>
+          <button id="action-planner-btn" class="action-btn">
+            <span class="text-xs">Plan</span>
+          </button>
+          <button id="action-admin-btn" class="action-btn">
+            <span class="text-xs">Admin</span>
+          </button>
+          <button id="action-radio-btn" class="action-btn">
+            <span class="text-xs">Radio</span>
+          </button>
+        </div>`;
+    }
 
-        // Modales
-        const contributionModal = document.getElementById('contribution-modal');
-        const manageModal = document.getElementById('manage-modal');
-        const rinconModal = document.getElementById('rincon-modal');
-        const ratingModal = document.getElementById('rating-modal');
-        const mapModal = document.getElementById('map-modal');
-        const vrModal = document.getElementById('vr-modal');
-        const arModal = document.getElementById('ar-modal');
-        const passwordModal = document.getElementById('password-modal');
-        const adminPanelModal = document.getElementById('admin-panel-modal');
-        const plannerModal = document.getElementById('planner-modal');
-        const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-        const confirmRubroDeleteModal = document.getElementById('confirm-rubro-delete-modal');
-
-        // Botones de acción
-        const actionMapBtn = document.getElementById('action-map-btn');
-        const actionPlannerBtn = document.getElementById('action-planner-btn');
-        const actionRinconBtn = document.getElementById('action-rincon-btn');
-        const actionAdminBtn = document.getElementById('action-admin-btn');
-
-        // NUEVO: Botón para controlar radio (si no existe, lo creamos dinámicamente)
-        let actionRadioBtn = document.getElementById('action-radio-btn');
-        if (!actionRadioBtn) {
-            const actionBar = document.getElementById('action-bar');
-            if (actionBar) {
-                const wrapper = actionBar.querySelector('.flex');
-                if (wrapper) {
-                    const btn = document.createElement('button');
-                    btn.id = 'action-radio-btn';
-                    btn.className = 'action-btn';
-                    btn.innerHTML = '<svg class="h-6 w-6 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4h12v2H4zM4 8h12v2H4zM4 12h12v2H4z"/></svg><span class="text-xs">Radio</span>';
-                    wrapper.appendChild(btn);
-                    actionRadioBtn = btn;
-                }
-            }
-        }
-
-        // Botones de cierre
-        const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
-        const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
-        const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
-        const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
-        const closeMapModalBtn = document.getElementById('close-map-modal-btn');
-        const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
-        const closeArModalBtn = document.getElementById('close-ar-modal-btn');
-        const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
-        const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
-        const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
-
-        // Admin
-        const passwordForm = document.getElementById('password-form');
-        const passwordInput = document.getElementById('password-input');
-        const passwordError = document.getElementById('password-error');
-        const adminAddBtn = document.getElementById('admin-add-btn');
-        const adminManageBtn = document.getElementById('admin-manage-btn');
-
-        // Formularios
-        const contributionForm = document.getElementById('contribution-form');
-        const tipForm = document.getElementById('tip-form');
-        const tipInput = document.getElementById('tip-input');
-        const plannerForm = document.getElementById('planner-form');
-        const manageList = document.getElementById('manage-list');
-        const rinconList = document.getElementById('rincon-list');
-        const ratingForm = document.getElementById('rating-form');
-        const commentInput = document.getElementById('comment-input');
-
-        // Radio
-        const radioPlayer = document.getElementById('radio-player');
-        const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
-
-        // --- VARIABLES GLOBALES ---
-        let db, auth, userId;
-        let lugaresCollectionRef, consejosCollectionRef;
-        let dynamicKnowledgeBase = {}, placesCache = [], chatHistory = [], tipsCache = [];
-        let isAdmin = false, isDataReady = false, mapInitialized = false, map = null;
-        let markersLayer = null, markersById = {};
-        let editingPlaceId = null;
-        const geminiApiKey = "AIzaSyCTgtEQ2SorpvrLjm8ntBbPDZVKAxTz6ZI"; // <- mover a backend
-        const appId = 'default-app-id';
-        const weatherApiKey = "a6200921f878ea692204d518fa54b6d9"; // <- mover a backend
-
-        // --- ESTADO INICIAL ---
-        const submitButton = chatForm.querySelector('button[type="submit"]');
-        chatInput.disabled = true;
-        chatInput.placeholder = "Conectando...";
-        submitButton.disabled = true;
-
-        // --- INICIALIZAR FIREBASE ---
-        function initializeFirebase() {
-            const firebaseConfig = {
-                apiKey: "AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
-                authDomain: "andes-app-turismo.firebaseapp.com",
-                projectId: "andes-app-turismo",
-                storageBucket: "andes-app-turismo.appspot.com",
-                messagingSenderId: "685878856963",
-                appId: "1:685878856963:web:660823dfdac24a0c39ed36"
-            };
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                onAuthStateChanged(auth, (u) => {
-                    if (u) {
-                        userId = u.uid;
-                        lugaresCollectionRef = collection(db, 'lugares');
-                        consejosCollectionRef = collection(db, 'consejos');
-                        listenForNewPlaces();
-                        listenForTips();
-                    } else {
-                        signInAnonymously(auth).catch(err => console.error('Anon signIn error', err));
-                    }
-                });
-            } catch (err) {
-                console.error('Error inicializando Firebase:', err);
-            }
-        }
-
-        // --- MODALES: cierres seguros ---
-        if (closeContributionModalBtn) closeContributionModalBtn.addEventListener('click', () => contributionModal.classList.add('hidden'));
-        if (closeManageModalBtn) closeManageModalBtn.addEventListener('click', () => manageModal.classList.add('hidden'));
-        if (closeRinconModalBtn) closeRinconModalBtn.addEventListener('click', () => rinconModal.classList.add('hidden'));
-        if (closeRatingModalBtn) closeRatingModalBtn.addEventListener('click', () => ratingModal.classList.add('hidden'));
-        if (closeMapModalBtn) closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
-        if (closeVrModalBtn) closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
-        if (closeArModalBtn) closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
-        if (closePasswordModalBtn) closePasswordModalBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
-        if (closePlannerModalBtn) closePlannerModalBtn.addEventListener('click', () => plannerModal.classList.add('hidden'));
-        if (closeAdminPanelBtn) closeAdminPanelBtn.addEventListener('click', () => adminPanelModal.classList.add('hidden'));
-
-        // --- ADMIN PASSWORD ---
-        passwordForm && passwordForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (passwordInput.value === 'andesadmin') {
-                isAdmin = true;
-                passwordModal.classList.add('hidden');
-                adminPanelModal.classList.remove('hidden');
-                passwordInput.value = '';
-                passwordError.classList.add('hidden');
-                passwordInput.classList.remove('border-red-500');
-                sessionStorage.setItem('andes_isAdmin', '1');
+    // --- RADIO ---
+    const radioBtn = document.getElementById("action-radio-btn");
+    const radioPlayer = document.getElementById("radio-player");
+    const streamUrl = "https://streaming6.locucionar.com:24140/stream";
+    if (radioBtn && radioPlayer) {
+        radioBtn.addEventListener("click", () => {
+            if (radioPlayer.src === "") radioPlayer.src = streamUrl;
+            if (radioPlayer.paused) {
+                radioPlayer.play();
             } else {
-                passwordError.classList.remove('hidden');
-                passwordInput.classList.add('border-red-500');
+                radioPlayer.pause();
             }
         });
+    }
 
-        if (sessionStorage.getItem('andes_isAdmin') === '1') {
-            isAdmin = true;
-        }
+    // --- FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTgtEQ2...",
+        authDomain: "andes-app-turismo.firebaseapp.com",
+        projectId: "andes-app-turismo",
+        storageBucket: "andes-app-turismo.appspot.com",
+        messagingSenderId: "685878856963",
+        appId: "1:685878856963:web:660823dfdac24a0c39ed36"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    signInAnonymously(auth).catch(console.error);
 
-        // --- SUGERENCIAS ---
-        function updateSuggestions() {
-            suggestionsContainer.innerHTML = '';
-            const suggestions = [
-                "¿Qué puedo hacer hoy?",
-                "Restaurantes en El Bolsón",
-                "Cabañas en Lago Puelo",
-                "Clima para mañana"
-            ];
-            suggestions.forEach(text => {
-                const button = document.createElement('button');
-                button.className = "bg-gray-200 dark:bg-slate-700 text-sm px-3 py-1 rounded-full hover:bg-gray-300 dark:hover:bg-slate-600";
-                button.textContent = text;
-                button.onclick = () => {
-                    chatInput.value = text;
-                    chatForm.dispatchEvent(new Event('submit'));
-                };
-                suggestionsContainer.appendChild(button);
-            });
-        }
-
-        // --- FIREBASE LISTENERS corregidos ---
-        function listenForTips() {
-            if (!consejosCollectionRef) return;
-            onSnapshot(query(consejosCollectionRef, orderBy('createdAt', 'desc')), (snapshot) => {
-                tipsCache = [];
-                snapshot.docs.forEach(d => {
-                    tipsCache.push({ id: d.id, ...d.data() });
-                });
-                if (!rinconModal.classList.contains('hidden')) {
-                    renderTipsList();
-                }
-            }, (err) => console.error('listenForTips error', err));
-        }
-
-        function listenForNewPlaces() {
-            if (!lugaresCollectionRef) return;
-            onSnapshot(lugaresCollectionRef, (snapshot) => {
-                placesCache = [];
-                dynamicKnowledgeBase = {
-                    restaurantes: {},
-                    alojamiento: {},
-                    actividades: {},
-                    lugaresParaVisitar: {}
-                };
-                snapshot.docs.forEach(d => {
-                    const place = { id: d.id, ...d.data() };
-                    placesCache.push(place);
-                    const tipo = place.tipo;
-                    if (dynamicKnowledgeBase[tipo]) {
-                        if (!dynamicKnowledgeBase[tipo][place.localidad]) {
-                            dynamicKnowledgeBase[tipo][place.localidad] = [];
-                        }
-                        dynamicKnowledgeBase[tipo][place.localidad].push(place);
-                    }
-                });
-
-                if (!isDataReady) {
-                    chatInput.disabled = false;
-                    submitButton.disabled = false;
-                    chatInput.placeholder = "Pregúntame algo.";
-                    isDataReady = true;
-                }
-                if(!manageModal.classList.contains('hidden')){
-                    renderManagementList();
-                }
-            }, (err) => console.error('listenForNewPlaces error', err));
-        }
-
-        // --- RENDERERS (funciones básicas) ---
-        function renderTipsList(){
-            if (!rinconList) return;
-            rinconList.innerHTML = '';
-            tipsCache.forEach(t => {
-                const el = document.createElement('div');
-                el.className = 'p-3 bg-gray-100 dark:bg-slate-700 rounded-md';
-                el.textContent = t.text || t.consejo || '(sin texto)';
-                rinconList.appendChild(el);
-            });
-        }
-
-        function renderManagementList(){
-            if (!manageList) return;
-            manageList.innerHTML = '';
-            placesCache.forEach(p => {
-                const row = document.createElement('div');
-                row.className = 'p-3 border-b flex justify-between items-center';
-                row.innerHTML = `<div><strong>${p.nombre || p.name || 'Sin nombre'}</strong><div class="text-sm text-gray-500">${p.localidad || ''}</div></div>`;
-                const actions = document.createElement('div');
-                const editBtn = document.createElement('button');
-                editBtn.className = 'mr-2 px-3 py-1 bg-emerald-500 text-white rounded';
-                editBtn.textContent = 'Editar';
-                editBtn.onclick = () => openEditPlace(p);
-                actions.appendChild(editBtn);
-
-                const delBtn = document.createElement('button');
-                delBtn.className = 'px-3 py-1 bg-red-600 text-white rounded';
-                delBtn.textContent = 'Eliminar';
-                delBtn.onclick = () => confirmDeletePlace(p);
-                actions.appendChild(delBtn);
-
-                row.appendChild(actions);
-                manageList.appendChild(row);
-            });
-        }
-
-        // --- funciones de edición/guardar/confirmar (base) ---
-        function openEditPlace(p){
-            contributionModal.classList.remove('hidden');
-            document.getElementById('lugar-nombre').value = p.nombre || '';
-            document.getElementById('lugar-direccion').value = p.direccion || '';
-            document.getElementById('lugar-telefono').value = p.telefono || '';
-            document.getElementById('lugar-latitud').value = p.latitud || '';
-            document.getElementById('lugar-longitud').value = p.longitud || '';
-            document.getElementById('lugar-descripcion').value = p.descripcion || '';
-            editingPlaceId = p.id;
-        }
-
-        function confirmDeletePlace(p){
-            const confirmBtn = document.getElementById('confirm-delete-btn');
-            const cancelBtn = document.getElementById('cancel-delete-btn');
-            document.getElementById('delete-confirmation-text').textContent = `Eliminar "${p.nombre || 'sin nombre'}"? Esta acción es irreversible.`;
-            document.getElementById('confirm-delete-modal').classList.remove('hidden');
-            const onConfirm = async () => {
-                try {
-                    await deleteDoc(doc(db, 'lugares', p.id));
-                } catch (err) {
-                    console.error('Error borrando lugar:', err);
-                }
-                document.getElementById('confirm-delete-modal').classList.add('hidden');
-                confirmBtn.removeEventListener('click', onConfirm);
-            };
-            const onCancel = () => {
-                document.getElementById('confirm-delete-modal').classList.add('hidden');
-                confirmBtn.removeEventListener('click', onConfirm);
-                cancelBtn.removeEventListener('click', onCancel);
-            };
-            confirmBtn.addEventListener('click', onConfirm);
-            cancelBtn.addEventListener('click', onCancel);
-        }
-
-        // --- Guardar nuevo lugar / editar lugar ---
-        contributionForm && contributionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nombre = document.getElementById('lugar-nombre').value.trim();
-            const direccion = document.getElementById('lugar-direccion').value.trim();
-            const telefono = document.getElementById('lugar-telefono').value.trim();
-            const latitud = document.getElementById('lugar-latitud').value.trim();
-            const longitud = document.getElementById('lugar-longitud').value.trim();
-            const descripcion = document.getElementById('lugar-descripcion').value.trim();
-            const tipo = document.getElementById('lugar-tipo').value || 'restaurantes';
-            const localidad = document.getElementById('lugar-localidad').value || '';
-
-            const payload = {
-                nombre,
-                direccion,
-                telefono,
-                latitud,
-                longitud,
-                descripcion,
-                tipo,
-                localidad,
-                updatedAt: serverTimestamp()
-            };
-
-            try {
-                if (editingPlaceId) {
-                    await updateDoc(doc(db, 'lugares', editingPlaceId), payload);
-                    editingPlaceId = null;
-                    contributionModal.classList.add('hidden');
-                } else {
-                    await addDoc(collection(db, 'lugares'), { ...payload, createdAt: serverTimestamp() });
-                    contributionModal.classList.add('hidden');
-                }
-            } catch (err) {
-                console.error('Error guardando lugar:', err);
-                alert('Error guardando. Revisa la consola.');
-            }
-        });
-
-        // --- Reconocimiento de voz (mic) ---
-        let recognition = null;
-        let recognizing = false;
-
-        function setupSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                console.warn('SpeechRecognition no soportado en este navegador.');
-                return null;
-            }
-            recognition = new SpeechRecognition();
-            recognition.lang = 'es-AR';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            recognition.onstart = () => {
-                recognizing = true;
-                micBtn.classList.add('mic-listening');
-            };
-            recognition.onend = () => {
-                recognizing = false;
-                micBtn.classList.remove('mic-listening');
-            };
-            recognition.onerror = (e) => {
-                console.error('SpeechRecognition error', e);
-                recognizing = false;
-                micBtn.classList.remove('mic-listening');
-            };
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                chatInput.value = transcript;
-            };
-            return recognition;
-        }
-
-        setupSpeechRecognition();
-
-        micBtn && micBtn.addEventListener('click', () => {
-            if (!recognition) {
-                alert('Tu navegador no soporta SpeechRecognition. Usa Chrome o Edge más recientes.');
-                return;
-            }
-            if (recognizing) {
-                recognition.stop();
-            } else {
-                recognition.start();
-            }
-        });
-
-        // --- Radio control (play/pause) ---
-        if (actionRadioBtn) {
-            actionRadioBtn.addEventListener('click', () => {
-                if (radioPlayer.src === '' || radioPlayer.src === null) {
-                    radioPlayer.src = streamUrl;
-                }
-                if (radioPlayer.paused) {
-                    radioPlayer.play().catch(err => {
-                        console.error('Error al reproducir radio', err);
-                        alert('No se pudo iniciar la radio. Verifica el stream o el autoplay del navegador.');
-                    });
-                    actionRadioBtn.classList.add('playing');
-                    actionRadioBtn.innerHTML = '<svg class="h-6 w-6 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M6 4h2v12H6zM12 4h2v12h-2z"/></svg><span class="text-xs">Radio</span>';
-                } else {
-                    radioPlayer.pause();
-                    actionRadioBtn.classList.remove('playing');
-                    actionRadioBtn.innerHTML = '<svg class="h-6 w-6 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4h12v2H4zM4 8h12v2H4zM4 12h12v2H4z"/></svg><span class="text-xs">Radio</span>';
-                }
-            });
-        }
-
-        // --- Plan inteligente: links a lugares recomendados ---
-        document.addEventListener('click', (e) => {
-            const el = e.target.closest('.place-link');
-            if (!el) return;
-            e.preventDefault();
-            const placeId = el.dataset.id;
-            if (!placeId) {
-                alert('Abriendo lugar: ' + (el.textContent || 'sin nombre'));
-                return;
-            }
-            const place = placesCache.find(p => p.id === placeId);
-            if (place) {
-                if (place.latitud && place.longitud && map) {
-                    map.setView([parseFloat(place.latitud), parseFloat(place.longitud)], 14);
-                    mapModal.classList.remove('hidden');
-                } else {
-                    alert(`${place.nombre}\n${place.direccion || ''}\n${place.descripcion || ''}`);
-                }
-            } else {
-                alert('Lugar no encontrado en cache.');
-            }
-        });
-
-        // --- Inicialización final ---
-        initializeFirebase();
-        updateSuggestions();
-
-        // --- util: captar errores globales para debugging ---
-        window.addEventListener('error', (ev) => {
-            console.error('Global error:', ev.message, ev.filename, ev.lineno);
-        });
-        window.addEventListener('unhandledrejection', (ev) => {
-            console.error('Unhandled rejection:', ev.reason);
-        });
+    onAuthStateChanged(auth, (u) => {
+        if (u) console.log("Auth ok:", u.uid);
     });
+
+    // --- CHAT ---
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const chatWindow = document.getElementById("chat-window");
+    chatForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        const div = document.createElement("div");
+        div.className = "p-2 my-1 bg-emerald-100 rounded";
+        div.textContent = "Tú: " + text;
+        chatWindow.appendChild(div);
+        chatInput.value = "";
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+
+    // --- MODALES ---
+    function showModal(id) {
+        document.getElementById(id)?.classList.remove("hidden");
+    }
+    function hideModal(id) {
+        document.getElementById(id)?.classList.add("hidden");
+    }
+    document.getElementById("action-rincon-btn")?.addEventListener("click", ()=> showModal("rincon-modal"));
+    document.getElementById("action-map-btn")?.addEventListener("click", ()=> showModal("map-modal"));
+    document.getElementById("action-planner-btn")?.addEventListener("click", ()=> showModal("planner-modal"));
+    document.getElementById("action-admin-btn")?.addEventListener("click", ()=> showModal("password-modal"));
+});
 </script>
 
 </body>
