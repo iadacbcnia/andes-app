@@ -1896,36 +1896,13 @@ w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
           addMessage({ text: finalText }, 'ai');
           chatHistory.push({ role: "model", parts: [{ text: finalText }] });
         } else {
-          // --- NUEVO CÓDIGO ---
-const responseText = aiResponseData.text;
-const isHtml = aiResponseData.isHtml;
-const isSponsored = aiResponseData.isSponsored;
-
-// Si es HTML y contiene múltiples elementos (tarjetas), dividimos por los contenedores
-if (isHtml && responseText.includes('<div class="place-card')) {
-  // Dividimos el texto en partes usando el inicio de cada tarjeta
-  const parts = responseText.split('<div class="place-card').filter(p => p.trim() !== '');
-  
-  // Enviamos cada parte como un mensaje separado
-  parts.forEach((part, index) => {
-    const fullPart = `<div class="place-card${part.startsWith(' sponsored-place') ? ' sponsored-place' : ''}${part}`;
-    addMessage({
-      text: fullPart,
-      isHtml: true,
-      isSponsored: isSponsored
-    }, 'ai');
-  });
-} else {
-  // Si no es una lista de lugares, enviamos como un solo mensaje
-  addMessage({
-    text: responseText,
-    isHtml: isHtml,
-    isSponsored: isSponsored
-  }, 'ai');
-}
-// --- FIN DEL NUEVO CÓDIGO ---
-
-chatHistory.push({ role: "model", parts: [{ text: responseText }] });
+          chatWindow.removeChild(typingIndicator);
+          addMessage({
+            text: aiResponseData.text,
+            isHtml: aiResponseData.isHtml,
+            isSponsored: aiResponseData.isSponsored
+          }, 'ai');
+          chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
         }
       }
 
@@ -2726,7 +2703,6 @@ EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
 
 </body>
 </html>
-
 
 
 
