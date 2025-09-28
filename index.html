@@ -1720,14 +1720,16 @@ rinconList.addEventListener('click', async (e) => {
     }
     function formatPlaceForAI(place) {
     const isSponsored = place.esAuspiciante || false;
-    const sponsorText = isSponsored ? ' <span class="text-yellow-600 font-semibold">⭐ Recomendado</span>' : '';
+    const sponsorBadge = isSponsored 
+        ? '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">⭐ Recomendado</span>' 
+        : '';
     const cardClass = isSponsored 
-        ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg p-3 mb-3' 
-        : 'rounded-lg p-3 mb-3';
+        ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl p-4 mb-4' 
+        : 'bg-white dark:bg-slate-800 rounded-xl p-4 mb-4';
     
     let html = `<div class="${cardClass}">`;
-    html += `<h3 class="font-bold text-lg mb-1">${place.nombre}${sponsorText}</h3>`;
-    html += `<p class="text-sm mb-2">${place.descripcion}</p>`;
+    html += `<h3 class="font-bold text-lg mb-2 flex items-center">${place.nombre}${sponsorBadge}</h3>`;
+    html += `<p class="text-sm mb-3">${place.descripcion}</p>`;
     
     if (place.datosClave) {
         html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
@@ -1739,15 +1741,15 @@ rinconList.addEventListener('click', async (e) => {
         html += `</div>`;
     }
     if (place.imagenURL) {
-        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
+        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-3 rounded-lg max-h-48 w-full object-cover">`;
     }
-    html += `<div class="mt-3 flex flex-wrap gap-2">`;
+    html += `<div class="mt-4 flex flex-wrap gap-2">`;
     if (place.imagen360URL) {
-        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
+        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1.5 px-3 rounded-full hover:bg-blue-600">Ver en 360°</button>`;
     }
-    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
+    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1.5 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
     if (place.latitud && place.longitud) {
-        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
+        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1.5 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
     }
     html += `</div></div>`;
     return html;
@@ -2331,6 +2333,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
