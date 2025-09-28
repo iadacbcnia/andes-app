@@ -1689,69 +1689,61 @@ rinconList.addEventListener('click', async (e) => {
         }
     }
     function processAIResponseText(text) {
-    let isHtml = false;
-    let isSponsored = false;
-    // Convertir [[Nombre del Lugar]] en un enlace
-    const linkRegex = /\[\[(.*?)\]\]/g;
-    let processedText = text.replace(linkRegex, (match, placeName) => {
-        const foundPlace = findPlaceByName(placeName.trim());
-        if (foundPlace) {
+        let isHtml = false;
+        let isSponsored = false;
+        // Convertir [[Nombre del Lugar]] en un enlace
+        const linkRegex = /\[\[(.*?)\]\]/g;
+        let processedText = text.replace(linkRegex, (match, placeName) => {
+            const foundPlace = findPlaceByName(placeName.trim());
+            if (foundPlace) {
+                isHtml = true;
+                if (foundPlace.esAuspiciante) isSponsored = true;
+                return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
+            }
+            return placeName; // Si no se encuentra, devuelve el nombre tal cual
+        });
+        // Convertir Markdown simple a HTML
+        if (processedText.includes('*') || processedText.includes('\n-')) {
             isHtml = true;
-            if (foundPlace.esAuspiciante) isSponsored = true;
-            return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
+            // Negrita: **texto** -> <strong>texto</strong>
+            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Listas: - item -> <li>item</li>
+            processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
+            if(processedText.includes('<li>')){
+                processedText = `<ul>${processedText}</ul>`;
+            }
         }
-        return placeName; // Si no se encuentra, devuelve el nombre tal cual
-    });
-    // Convertir Markdown simple a HTML
-    if (processedText.includes('*') || processedText.includes('
--')) {
-        isHtml = true;
-        // Negrita: **texto** -> <strong>texto</strong>
-        processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Listas: - item -> <li>item</li>
-        processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
-        if(processedText.includes('<li>')){
-            processedText = `<ul>${processedText}</ul>`;
-        }
+        return { text: processedText, isHtml, isSponsored };
     }
-    return { text: processedText, isHtml, isSponsored };
-}
-
-    return { text: processedText, isHtml, isSponsored };
-}
     function findPlaceByName(name) {
         return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
     }
     function formatPlaceForAI(place) {
-    const isSponsored = place.esAuspiciante || false;
-    const sponsorBadge = isSponsored ? ' <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">⭐ Recomendado</span>' : '';
-    const cardClass = isSponsored ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl p-4 mb-4' : 'bg-white dark:bg-slate-800 rounded-xl p-4 mb-4';
-    let html = `<div class="${cardClass}">`;
-    html += `<h3 class="font-bold text-lg mb-2 flex items-center">${place.nombre}${sponsorBadge}</h3>`;
-    html += `<p class="text-sm mb-3">${place.descripcion}</p>`;
-    if (place.datosClave) {
-        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
-    }
-    if (place.direccion || place.telefono) {
-        html += `<div class="mt-2 text-xs">`;
-        if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
-        if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+        let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
+        html += `<p class="text-sm">${place.descripcion}</p>`;
+        if (place.datosClave) {
+            html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+        }
+        if (place.direccion || place.telefono) {
+            html += `<div class="mt-2 text-xs">`;
+            if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
+            if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+            html += `</div>`;
+        }
+        if (place.imagenURL) {
+            html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
+        }
+        html += `<div class="mt-3 flex flex-wrap gap-2">`;
+        if (place.imagen360URL) {
+            html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
+        }
+        html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
+        if (place.latitud && place.longitud) {
+            html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
+        }
         html += `</div>`;
+        return html;
     }
-    if (place.imagenURL) {
-        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-3 rounded-lg max-h-48 w-full object-cover">`;
-    }
-    html += `<div class="mt-4 flex flex-wrap gap-2">`;
-    if (place.imagen360URL) {
-        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1.5 px-3 rounded-full hover:bg-blue-600">Ver en 360°</button>`;
-    }
-    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1.5 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
-    if (place.latitud && place.longitud) {
-        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1.5 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
-    }
-    html += `</div></div>`;
-    return html;
-}
     // --- LÓGICA DE SUGERENCIAS ---
     function updateSuggestions() {
         suggestionsContainer.innerHTML = '';
@@ -2331,13 +2323,6 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 
