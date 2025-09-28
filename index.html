@@ -1698,7 +1698,7 @@ rinconList.addEventListener('click', async (e) => {
             if (foundPlace) {
                 isHtml = true;
                 if (foundPlace.esAuspiciante) isSponsored = true;
-                return formatPlaceForAI(foundPlace);
+                return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
             }
             return placeName; // Si no se encuentra, devuelve el nombre tal cual
         });
@@ -1719,73 +1719,37 @@ rinconList.addEventListener('click', async (e) => {
         return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
     }
     function formatPlaceForAI(place) {
-    // Determinar si es auspiciante
     const isSponsored = place.esAuspiciante || false;
-    
-    // Clases CSS según si es auspiciante o no
-    const cardClass = isSponsored 
-        ? 'bg-yellow-50 border-yellow-300 dark:bg-yellow-900/20 dark:border-yellow-700' 
-        : 'bg-white border-gray-200 dark:bg-slate-800 dark:border-slate-600';
-    const titleClass = isSponsored 
-        ? 'text-yellow-800 dark:text-yellow-300' 
-        : 'text-gray-900 dark:text-gray-100';
     const sponsorText = isSponsored ? ' <span class="text-yellow-600 font-semibold">⭐ Recomendado</span>' : '';
-
-    let html = `
-        <div class="mb-4 p-4 border rounded-lg shadow-sm ${cardClass}">
-            <h3 class="font-bold text-lg mb-2 ${titleClass}">${place.nombre}${sponsorText}</h3>
-            <p class="text-sm mb-2">${place.descripcion}</p>
-    `;
+    const cardClass = isSponsored 
+        ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg p-3 mb-3' 
+        : 'rounded-lg p-3 mb-3';
     
-    // Datos clave
+    let html = `<div class="${cardClass}">`;
+    html += `<h3 class="font-bold text-lg mb-1">${place.nombre}${sponsorText}</h3>`;
+    html += `<p class="text-sm mb-2">${place.descripcion}</p>`;
+    
     if (place.datosClave) {
-        html += `
-            <div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded">
-                <strong>Datos clave:</strong><br>${place.datosClave.replace(/
-/g, '<br>')}
-            </div>
-        `;
+        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
     }
-    
-    // Dirección y teléfono
     if (place.direccion || place.telefono) {
-        html += `
-            <div class="mt-2 text-xs">
-                ${place.direccion ? `<strong>Dirección:</strong> ${place.direccion}<br>` : ''}
-                ${place.telefono ? `<strong>Teléfono:</strong> ${place.telefono}` : ''}
-            </div>
-        `;
+        html += `<div class="mt-2 text-xs">`;
+        if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
+        if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+        html += `</div>`;
     }
-    
-    // Imagen
     if (place.imagenURL) {
-        html += `
-            <img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">
-        `;
+        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
     }
-    
-    // Botones
-    html += `
-            <div class="mt-3 flex flex-wrap gap-2">
-    `;
+    html += `<div class="mt-3 flex flex-wrap gap-2">`;
     if (place.imagen360URL) {
-        html += `
-                <button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>
-        `;
+        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
     }
-    html += `
-                <button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>
-    `;
+    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
     if (place.latitud && place.longitud) {
-        html += `
-                <button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>
-        `;
+        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
     }
-    html += `
-            </div>
-        </div>
-    `;
-    
+    html += `</div></div>`;
     return html;
 }
     // --- LÓGICA DE SUGERENCIAS ---
@@ -2367,6 +2331,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
