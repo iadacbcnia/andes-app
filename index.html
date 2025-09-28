@@ -23,21 +23,25 @@
             --card-bg: var(--slate-700); /* Globos de chat y tarjetas más claras */
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color, var(--gray-100));
-            color: var(--text-color, var(--slate-900));
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color, var(--gray-100));
+    color: var(--text-color, var(--slate-900));
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    /* Añadimos padding para evitar que los elementos queden tapados por la barra de navegación */
+    padding-bottom: env(safe-area-inset-bottom);
+}
         .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
         .ai-message {
-    background-color: var(--slate-600); /* Más claro que slate-700 */
-    color: var(--gray-100);
+    background-color: var(--slate-600);
+    color: #ffffff;
     border-radius: 20px 20px 20px 5px;
+    padding: 1rem;
+    line-height: 1.5;
 }
 .user-message {
     background-color: var(--emerald-500);
@@ -2298,5 +2302,6 @@ rinconList.addEventListener('click', async (e) => {
 </script>
 </body>
 </html>
+
 
 
