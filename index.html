@@ -1724,17 +1724,11 @@ rinconList.addEventListener('click', async (e) => {
     }
     function formatPlaceForAI(place) {
     const isSponsored = place.esAuspiciante || false;
-    const sponsorBadge = isSponsored 
-        ? '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">⭐ Recomendado</span>' 
-        : '';
-    const cardClass = isSponsored 
-        ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl p-4 mb-4' 
-        : 'bg-white dark:bg-slate-800 rounded-xl p-4 mb-4';
-    
+    const sponsorBadge = isSponsored ? ' <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">⭐ Recomendado</span>' : '';
+    const cardClass = isSponsored ? 'border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl p-4 mb-4' : 'bg-white dark:bg-slate-800 rounded-xl p-4 mb-4';
     let html = `<div class="${cardClass}">`;
     html += `<h3 class="font-bold text-lg mb-2 flex items-center">${place.nombre}${sponsorBadge}</h3>`;
     html += `<p class="text-sm mb-3">${place.descripcion}</p>`;
-    
     if (place.datosClave) {
         html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
     }
@@ -2337,6 +2331,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
