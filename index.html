@@ -1691,20 +1691,18 @@ rinconList.addEventListener('click', async (e) => {
     function processAIResponseText(text) {
     let isHtml = false;
     let isSponsored = false;
-    // Primero, procesar los enlaces [[Nombre]] para convertirlos en bloques completos
+    // Convertir [[Nombre del Lugar]] en un enlace
     const linkRegex = /\[\[(.*?)\]\]/g;
     let processedText = text.replace(linkRegex, (match, placeName) => {
         const foundPlace = findPlaceByName(placeName.trim());
         if (foundPlace) {
             isHtml = true;
             if (foundPlace.esAuspiciante) isSponsored = true;
-            // Generar el bloque completo del lugar
-            return formatPlaceForAI(foundPlace);
+            return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
         }
         return placeName; // Si no se encuentra, devuelve el nombre tal cual
     });
-
-    // Convertir Markdown simple a HTML (negrita, listas)
+    // Convertir Markdown simple a HTML
     if (processedText.includes('*') || processedText.includes('
 -')) {
         isHtml = true;
@@ -1716,6 +1714,8 @@ rinconList.addEventListener('click', async (e) => {
             processedText = `<ul>${processedText}</ul>`;
         }
     }
+    return { text: processedText, isHtml, isSponsored };
+}
 
     return { text: processedText, isHtml, isSponsored };
 }
@@ -2331,6 +2331,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
