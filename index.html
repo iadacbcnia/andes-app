@@ -37,8 +37,8 @@
 }
         .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
         .ai-message {
-    background-color: var(--slate-600);
-    color: #ffffff;
+    background-color: var(--slate-700); /* Fondo más oscuro */
+    color: #ffffff; /* Texto blanco puro */
     border-radius: 20px 20px 20px 5px;
     padding: 1rem;
     line-height: 1.5;
@@ -160,13 +160,66 @@
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
-<body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
-    <div class="chat-container" id="chat-window">
+<body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 flex flex-col h-dvh">
+    <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
         <div class="w-full flex justify-start">
             <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
                 ¡Hola! Soy Andes, tu guía personal en la Comarca Andina. Estoy aquí para ayudarte a descubrir los mejores lugares, planificar tu día o simplemente contarte sobre el clima. ¿En qué puedo ayudarte hoy?
             </div>
         </div>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+        <div id="suggestions" class="flex flex-wrap gap-2 mb-2"></div>
+        <form id="chat-form" class="flex items-center gap-2">
+            <div class="relative w-full">
+                <input type="text" id="chat-input" placeholder="Pregúntame algo..." class="w-full p-3 pr-20 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <button type="button" id="mic-btn" class="absolute inset-y-0 right-10 flex items-center p-3 text-gray-500 hover:text-emerald-500">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                </button>
+            </div>
+            <button type="submit" class="bg-emerald-500 text-white p-3 rounded-lg hover:bg-emerald-600 disabled:bg-emerald-300">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.949a.75.75 0 00.95.544l4.25-1.214a.75.75 0 01.44 1.392l-4.25 1.214a.75.75 0 00-.95.544l-1.414 4.949a.75.75 0 00.826.95l14.083-4.024a.75.75 0 000-1.425L3.105 2.289z" /></svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Radio player (siempre visible en mobile) -->
+    <div class="bg-gray-100 dark:bg-slate-700 p-2 border-t border-gray-200 dark:border-slate-600">
+        <button id="radio-btn" class="w-full flex items-center justify-center">
+            <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
+                <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
+                <div id="radio-icon-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white"></div>
+            </div>
+            <div class="ml-2 overflow-hidden hidden md:block">
+                <p class="font-semibold text-sm truncate">FM Paraíso 42</p>
+                <p id="radio-status-text" class="text-xs text-gray-500 dark:text-gray-400">Click para escuchar</p>
+            </div>
+        </button>
+    </div>
+
+    <!-- Barra de navegación inferior (solo en mobile) -->
+    <div class="flex justify-around items-center p-2 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-600 md:hidden">
+        <button id="planner-btn" class="flex flex-col items-center text-xs">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
+            <span>Plan</span>
+        </button>
+        <button id="rincon-btn" class="flex flex-col items-center text-xs">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.028.658a.78.78 0 01-.357.443 3.377 3.377 0 01-2.924.001zM18 8a2 2 0 11-4 0 2 2 0 014 0zm-1.808 1.054a6.458 6.458 0 00-1.905-3.959 3 3 0 014.308 3.516.78.78 0 01-.357-.443c.042-.216.051-.436.028-.658a.78.78 0 01-.358.442 3.377 3.377 0 01-2.924-.001zM10 18a3 3 0 100-6 3 3 0 000 6z" /></svg>
+            <span>Rincón</span>
+        </button>
+        <button id="map-btn" class="flex flex-col items-center text-xs">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
+            <span>Mapa</span>
+        </button>
+        <button id="ar-btn" class="flex flex-col items-center text-xs">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
+            <span>AR</span>
+        </button>
+        <button id="admin-btn" class="flex flex-col items-center text-xs">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
+            <span>Admin</span>
+        </button>
     </div>
 
     <div class="input-container">
@@ -2302,6 +2355,7 @@ rinconList.addEventListener('click', async (e) => {
 </script>
 </body>
 </html>
+
 
 
 
