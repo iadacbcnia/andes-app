@@ -136,10 +136,12 @@
             gap: 0.75rem;
         }
         .radio-logo-container {
-            position: relative;
-            width: 2.5rem;
-            height: 2.5rem;
-        }
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: black; /* Fondo negro sólido */
+    border-radius: 50%; /* Asegura que sea un círculo completo */
+}
         .radio-logo {
             width: 100%;
             height: 100%;
@@ -2260,41 +2262,58 @@ rinconList.addEventListener('click', async (e) => {
         micBtn.style.display = 'none';
         document.querySelectorAll('.mic-input-btn').forEach(b => b.style.display = 'none');
     }
-    // ===============================================================
-    // ==================== LÓGICA REPRODUCTOR RADIO =================
-    // ===============================================================
-    function setRadioState(state) {
-        if (state === 'playing') {
-            radioIconOverlay.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd" />
-                </svg>`;
-            radioLogo.classList.remove('opacity-70');
-            radioStatusText.textContent = 'Reproduciendo...';
-        } else { // 'paused' or 'stopped'
-            radioIconOverlay.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 11-16 0 8 8 0 0116 0zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                </svg>`;
-            radioLogo.classList.add('opacity-70');
-            radioStatusText.textContent = 'Click para escuchar';
-        }
+    // --- LÓGICA REPRODUCTOR RADIO ---
+let isPlaying = false;
+
+function setRadioState(state) {
+    if (state === 'playing') {
+        radioIconOverlay.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+            </svg>`;
+        radioLogo.classList.remove('opacity-70');
+        radioStatusText.textContent = 'Reproduciendo...';
+        isPlaying = true;
+    } else if (state === 'paused') {
+        radioIconOverlay.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 11-16 0 8 8 0 0116 0zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>`;
+        radioLogo.classList.add('opacity-70');
+        radioStatusText.textContent = 'En pausa'; // 👈 Cambiado aquí
+        isPlaying = false;
+    } else { // 'stopped' or error state
+        radioIconOverlay.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 11-16 0 8 8 0 0116 0zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>`;
+        radioLogo.classList.add('opacity-70');
+        radioStatusText.textContent = 'Error de stream'; // Solo para errores reales
+        isPlaying = false;
     }
-    radioBtn.addEventListener('click', () => {
-        if (radioPlayer.paused) {
-            radioPlayer.src = streamUrl;
-            radioPlayer.play().catch(e => console.error("Error al reproducir radio:", e));
-        } else {
-            radioPlayer.pause();
-            radioPlayer.src = ""; // Detener la carga del stream
-        }
-    });
-    radioPlayer.addEventListener('play', () => setRadioState('playing'));
-    radioPlayer.addEventListener('pause', () => setRadioState('paused'));
-    radioPlayer.addEventListener('error', () => {
-        setRadioState('paused');
-        radioStatusText.textContent = 'Error de stream';
-    });
+}
+
+radioBtn.addEventListener('click', () => {
+    if (!isPlaying) {
+        radioPlayer.src = streamUrl;
+        radioPlayer.play().catch(e => {
+            console.error("Error al reproducir radio:", e);
+            setRadioState('stopped'); // Marcar como error si falla
+        });
+    } else {
+        radioPlayer.pause();
+        setRadioState('paused'); // Marcar como pausado
+    }
+});
+
+radioPlayer.addEventListener('play', () => setRadioState('playing'));
+radioPlayer.addEventListener('pause', () => setRadioState('paused'));
+
+// Solo manejar error si realmente ocurre
+radioPlayer.addEventListener('error', () => {
+    console.error("Error real en el stream de radio");
+    setRadioState('stopped');
+});
     // Estado inicial
     setRadioState('paused');
     // --- INICIALIZACIÓN GENERAL ---
@@ -2304,6 +2323,7 @@ rinconList.addEventListener('click', async (e) => {
 </script>
 </body>
 </html>
+
 
 
 
