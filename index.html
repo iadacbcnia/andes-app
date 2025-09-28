@@ -1689,32 +1689,36 @@ rinconList.addEventListener('click', async (e) => {
         }
     }
     function processAIResponseText(text) {
-        let isHtml = false;
-        let isSponsored = false;
-        // Convertir [[Nombre del Lugar]] en un enlace
-        const linkRegex = /\[\[(.*?)\]\]/g;
-        let processedText = text.replace(linkRegex, (match, placeName) => {
-            const foundPlace = findPlaceByName(placeName.trim());
-            if (foundPlace) {
-                isHtml = true;
-                if (foundPlace.esAuspiciante) isSponsored = true;
-                return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
-            }
-            return placeName; // Si no se encuentra, devuelve el nombre tal cual
-        });
-        // Convertir Markdown simple a HTML
-        if (processedText.includes('*') || processedText.includes('\n-')) {
+    let isHtml = false;
+    let isSponsored = false;
+    // Primero, procesar los enlaces [[Nombre]] para convertirlos en bloques completos
+    const linkRegex = /\[\[(.*?)\]\]/g;
+    let processedText = text.replace(linkRegex, (match, placeName) => {
+        const foundPlace = findPlaceByName(placeName.trim());
+        if (foundPlace) {
             isHtml = true;
-            // Negrita: **texto** -> <strong>texto</strong>
-            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Listas: - item -> <li>item</li>
-            processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
-            if(processedText.includes('<li>')){
-                processedText = `<ul>${processedText}</ul>`;
-            }
+            if (foundPlace.esAuspiciante) isSponsored = true;
+            // Generar el bloque completo del lugar
+            return formatPlaceForAI(foundPlace);
         }
-        return { text: processedText, isHtml, isSponsored };
+        return placeName; // Si no se encuentra, devuelve el nombre tal cual
+    });
+
+    // Convertir Markdown simple a HTML (negrita, listas)
+    if (processedText.includes('*') || processedText.includes('
+-')) {
+        isHtml = true;
+        // Negrita: **texto** -> <strong>texto</strong>
+        processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Listas: - item -> <li>item</li>
+        processedText = processedText.replace(/^\s*-\s*(.*)/gm, '<li>$1</li>');
+        if(processedText.includes('<li>')){
+            processedText = `<ul>${processedText}</ul>`;
+        }
     }
+
+    return { text: processedText, isHtml, isSponsored };
+}
     function findPlaceByName(name) {
         return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
     }
@@ -2333,6 +2337,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
