@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const API_KEY = process.env.GEMINI_API_KEY;
+  const API_KEY = process.env.key=API_KEY;
   if (!API_KEY) {
     return res.status(500).json({ error: 'Clave de API no configurada' });
   }
