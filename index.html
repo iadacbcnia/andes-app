@@ -710,8 +710,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
-                const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 let db;
                 let auth;
@@ -1619,29 +1618,32 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     return typingDiv;
                 }
                 async function getAIResponse(history, systemInstructions) {
-                    try {
-                        const payload = {
-                            contents: history,
-                            systemInstruction: { parts: [{ text: systemInstructions }] }
-                        };
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        if (!response.ok) {
-                            const errorBody = await response.json();
-                            console.error("Detalle del error de la API:", errorBody);
-                            throw new Error(`API call failed with status: ${response.status}`);
-                        }
-                        const result = await response.json();
-                        const text = result.candidates[0].content.parts[0].text;
-                        return processAIResponseText(text);
-                    } catch (error) {
-                        console.error("Error calling AI API:", error);
-                        return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-                    }
-                }
+  try {
+    const payload = {
+      contents: history,
+      systemInstruction: { parts: [{ text: systemInstructions }] }
+    };
+
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json();
+      console.error("Error de la API:", errorBody);
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const text = result.candidates[0].content.parts[0].text;
+    return processAIResponseText(text);
+  } catch (error) {
+    console.error("Error calling AI API:", error);
+    return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
+  }
+}
                 function processAIResponseText(text) {
                     let isHtml = false;
                     let isSponsored = false;
@@ -2249,3 +2251,4 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
+
