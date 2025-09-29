@@ -164,30 +164,30 @@
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 flex flex-col h-dvh">
         <!-- Pantalla de Bienvenida -->
-    <div id="welcome-screen" class="flex flex-col items-center justify-center p-6 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full h-full absolute inset-0 z-40 transition-opacity duration-500">
-        <div class="max-w-md text-center">
-            <img src="https://i.postimg.cc/4d45rq7k/Chat-GPT-Image-28-sept-2025-19-09-13.png" alt="Andes, el Pudu Pudu guía" class="w-full rounded-xl shadow-lg mb-4">
-            <h1 class="text-2xl md:text-3xl font-bold mb-4">¡Bienvenido, soy Andes!</h1>
-            <p class="text-sm md:text-base mb-6">Tu guía personal en la Comarca Andina.</p>
-            <div class="space-y-3 mb-8">
-                <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">✨</span>
-                    <span>Pregúntame por lugares o planes</span>
-                </div>
-                <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">🗺️</span>
-                    <span>Explora el mapa interactivo</span>
-                </div>
-                <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">📻</span>
-                    <span>Escucha FM Paraíso 42 en vivo</span>
-                </div>
+<div id="welcome-screen" class="flex flex-col items-center justify-center p-6 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full h-full fixed inset-0 z-40 transition-opacity duration-500 box-border">
+    <div class="max-w-md text-center" style="max-height: calc(100vh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 30px)); overflow-y: auto;">
+        <img src="https://i.postimg.cc/4d45rq7k/Chat-GPT-Image-28-sept-2025-19-09-13.png" alt="Andes, el Pudu Pudu guía" class="w-full rounded-xl shadow-lg mb-4">
+        <h1 class="text-2xl md:text-3xl font-bold mb-4">¡Bienvenido, soy Andes!</h1>
+        <p class="text-sm md:text-base mb-6">Tu guía personal en la Comarca Andina.</p>
+        <div class="space-y-3 mb-8">
+            <div class="flex items-center justify-center gap-2">
+                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">✨</span>
+                <span>Pregúntame por lugares o planes</span>
             </div>
-            <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105">
-                Comenzar
-            </button>
+            <div class="flex items-center justify-center gap-2">
+                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">🗺️</span>
+                <span>Explora el mapa interactivo</span>
+            </div>
+            <div class="flex items-center justify-center gap-2">
+                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">📻</span>
+                <span>Escucha FM Paraíso 42 en vivo</span>
+            </div>
         </div>
+        <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105">
+            Comenzar
+        </button>
     </div>
+</div>
     <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
         <div class="w-full flex justify-start">
             <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
@@ -2362,6 +2362,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
