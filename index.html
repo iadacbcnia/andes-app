@@ -210,7 +210,15 @@
             </button>
         </form>
     </div>
-
+    <!-- Botón Enviar por WhatsApp -->
+    <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+        <button id="send-whatsapp-btn" class="w-full flex items-center justify-center gap-3 bg-green-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-green-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l1.42 6.077A1 1 0 019 13h6a1 1 0 01.986.836l1.42 6.077A1 1 0 0118 20H4a1 1 0 01-1-1v-9A1 1 0 012 9zm10 0a1 1 0 011 1v6a1 1 0 01-1 1H8a1 1 0 01-1-1V4a1 1 0 011-1h4z"/>
+            </svg>
+            Enviar por WhatsApp
+        </button>
+    </div>
     <!-- Radio player (siempre visible en mobile) -->
     <div class="bg-gray-100 dark:bg-slate-700 p-2 border-t border-gray-200 dark:border-slate-600">
         <button id="radio-btn" class="w-full flex items-center justify-center">
@@ -253,7 +261,7 @@
     <!-- Copiado línea por línea desde tu archivo index_backup_funciona.txt.txt -->
     <!-- Incluye todos los modales, scripts, lógica de Firebase, IA, etc. -->
 
-    <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+        <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
         <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
             <div class="text-center mb-8">
                 <div class="inline-block bg-emerald-100 dark:bg-emerald-900/50 p-3 rounded-full mb-3">
@@ -316,6 +324,39 @@
                             <span class="font-semibold">Alto</span>
                         </button>
                     </div>
+                </div>
+                <div>
+                    <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
+                        Localidades que visitarás
+                    </label>
+                    <div id="planner-localidades-group" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                        <button type="button" data-localidad="El Bolsón" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">El Bolsón</span>
+                        </button>
+                        <button type="button" data-localidad="Lago Puelo" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">Lago Puelo</span>
+                        </button>
+                        <button type="button" data-localidad="El Hoyo" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">El Hoyo</span>
+                        </button>
+                        <button type="button" data-localidad="Epuyén" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">Epuyén</span>
+                        </button>
+                        <button type="button" data-localidad="El Maitén" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">El Maitén</span>
+                        </button>
+                        <button type="button" data-localidad="Cholila" class="planner-localidad-btn flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <span>📍</span>
+                            <span class="font-semibold text-sm">Cholila</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Selecciona al menos una. Puedes elegir varias.</p>
                 </div>
                 <div class="pt-6">
                     <button type="submit" class="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:bg-emerald-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
@@ -1589,6 +1630,29 @@ rinconList.addEventListener('click', async (e) => {
         chatInput.value = '';
         processUserMessage(userMessage);
     });
+        // Botón Enviar por WhatsApp
+    const sendWhatsAppBtn = document.getElementById('send-whatsapp-btn');
+    sendWhatsAppBtn.addEventListener('click', () => {
+        const chatMessages = Array.from(chatWindow.children)
+            .filter(child => child.className.includes('w-full'))
+            .map(child => {
+                const messageDiv = child.querySelector('.ai-message, .user-message');
+                if (messageDiv) {
+                    return messageDiv.textContent.trim();
+                }
+                return '';
+            })
+            .filter(text => text !== '')
+            .join('
+');
+
+        if (chatMessages) {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(chatMessages)}`;
+            window.open(whatsappUrl, '_blank');
+        } else {
+            alert("No hay mensajes para enviar.");
+        }
+    });
     chatWindow.addEventListener('click', function(e) {
         const placeLink = e.target.closest('.place-link');
         const view360Button = e.target.closest('.view-360-btn');
@@ -1817,15 +1881,38 @@ rinconList.addEventListener('click', async (e) => {
         btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
         btn.classList.remove('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
     });
-    plannerForm.addEventListener('submit', async (e) => {
+        // Manejo de selección múltiple de localidades
+    document.querySelectorAll('.planner-localidad-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('bg-emerald-500');
+            btn.classList.toggle('text-white');
+            btn.classList.toggle('border-emerald-500');
+            btn.classList.toggle('bg-gray-50');
+            btn.classList.toggle('dark:bg-slate-700');
+            btn.classList.toggle('border-gray-200');
+            btn.classList.toggle('dark:border-slate-600');
+        });
+    });
+        plannerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
         const style = selectedStyleBtn ? selectedStyleBtn.dataset.value : 'Aventura'; // Valor por defecto
         const days = document.getElementById('planner-days').value;
         const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
         const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio'; // Valor por defecto
+
+        // NUEVO: obtener localidades seleccionadas
+        const selectedLocalidadBtns = document.querySelectorAll('#planner-localidades-group .bg-emerald-500');
+        const localidades = Array.from(selectedLocalidadBtns).map(btn => btn.dataset.localidad);
+
+        // Validar que haya al menos una
+        if (localidades.length === 0) {
+            alert("Por favor, selecciona al menos una localidad.");
+            return;
+        }
+
         plannerModal.classList.add('hidden');
-        const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+        const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style}, nivel de energía ${energy}, visitando estas localidades: ${localidades.join(', ')}.`;
         addMessage({ text: userMessage }, 'user');
         const typingIndicator = showTypingIndicator();
         const plannerHistory = [{
@@ -1834,9 +1921,10 @@ rinconList.addEventListener('click', async (e) => {
                 - Estilo de Viaje: ${style}
                 - Duración: ${days} días
                 - Nivel de Energía: ${energy}
+                - Localidades: ${localidades.join(', ')}
             ` }]
         }];
-        const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
+        const plannerSystemPrompt = generatePlannerPrompt(style, days, energy, localidades);
         const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
         chatWindow.removeChild(typingIndicator);
         addMessage({
@@ -1844,7 +1932,7 @@ rinconList.addEventListener('click', async (e) => {
             isPlannerResponse: true
         }, 'ai');
     });
-    function generatePlannerPrompt(style, days, energy) {
+        function generatePlannerPrompt(style, days, energy, localidades) {
         return `
         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
         Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
@@ -1852,6 +1940,7 @@ rinconList.addEventListener('click', async (e) => {
         - Estilo de Viaje: ${style}
         - Duración: ${days} días
         - Nivel de Energía: ${energy}
+        - Localidades a visitar: ${localidades.join(', ')}
         BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
         \`\`\`json
         ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
@@ -2342,16 +2431,40 @@ radioPlayer.addEventListener('error', () => {
     // Estado inicial
     setRadioState('paused');
         // --- INICIALIZACIÓN GENERAL ---
-    function startApp() {
+       function startApp() {
         const welcomeScreen = document.getElementById('welcome-screen');
         if (welcomeScreen) {
-            welcomeScreen.classList.add('hidden');
+            welcomeScreen.style.display = 'none';
         }
         initializeFirebase();
         updateSuggestions();
     }
 
+    // Escuchar el evento DOMContentLoaded para asegurar que el botón exista
+    document.addEventListener('DOMContentLoaded', () => {
+        const startChatBtn = document.getElementById('start-chat-btn');
+        if (startChatBtn) {
+            startChatBtn.addEventListener('click', startApp);
+        } else {
+            // Si no hay pantalla de bienvenida, iniciar directamente
+            initializeFirebase();
+            updateSuggestions();
+        }
+    });
+
     const startChatBtn = document.getElementById('start-chat-btn');
+        // Manejo de selección múltiple de localidades
+    document.querySelectorAll('.planner-localidad-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('bg-emerald-500');
+            btn.classList.toggle('text-white');
+            btn.classList.toggle('border-emerald-500');
+            btn.classList.toggle('bg-gray-50');
+            btn.classList.toggle('dark:bg-slate-700');
+            btn.classList.toggle('border-gray-200');
+            btn.classList.toggle('dark:border-slate-600');
+        });
+    });
     if (startChatBtn) {
         startChatBtn.addEventListener('click', startApp);
     } else {
