@@ -1647,21 +1647,21 @@ rinconList.addEventListener('click', async (e) => {
         chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
         const systemPrompt = generateSystemPrompt();
         const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-        const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?):(.*?)\]/);
+        const weatherMatch = aiResponseData.text.match(/\[CLIMA:\s*(.*?)\s*\]/i);
         if (weatherMatch) {
-            const location = weatherMatch[1].trim();
-            const timeframe = weatherMatch[2].trim();
-            const weatherInfo = await getWeatherData(location);
-            let finalText;
-            if (weatherInfo.error) {
-                finalText = weatherInfo.error;
-            } else {
-                finalText = await formatWeatherResponse(weatherInfo, timeframe);
-            }
-            chatWindow.removeChild(typingIndicator);
-            addMessage({ text: finalText }, 'ai');
-            chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-        } else {
+    const location = weatherMatch[1].trim();
+    const timeframe = 'hoy'; // 👈 Asumimos "hoy" si no se especifica
+    const weatherInfo = await getWeatherData(location);
+    let finalText;
+    if (weatherInfo.error) {
+        finalText = weatherInfo.error;
+    } else {
+        finalText = await formatWeatherResponse(weatherInfo, timeframe);
+    }
+    chatWindow.removeChild(typingIndicator);
+    addMessage({ text: finalText }, 'ai');
+    chatHistory.push({ role: "model", parts: [{ text: finalText }] });
+} else {
             // Si no es un comando de clima, procede como siempre
             chatWindow.removeChild(typingIndicator);
             addMessage({
@@ -2362,6 +2362,7 @@ radioPlayer.addEventListener('error', () => {
 </script>
 </body>
 </html>
+
 
 
 
