@@ -163,31 +163,31 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 flex flex-col h-dvh">
-                                                                        <!-- Pantalla de Bienvenida -->
-<div id="welcome-screen" class="flex flex-col items-center justify-between p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full min-h-[100dvh] fixed inset-0 z-50 transition-opacity duration-500 box-border" style="padding-top: env(safe-area-inset-top, 16px); padding-bottom: env(safe-area-inset-bottom, 80px);">
-    <div class="flex-grow flex flex-col items-center justify-center w-full max-w-sm">
-        <img src="https://i.postimg.cc/4d45rq7k/Chat-GPT-Image-28-sept-2025-19-09-13.png" alt="Andes, el Pudu Pudu guía" class="w-full rounded-xl shadow-lg mb-3">
-        <h1 class="text-xl md:text-2xl font-bold mb-3 text-center">¡Bienvenido, soy Andes!</h1>
-        <p class="text-sm mb-4 text-center">Tu guía personal en la Comarca Andina.</p>
-        <div class="space-y-2 mb-4">
-            <div class="flex items-center justify-center gap-2">
-                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">✨</span>
-                <span>Pregúntame por lugares o planes</span>
-            </div>
-            <div class="flex items-center justify-center gap-2">
-                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">🗺️</span>
-                <span>Explora el mapa interactivo</span>
-            </div>
-            <div class="flex items-center justify-center gap-2">
-                <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">📻</span>
-                <span>Escucha FM Paraíso 42 en vivo</span>
+                                                                            <!-- Pantalla de Bienvenida -->
+    <div id="welcome-screen" class="flex flex-col items-center justify-start p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full h-full fixed inset-0 z-50 transition-opacity duration-500 box-border overflow-y-auto">
+        <div class="flex flex-col items-center justify-start w-full max-w-sm mt-8">
+            <img src="https://i.postimg.cc/4d45rq7k/Chat-GPT-Image-28-sept-2025-19-09-13.png" alt="Andes, el Pudu Pudu guía" class="w-full rounded-xl shadow-lg mb-3">
+            <h1 class="text-xl md:text-2xl font-bold mb-3 text-center">¡Bienvenido, soy Andes!</h1>
+            <p class="text-sm mb-4 text-center">Tu guía personal en la Comarca Andina.</p>
+            <div class="space-y-2 mb-6">
+                <div class="flex items-center justify-center gap-2">
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">✨</span>
+                    <span>Pregúntame por lugares o planes</span>
+                </div>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">🗺️</span>
+                    <span>Explora el mapa interactivo</span>
+                </div>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">📻</span>
+                    <span>Escucha FM Paraíso 42 en vivo</span>
+                </div>
             </div>
         </div>
+        <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-2.5 px-6 rounded-full text-base shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap mb-6">
+            Comenzar
+        </button>
     </div>
-    <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-2.5 px-6 rounded-full text-base shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap">
-        Comenzar
-    </button>
-</div>
     <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
         <div class="w-full flex justify-start">
             <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
