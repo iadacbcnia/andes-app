@@ -163,26 +163,23 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 flex flex-col h-dvh">
-          <!-- Pantalla de Bienvenida -->
+        <!-- Pantalla de Bienvenida -->
     <div id="welcome-screen" class="flex flex-col items-center justify-center p-6 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full h-full absolute inset-0 z-40 transition-opacity duration-500">
         <div class="max-w-md text-center">
-            <img src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo Andes" class="w-24 h-24 mx-auto rounded-full bg-white p-2 mb-6">
-            <h1 class="text-3xl font-bold mb-4">¡Bienvenido a Andes!</h1>
-            <p class="text-lg mb-6 opacity-90">
-                Tu guía personal en la Comarca Andina.<br>
-                Descubre cabañas, restaurantes, actividades y más.
-            </p>
+            <img src="https://i.postimg.cc/4d45rq7k/Chat-GPT-Image-28-sept-2025-19-09-13.png" alt="Andes, el Pudu Pudu guía" class="w-full rounded-xl shadow-lg mb-4">
+            <h1 class="text-2xl md:text-3xl font-bold mb-4">¡Bienvenido a Andes!</h1>
+            <p class="text-sm md:text-base mb-6">Tu guía personal en la Comarca Andina.</p>
             <div class="space-y-3 mb-8">
                 <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-1 rounded-full text-sm font-bold">✨</span>
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">✨</span>
                     <span>Pregúntame por lugares o planes</span>
                 </div>
                 <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-1 rounded-full text-sm font-bold">🗺️</span>
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">🗺️</span>
                     <span>Explora el mapa interactivo</span>
                 </div>
                 <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-1 rounded-full text-sm font-bold">📻</span>
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-sm font-bold">📻</span>
                     <span>Escucha FM Paraíso 42 en vivo</span>
                 </div>
             </div>
@@ -683,8 +680,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const suggestionsContainer = document.getElementById('suggestions');
     const micBtn = document.getElementById('mic-btn');
-        const welcomeScreen = document.getElementById('welcome-screen');
-    const startChatBtn = document.getElementById('start-chat-btn');
     // Modales
     const contributionModal = document.getElementById('contribution-modal');
     const manageModal = document.getElementById('manage-modal');
@@ -2346,8 +2341,9 @@ radioPlayer.addEventListener('error', () => {
 });
     // Estado inicial
     setRadioState('paused');
-       // --- INICIALIZACIÓN GENERAL ---
+        // --- INICIALIZACIÓN GENERAL ---
     function startApp() {
+        const welcomeScreen = document.getElementById('welcome-screen');
         if (welcomeScreen) {
             welcomeScreen.classList.add('hidden');
         }
@@ -2355,10 +2351,10 @@ radioPlayer.addEventListener('error', () => {
         updateSuggestions();
     }
 
+    const startChatBtn = document.getElementById('start-chat-btn');
     if (startChatBtn) {
         startChatBtn.addEventListener('click', startApp);
     } else {
-        // Si no hay pantalla de bienvenida, inicia normalmente
         initializeFirebase();
         updateSuggestions();
     }
