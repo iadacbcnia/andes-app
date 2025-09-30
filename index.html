@@ -145,18 +145,11 @@
             justify-content: center;
             color: white;
         }
-        .image-preview {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-right: 8px;
-            border: 2px solid #10b981;
-        }
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
+
     <!-- Pantalla de Bienvenida -->
     <div id="welcome-screen" class="flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full min-h-[100dvh] fixed inset-0 z-50 transition-opacity duration-500 box-border">
         <div class="max-w-sm w-full flex flex-col items-center justify-center" style="max-height: calc(100dvh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 80px)); overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 80px); padding-top: env(safe-area-inset-top, 10px);">
@@ -176,18 +169,16 @@
                     <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">📻</span>
                     <span>Escucha FM Paraíso 42 en vivo</span>
                 </div>
-                <div class="flex items-center justify-center gap-2">
-                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">📖</span>
-                    <span>Crea tu Storybook de viaje</span>
-                </div>
             </div>
             <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-2.5 px-6 rounded-full text-base shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap">
                 Comenzar
             </button>
         </div>
     </div>
+
     <!-- App principal (oculta al inicio) -->
     <div id="main-app" class="hidden flex flex-col h-dvh">
+
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
             <div class="w-full flex justify-start">
                 <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
@@ -234,12 +225,6 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
                 <span>Mapa</span>
             </button>
-            <button id="storybook-btn" class="flex flex-col items-center text-xs">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.5m0 0l-5.5-5.5m5.5 5.5l5.5-5.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Storybook</span>
-            </button>
             <button id="ar-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
                 <span>AR</span>
@@ -249,67 +234,7 @@
                 <span>Admin</span>
             </button>
         </div>
-        <!-- MODAL STORYBOOK -->
-        <div id="storybook-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[110] transition-opacity duration-300">
-            <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
-                <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Crea tu Storybook de Viaje</h3>
-                    <button id="close-storybook-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-                <form id="storybook-form" class="flex-grow overflow-y-auto pr-2 space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Sube de 1 a 5 fotos de tu viaje
-                        </label>
-                        <input type="file" id="storybook-image-input" accept="image/*" multiple class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
-                        <div id="image-preview-container" class="mt-2 flex flex-wrap gap-2"></div>
-                        <p class="text-xs text-gray-500 mt-1">Puedes seleccionar fotos de tu galería o tomar una nueva.</p>
-                    </div>
-                    <div>
-                        <label for="storybook-question1" class="block text-sm font-medium text-gray-700 dark:text-gray-300">¿Cuál fue tu momento favorito?</label>
-                        <textarea id="storybook-question1" rows="2" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="storybook-question2" class="block text-sm font-medium text-gray-700 dark:text-gray-300">¿Qué lugar te sorprendió más?</label>
-                        <input type="text" id="storybook-question2" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label for="storybook-question3" class="block text-sm font-medium text-gray-700 dark:text-gray-300">¿Qué consejo darías a otros viajeros?</label>
-                        <textarea id="storybook-question3" rows="2" class="w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
-                    </div>
-                    <div class="pt-4">
-                        <button type="submit" class="w-full bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-600">Generar Storybook</button>
-                    </div>
-                </form>
-            </div>
-        </div>
 
-        <!-- MODAL PREVIEW -->
-        <div id="storybook-preview-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[120] transition-opacity duration-300">
-            <div class="relative top-10 mx-auto p-5 border w-full max-w-3xl shadow-lg rounded-md bg-white dark:bg-slate-800 max-h-[85vh] flex flex-col">
-                <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-slate-600">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Tu Storybook de Viaje</h3>
-                    <button id="close-storybook-preview-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-                <div id="storybook-preview-content" class="flex-grow overflow-y-auto pr-2 py-4 bg-gray-50 dark:bg-slate-700 rounded-lg"></div>
-                <div class="pt-4 text-center">
-                    <button id="send-whatsapp-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 mx-auto">
-                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        Enviar por WhatsApp
-                    </button>
-                </div>
-            </div>
-        </div>
         <!-- Todos los modales y el resto del código JS se mantienen igual -->
         <!-- Copiado 1:1 del archivo original -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
@@ -724,7 +649,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
             import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
             import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, writeBatch, getDocs, query, orderBy, runTransaction, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-            import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
             document.addEventListener('DOMContentLoaded', function() {
                 // --- OBTENER ELEMENTOS DEL HTML ---
                 const chatWindow = document.getElementById('chat-window');
@@ -742,15 +666,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const passwordModal = document.getElementById('password-modal');
                 const adminPanelModal = document.getElementById('admin-panel-modal');
                 const plannerModal = document.getElementById('planner-modal');
-                const storybookModal = document.getElementById('storybook-modal');
-                const storybookPreviewModal = document.getElementById('storybook-preview-modal');
-                const closeStorybookModalBtn = document.getElementById('close-storybook-modal-btn');
-                const closeStorybookPreviewModalBtn = document.getElementById('close-storybook-preview-modal-btn');
-                const storybookForm = document.getElementById('storybook-form');
-                const imageInput = document.getElementById('storybook-image-input');
-                const imagePreviewContainer = document.getElementById('image-preview-container');
-                const storybookPreviewContent = document.getElementById('storybook-preview-content');
-                const sendWhatsappBtn = document.getElementById('send-whatsapp-btn');
                 const confirmDeleteModal = document.getElementById('confirm-delete-modal');
                 const confirmRubroDeleteModal = document.getElementById('confirm-rubro-delete-modal');
                 const deleteConfirmationText = document.getElementById('delete-confirmation-text');
@@ -769,7 +684,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const arBtn = document.getElementById('ar-btn');
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
-                const storybookBtn = document.getElementById('storybook-btn');
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
                 const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
                 const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
@@ -796,6 +710,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
+                
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 let db;
                 let auth;
@@ -827,84 +742,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const radioIconOverlay = document.getElementById('radio-icon-overlay');
                 const radioStatusText = document.getElementById('radio-status-text');
                 const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
-
-                // --- STORYBOOK CON SUBIDA REAL DE IMÁGENES ---
-                if (storybookBtn) storybookBtn.addEventListener('click', () => storybookModal.classList.remove('hidden'));
-                if (closeStorybookModalBtn) closeStorybookModalBtn.addEventListener('click', () => storybookModal.classList.add('hidden'));
-                if (closeStorybookPreviewModalBtn) closeStorybookPreviewModalBtn.addEventListener('click', () => storybookPreviewModal.classList.add('hidden'));
-
-                imageInput.addEventListener('change', () => {
-                    imagePreviewContainer.innerHTML = '';
-                    const files = Array.from(imageInput.files).slice(0, 5);
-                    files.forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            img.className = 'image-preview w-16 h-16 object-cover rounded-md border-2 border-emerald-500';
-                            imagePreviewContainer.appendChild(img);
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                });
-
-                async function uploadImageToStorage(file) {
-                    const storage = getStorage();
-                    const storageRef = ref(storage, `storybook/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageRef, file);
-                    return await getDownloadURL(snapshot.ref);
-                }
-
-                async function generateStorybook(images, q1, q2, q3) {
-                    const prompt = `Eres Andes, un narrador de viajes. Crea un storybook de 6-10 páginas en HTML para WhatsApp usando estas fotos y respuestas. Usa <img src="URL"> para las imágenes. No uses CSS externo. Sé cálido y personal.
-
-Fotos: ${images.join(', ')}
-
-Respuestas:
-- Momento favorito: "${q1}"
-- Lugar sorprendente: "${q2}"
-- Consejo: "${q3}"`;
-                    const history = [{ role: "user", parts: [{ text: prompt }] }];
-                    const response = await getAIResponse(history, "");
-                    return response.text;
-                }
-
-                storybookForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const files = Array.from(imageInput.files);
-                    const q1 = document.getElementById('storybook-question1').value.trim();
-                    const q2 = document.getElementById('storybook-question2').value.trim();
-                    const q3 = document.getElementById('storybook-question3').value.trim();
-
-                    if (files.length === 0 || !q1 || !q2 || !q3) {
-                        alert('Selecciona al menos 1 foto y responde todas las preguntas.');
-                        return;
-                    }
-                    if (files.length > 5) {
-                        alert('Máximo 5 fotos.');
-                        return;
-                    }
-
-                    storybookModal.classList.add('hidden');
-                    storybookPreviewContent.innerHTML = '<p class="text-center py-4">Generando tu storybook... 📖</p>';
-                    storybookPreviewModal.classList.remove('hidden');
-
-                    try {
-                        const urls = await Promise.all(files.map(f => uploadImageToStorage(f)));
-                        const html = await generateStorybook(urls, q1, q2, q3);
-                        storybookPreviewContent.innerHTML = html;
-                    } catch (err) {
-                        storybookPreviewContent.innerHTML = '<p class="text-red-500 text-center py-4">Error al generar el storybook.</p>';
-                        console.error(err);
-                    }
-                });
-
-                sendWhatsappBtn.addEventListener('click', () => {
-                    const text = storybookPreviewContent.innerText || "¡Mira mi storybook de viaje!";
-                    const url = `https://wa.me/?text=${encodeURIComponent(`¡Hola! 🌄\n\n${text}\n\nCreado con Andes - Tu Guía en la Comarca`)}`;
-                    window.open(url, '_blank');
-                });
-
                 function initializeFirebase() {
                     try {
                         let firebaseConfig;
@@ -1784,23 +1621,28 @@ Respuestas:
   try {
     const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
     const payload = {
       contents: history,
       systemInstruction: { parts: [{ text: systemInstructions }] }
     };
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+
     if (!response.ok) {
       const errorBody = await response.json();
       console.error("Error de la API:", errorBody);
       throw new Error(`API call failed with status: ${response.status}`);
     }
+
     const result = await response.json();
     const text = result.candidates[0].content.parts[0].text;
     return processAIResponseText(text);
+
   } catch (error) {
     console.error("Error calling AI API:", error);
     return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
@@ -2413,3 +2255,6 @@ Respuestas:
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
+
+
+
