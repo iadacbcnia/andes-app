@@ -1151,17 +1151,14 @@ Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un
                     "san carlos de bariloche": 7
                 };
 
-                async function getWeatherData(location) {
-    const smnLocationMap = {
-        "el bolsón": 1,
-        "lago puelo": 2,
-        "el hoyo": 3,
-        "epuyén": 4,
-        "el maitén": 5,
-        "cholila": 6,
-        "bariloche": 7,
-        "san carlos de bariloche": 7
-    };
+                async function formatWeatherResponse(weatherInfo, timeframe) {
+    if (weatherInfo.error) {
+        return weatherInfo.error;
+    }
+    const temp = Math.round(weatherInfo.data.current.temp);
+    const desc = weatherInfo.data.current.description;
+    return `🌤️ El clima en ${weatherInfo.location} es de ${temp}°C. ${desc.charAt(0).toUpperCase() + desc.slice(1)}.`;
+}
 
     const locationKey = location.toLowerCase();
     const id = smnLocationMap[locationKey];
@@ -1350,89 +1347,7 @@ Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un
                     "corcovado": { lat: -43.53, lon: -71.47 }
                 };
 
-                chatForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const userMessage = chatInput.value.trim();
-                    if (userMessage === '') return;
-                    addMessage({ text: userMessage }, 'user');
-                    chatInput.value = '';
-                    processUserMessage(userMessage);
-                });
-
-                function addMessage(message, sender) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
-                    const messageContent = document.createElement('div');
-                    messageContent.className = `${sender === 'user' ? 'user-message' : 'ai-message'} w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
-                    if (message.isHtml) {
-                        messageContent.innerHTML = message.text;
-                    } else {
-                        messageContent.textContent = message.text;
-                    }
-                    if (sender === 'ai' && message.isSponsored) {
-                        messageContent.classList.add('sponsored-message');
-                    }
-                    messageDiv.appendChild(messageContent);
-                    chatWindow.appendChild(messageDiv);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
-
-                async function processUserMessage(userMessage) {
-                    const typingIndicator = showTypingIndicator();
-                    chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
-                    const systemPrompt = generateSystemPrompt();
-                    const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-                    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?):(.*?)\]/);
-                    if (weatherMatch) {
-                        const location = weatherMatch[1].trim();
-                        const timeframe = weatherMatch[2].trim();
-                        const weatherInfo = await getWeatherData(location);
-                        let finalText;
-                        if (weatherInfo.error) {
-                            finalText = weatherInfo.error;
-                        } else {
-                            finalText = await formatWeatherResponse(weatherInfo, timeframe);
-                        }
-                        chatWindow.removeChild(typingIndicator);
-                        addMessage({ text: finalText }, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-                    } else {
-                        chatWindow.removeChild(typingIndicator);
-                        addMessage({
-                            text: aiResponseData.text,
-                            isHtml: aiResponseData.isHtml,
-                            isSponsored: aiResponseData.isSponsored
-                        }, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
-                    }
-                }
-
-                async function getAIResponse(history, systemInstructions) {
-                    try {
-                        const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                        const payload = {
-                            contents: history,
-                            systemInstruction: { parts: [{ text: systemInstructions }] }
-                        };
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        if (!response.ok) {
-                            const errorBody = await response.json();
-                            console.error("Error de la API:", errorBody);
-                            throw new Error(`API call failed with status: ${response.status}`);
-                        }
-                        const result = await response.json();
-                        const text = result.candidates[0].content.parts[0].text;
-                        return processAIResponseText(text);
-                    } catch (error) {
-                        console.error("Error calling AI API:", error);
-                        return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-                    }
-                }
+                
 
                 function processAIResponseText(text) {
                     let isHtml = false;
@@ -2220,5 +2135,6 @@ Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un
     </div>
 </body>
 </html>
+
 
 
