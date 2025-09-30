@@ -1150,42 +1150,53 @@ Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un
                 };
 
                 async function getWeatherData(location) {
-                    const locationKey = location.toLowerCase();
-                    const id = smnLocationMap[locationKey];
-                    if (!id) {
-                        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina." };
-                    }
-                    try {
-                        const response = await fetch('https://ws.smn.gob.ar/map_items/weather');
-                        const data = await response.json();
-                        const cityData = data.find(item => item.id === id);
-                        if (!cityData || !cityData.weather || cityData.weather.length === 0) {
-                            return { error: "No hay datos del clima disponibles para esa localidad." };
-                        }
-                        const current = cityData.weather[0];
-                        return {
-                            data: {
-                                current: {
-                                    temp: current.temp,
-                                    description: current.description
-                                }
-                            },
-                            location: location
-                        };
-                    } catch (error) {
-                        console.error("Error fetching SMN weather:", error);
-                        return { error: "Tuve un problema para conectarme con el Servicio Meteorológico Nacional." };
-                    }
-                }
+    const smnLocationMap = {
+        "el bolsón": 1,
+        "lago puelo": 2,
+        "el hoyo": 3,
+        "epuyén": 4,
+        "el maitén": 5,
+        "cholila": 6,
+        "bariloche": 7,
+        "san carlos de bariloche": 7
+    };
 
-                async function formatWeatherResponse(weatherInfo, timeframe) {
-                    if (weatherInfo.error) {
-                        return weatherInfo.error;
-                    }
-                    const temp = Math.round(weatherInfo.data.current.temp);
-                    const desc = weatherInfo.data.current.description;
-                    return `🌤️ El clima en ${weatherInfo.location} es de ${temp}°C. ${desc.charAt(0).toUpperCase() + desc.slice(1)}.`;
+    const locationKey = location.toLowerCase();
+    const id = smnLocationMap[locationKey];
+    if (!id) {
+        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina." };
+    }
+
+    try {
+        const response = await fetch('https://ws.smn.gob.ar/map_items/weather');
+        const data = await response.json();
+        const cityData = data.find(item => item.id === id);
+        if (!cityData || !cityData.weather || cityData.weather.length === 0) {
+            return { error: "No hay datos del clima disponibles para esa localidad." };
+        }
+        const current = cityData.weather[0];
+        return {
+            data: {
+                current: {
+                    temp: current.temp,
+                    description: current.description
                 }
+            },
+            location: location
+        };
+    } catch (error) {
+        console.error("Error fetching SMN weather:", error);
+        return { error: "Tuve un problema para conectarme con el Servicio Meteorológico Nacional." };
+    }
+}
+                async function formatWeatherResponse(weatherInfo, timeframe) {
+    if (weatherInfo.error) {
+        return weatherInfo.error;
+    }
+    const temp = Math.round(weatherInfo.data.current.temp);
+    const desc = weatherInfo.data.current.description;
+    return `🌤️ El clima en ${weatherInfo.location} es de ${temp}°C. ${desc.charAt(0).toUpperCase() + desc.slice(1)}.`;
+}
 
                 // --- RESTO DEL CÓDIGO ORIGINAL ---
                 // (Se mantiene igual: Firebase listeners, chat, planner, map, etc.)
@@ -2207,3 +2218,4 @@ Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un
     </div>
 </body>
 </html>
+
