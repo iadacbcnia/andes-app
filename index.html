@@ -197,60 +197,11 @@
         }
         #storybook-story-output {
             margin-top: 1.5rem;
-        }
-        /* Nuevos estilos para el libro */
-        #storybook-result-container {
-            background: #fdfaf4; /* Creamy paper color */
-            border: 1px solid #ddd;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-            padding: 2rem;
-            border-radius: 5px;
-            color: #333; /* Dark text for readability */
-        }
-        .storybook-book-layout {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .storybook-left-page, .storybook-right-page {
-            flex: 1;
-        }
-        .storybook-story-title {
-            font-family: Georgia, 'Times New Roman', Times, serif;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--emerald-500);
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .storybook-photos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-        }
-        .storybook-photos-grid img {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .storybook-story-text {
-            font-family: Georgia, 'Times New Roman', Times, serif;
+            padding: 1rem;
+            background: var(--slate-700);
+            border-radius: 12px;
             white-space: pre-wrap;
-            line-height: 1.7;
-            font-size: 1.1rem;
-            color: #333;
-        }
-        @media (min-width: 768px) {
-            .storybook-book-layout {
-                flex-direction: row;
-                gap: 2rem;
-            }
-            .storybook-left-page {
-                border-right: 1px dashed #ccc;
-                padding-right: 2rem;
-            }
+            line-height: 1.6;
         }
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
@@ -353,7 +304,7 @@
 
         <!-- MODAL STORYBOOK -->
         <div id="storybook-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
-            <div class="relative top-1/2 -translate-y-1/2 mx-auto p-6 w-full max-w-2xl xl:max-w-4xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl">
+            <div class="relative top-1/2 -translate-y-1/2 mx-auto p-6 w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold">📖 Mi Storybook de Viaje</h3>
                     <button id="close-storybook-modal" class="text-gray-500 hover:text-gray-700">
@@ -365,48 +316,40 @@
 
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Sube hasta 10 fotos de tu viaje y responde 3 preguntas. Andes creará una historia única para ti.</p>
 
-                <!-- Formulario y Preview lado a lado en pantallas grandes -->
-                <div class="md:flex md:gap-6">
-                    <!-- Columna Izquierda: Formulario -->
-                    <div class="md:w-1/2">
-                        <!-- Subida de fotos -->
-                        <div id="storybook-dropzone" class="mb-4">
-                            <p>Arrastra tus fotos aquí o haz clic para seleccionar</p>
-                            <input type="file" id="storybook-file-input" accept="image/*" multiple class="hidden">
-                        </div>
-                        <div id="storybook-preview" class="mb-6"></div>
+                <!-- Subida de fotos -->
+                <div id="storybook-dropzone" class="mb-4">
+                    <p>Arrastra tus fotos aquí o haz clic para seleccionar</p>
+                    <input type="file" id="storybook-file-input" accept="image/*" multiple class="hidden">
+                </div>
+                <div id="storybook-preview" class="mb-6"></div>
 
-                        <!-- Formulario -->
-                        <form id="storybook-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">1. ¿Cuál fue el destino principal de tu viaje?</label>
-                                <input type="text" id="q1" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">2. ¿Con quién viajaste?</label>
-                                <input type="text" id="q2" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">3. ¿Qué momento fue el más inolvidable?</label>
-                                <input type="text" id="q3" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Información adicional (opcional)</label>
-                                <textarea id="extra" rows="3" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600">Generar mi historia</button>
-                        </form>
+                <!-- Formulario -->
+                <form id="storybook-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">1. ¿Cuál fue el destino principal de tu viaje?</label>
+                        <input type="text" id="q1" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">2. ¿Con quién viajaste?</label>
+                        <input type="text" id="q2" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">3. ¿Qué momento fue el más inolvidable?</label>
+                        <input type="text" id="q3" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Información adicional (opcional)</label>
+                        <textarea id="extra" rows="3" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600">Generar mi historia</button>
+                </form>
 
-                    <!-- Columna Derecha: Resultado -->
-                    <div class="md:w-1/2 mt-6 md:mt-0">
-                         <div id="storybook-result" class="hidden">
-                            <div id="storybook-story-output"></div>
-                            <div class="flex gap-3 mt-4">
-                                <button id="download-pdf-btn" class="flex-1 bg-blue-500 text-white py-2 rounded-lg">📥 Descargar PDF</button>
-                                <button id="share-whatsapp-btn" class="flex-1 bg-green-500 text-white py-2 rounded-lg">📲 WhatsApp</button>
-                            </div>
-                        </div>
+                <!-- Resultado -->
+                <div id="storybook-result" class="hidden mt-6">
+                    <div id="storybook-story-output"></div>
+                    <div class="flex gap-3 mt-4">
+                        <button id="download-pdf-btn" class="flex-1 bg-blue-500 text-white py-2 rounded-lg">📥 Descargar PDF</button>
+                        <button id="share-whatsapp-btn" class="flex-1 bg-green-500 text-white py-2 rounded-lg">📲 WhatsApp</button>
                     </div>
                 </div>
             </div>
@@ -1051,6 +994,9 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     const storybookForm = document.getElementById('storybook-form');
                     const storybookResult = document.getElementById('storybook-result');
                     const storybookStoryOutput = document.getElementById('storybook-story-output');
+                    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+                    const shareWhatsappBtn = document.getElementById('share-whatsapp-btn');
+
                     
                     storybookDropzone.addEventListener('click', () => {
                         if (storybookPhotos.length < 10) storybookFileInput.click();
@@ -1130,7 +1076,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         const prompt = `Eres Andes, un narrador de viajes experto. Basado en las siguientes fotos y respuestas, crea una historia emotiva y detallada del viaje del usuario, como si fuera un libro de recuerdos.\n\nDestino: ${q1}\nCompañía: ${q2}\nMomento inolvidable: ${q3}\nInformación adicional: ${extra || "Ninguna"}\n\nDescribe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un tono cálido, poético y personal. La historia debe tener entre 300 y 500 palabras.`;
 
                         try {
-                            const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Será inyectada por el entorno de ejecución
+                            const apiKey = ""; // Será inyectada por el entorno de ejecución
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                             const response = await fetch(apiUrl, {
                                 method: 'POST',
@@ -1148,119 +1094,83 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                 throw new Error('La respuesta de la API no tuvo el formato esperado.');
                             }
                             const story = data.candidates[0].content.parts[0].text;
-                            
-                            storybookStoryOutput.innerHTML = `
-                                <div id="storybook-result-container">
-                                    <div class="storybook-book-layout">
-                                        <div class="storybook-left-page">
-                                            <h3 class="storybook-story-title">Mi Viaje a ${q1}</h3>
-                                            <div class="storybook-photos-grid">
-                                                ${storybookPhotos.map(p => `<img src="${p.preview}" alt="Recuerdo de viaje">`).join('')}
-                                            </div>
-                                        </div>
-                                        <div class="storybook-right-page">
-                                            <p class="storybook-story-text">${story}</p>
-                                        </div>
-                                    </div>
-                                </div>`;
+                            storybookStoryOutput.textContent = story;
                         } catch (error) {
                             console.error('Error generando historia:', error);
                             storybookStoryOutput.innerHTML = `<p class="text-red-500">Hubo un error al generar tu historia. Por favor, intenta de nuevo.<br><small>${error.message}</small></p>`;
                         }
                     });
                     
-                    storybookResult.addEventListener('click', (e) => {
-                        const downloadPdfBtn = e.target.closest('#download-pdf-btn');
-                        const shareWhatsappBtn = e.target.closest('#share-whatsapp-btn');
-                        
-                        if (downloadPdfBtn) {
-                            const storyContainer = document.getElementById('storybook-result-container');
-                            const q1 = document.getElementById('q1').value || 'viaje';
-                             if (storyContainer) {
-                                const elementToPrint = storyContainer.cloneNode(true);
-                                // Asegurarnos de que el texto sea negro en el PDF
-                                const textElement = elementToPrint.querySelector('.storybook-story-text');
-                                if (textElement) textElement.style.color = '#000';
+                    downloadPdfBtn.addEventListener('click', () => {
+                        const element = document.createElement('div');
+                        element.innerHTML = `
+                            <div style="padding: 20px; color: black;">
+                                <h1 style="text-align:center; color:#10b981;">Mi Viaje con Andes</h1>
+                                <div style="margin-top:20px; white-space: pre-wrap;">${storybookStoryOutput.textContent}</div>
+                                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;">
+                                    ${storybookPhotos.map(p => `<img src="${p.preview}" style="width:100%; max-width:300px; margin:10px 0; border-radius:8px;" />`).join('')}
+                                </div>
+                            </div>
+                        `;
+                        html2pdf().from(element).save('mi-viaje-andes.pdf');
+                    });
 
-                                html2pdf().from(elementToPrint).set({
-                                    margin: 0.5,
-                                    filename: `mi-viaje-${q1.replace(/\s+/g, '-')}.pdf`,
-                                    image: { type: 'jpeg', quality: 0.98 },
-                                    html2canvas: { scale: 2, useCORS: true },
-                                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                                }).save();
-                            }
+                    shareWhatsappBtn.addEventListener('click', () => {
+                        const introText = "¡Mira la historia de mi viaje que creó Andes! 🌄\n\n";
+                        const storyText = storybookStoryOutput.textContent;
+                        let fullText = introText + storyText;
+                        if (fullText.length > 1500) { // Límite aproximado para evitar problemas
+                            fullText = fullText.substring(0, 1500) + '... (lee el resto en el PDF)';
                         }
-                        if (shareWhatsappBtn) {
-                            const storyTextElement = storybookResult.querySelector('.storybook-story-text');
-                            if(storyTextElement) {
-                                const introText = "¡Mira la historia de mi viaje que creó Andes! 🌄\n\n";
-                                const storyText = storyTextElement.textContent;
-                                const text = encodeURIComponent(introText + storyText);
-                                window.open(`https://wa.me/?text=${text}`, '_blank');
-                            }
-                        }
+                        const text = encodeURIComponent(fullText);
+                        window.open(`https://wa.me/?text=${text}`, '_blank');
                     });
                 }
                 setupStorybook();
 
                 async function getWeatherData(location) {
                     const locationKey = location.toLowerCase().trim();
-                    const comarcaCoordinates = {
-                        "el bolsón": { lat: -41.96, lon: -71.53 },
-                        "lago puelo": { lat: -42.06, lon: -71.60 },
-                        "el hoyo": { lat: -42.06, lon: -71.51 },
-                        "epuyén": { lat: -42.23, lon: -71.35 },
-                        "el maitén": { lat: -42.05, lon: -71.16 },
-                        "cholila": { lat: -42.51, lon: -71.45 },
-                        "bariloche": { lat: -41.13, lon: -71.31 },
-                        "san carlos de bariloche": { lat: -41.13, lon: -71.31 },
+                    const smnLocationMap = {
+                        "el bolsón": 87765, 
+                        "lago puelo": 87765,
+                        "el hoyo": 87765,
+                        "epuyén": 87828,
+                        "el maitén": 87828,
+                        "cholila": 87828,
+                        "bariloche": 87765,
+                        "san carlos de bariloche": 87765
                     };
-
-                    const coords = comarcaCoordinates[locationKey];
-
-                    if (!coords) {
-                        return { error: "Lo siento, no tengo las coordenadas para buscar el clima de esa localidad." };
+                    const stationId = smnLocationMap[locationKey];
+                
+                    if (!stationId) {
+                        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina." };
                     }
-
+                
                     try {
-                        // Paso 1: Obtener la URL del pronóstico para las coordenadas
-                        const pointsResponse = await fetch(`https://api.weather.gov/points/${coords.lat},${coords.lon}`);
-                        if (!pointsResponse.ok) {
-                            const errorData = await pointsResponse.json();
-                            console.error("Weather.gov API error:", errorData.detail || 'Error al buscar la zona.');
-                            return { error: `La API del clima de EEUU no tiene datos para ${location}. Solo funciona dentro de Estados Unidos.` };
+                        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                        const targetUrl = encodeURIComponent('https://ws.smn.gob.ar/map_items/weather');
+                        const response = await fetch(proxyUrl + targetUrl);
+
+                        if (!response.ok) throw new Error("No se pudo conectar al SMN a través del proxy.");
+                        const data = await response.json();
+                        
+                        const cityData = data.find(item => item.station_id == stationId);
+                        
+                        if (!cityData || !cityData.weather) {
+                           throw new Error("No se encontraron datos para la estación.");
                         }
                         
-                        const pointsData = await pointsResponse.json();
-                        const forecastUrl = pointsData.properties.forecast;
-
-                        // Paso 2: Obtener el pronóstico desde la URL obtenida
-                        const forecastResponse = await fetch(forecastUrl);
-                        if (!forecastResponse.ok) {
-                             throw new Error('No se pudo obtener el pronóstico detallado.');
-                        }
-
-                        const forecastData = await forecastResponse.json();
-                        const currentForecast = forecastData.properties.periods[0];
-                        
-                        let tempCelsius = currentForecast.temperature;
-                        // Convertir de Fahrenheit a Celsius si es necesario
-                        if (currentForecast.temperatureUnit === 'F') {
-                            tempCelsius = (currentForecast.temperature - 32) * 5 / 9;
-                        }
-
                         return {
                             data: {
-                                temp: tempCelsius,
-                                description: currentForecast.shortForecast
+                                temp: cityData.weather.temperature,
+                                description: cityData.weather.description
                             },
-                            location: location,
+                            location: cityData.name,
+                            requestedLocation: location
                         };
-
                     } catch (error) {
-                        console.error("Error fetching weather from weather.gov:", error);
-                        return { error: `Tuve un problema para conectarme con el servicio meteorológico de EEUU. Es posible que no funcione para ubicaciones en Argentina.` };
+                        console.error("Error fetching SMN weather via proxy:", error);
+                        return { error: "Tuve un problema para conectarme con el Servicio Meteorológico. Intenta de nuevo en un momento." };
                     }
                 }
 
@@ -1270,9 +1180,14 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     }
                     const temp = Math.round(weatherInfo.data.temp);
                     const desc = weatherInfo.data.description;
-                    const userLocationName = weatherInfo.location.charAt(0).toUpperCase() + weatherInfo.location.slice(1);
-                    
-                    return `🌤️ El clima actual en ${userLocationName} es de ${temp}°C. Se presenta: ${desc}.`;
+                    const apiLocationName = weatherInfo.location;
+                    const userLocationName = weatherInfo.requestedLocation.charAt(0).toUpperCase() + weatherInfo.requestedLocation.slice(1);
+
+                    let responseText = `🌤️ En ${apiLocationName} (cercano a ${userLocationName}) la temperatura actual es de ${temp}°C y está ${desc.toLowerCase()}.`;
+                    if (apiLocationName.toLowerCase().includes(userLocationName.toLowerCase())) {
+                       responseText = `🌤️ El clima actual en ${userLocationName} es de ${temp}°C. Se presenta ${desc.toLowerCase()}.`;
+                    }
+                    return responseText;
                 }
 
                 function startApp() {
@@ -1456,7 +1371,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
 
                 async function getAIResponse(history, systemInstructions) {
                     try {
-                        const apiKey = "";
+                        const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
                         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                         const payload = {
                             contents: history,
@@ -2250,15 +2165,4 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </script>
     </div>
 </body>
-</html>" code between  and  in the most up-to-date Canvas "Andes App Corregida" document above and am asking a query about/based on this code below.
-Instructions to follow:
-  * Don't output/edit the document if the query is Direct/Simple. For example, if the query asks for a simple explanation, output a direct answer.
-  * Make sure to **edit** the document if the query is asking to "add a feature", "fix an error" or shows any other intent of editing the document, in which case output the entire edited document, **not just that section or the edits**.
-    * Don't output the same document/empty document and say that you have edited it.
-    * Don't change unrelated code in the document.
-  * Don't output  and  in your final response.
-  * Any references like "this" or "selected code" refers to the code between  and  tags.
-  * Just acknowledge my request in the introduction.
-  * Make sure to refer to the document as "Canvas" in your response.
-
-NO, no me gusta, volve al diseño anterior del storybook y volve a poner la api del clima de argentina que andaba mejor
+</html>
