@@ -797,7 +797,67 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 }
             });
 
-            async function generateStorybookWithAI(images, answers) {
+            
+            // --- Local fallback 'Andes' generator (no external API needed) ---
+            // This function simulates an AI response and returns an object { text: "<html...>" }.
+            async function getAIResponse(history, _opts) {
+                // history[0] contains the prompt we built in generateStorybookWithAI
+                const prompt = (history && history[0] && history[0].parts && history[0].parts[0] && history[0].parts[0].text) || '';
+                // Try to extract the photos and answers from the prompt for local generation
+                const photosMatch = prompt.match(/Fotos: ([\s\S]*?)\n/);
+                const fotos = photosMatch ? photosMatch[1].split(/,\s*/).filter(Boolean) : [];
+                const q1 = (prompt.match(/Momento favorito:\s*\"([^\"]*)\"/) || [])[1] || '';
+                const q2 = (prompt.match(/Lugar que sorprendió más:\s*\"([^\"]*)\"/) || [])[1] || '';
+                const q3 = (prompt.match(/Consejo para otros viajeros:\s*\"([^\"]*)\"/) || [])[1] || '';
+
+                // Build simple HTML storybook
+                let pages = [];
+                const maxPages = Math.max(3, Math.min(10, fotos.length + 2));
+                for (let i = 0; i < maxPages; i++) {
+                    let title = '';
+                    let paragraph = '';
+                    if (i === 0) {
+                        title = 'Introducción a tu viaje';
+                        paragraph = q1 || 'Un momento especial que recordás con cariño.';
+                    } else if (i === 1) {
+                        title = 'El lugar que te sorprendió';
+                        paragraph = q2 || 'Un lugar que te dejó sin aliento.';
+                    } else if (i === maxPages - 1) {
+                        title = 'Consejo final para viajeros';
+                        paragraph = q3 || 'Un consejo sencillo para quien venga después.';
+                    } else {
+                        title = `Página ${i+1}`;
+                        paragraph = `Recuerdo y sensación alrededor de la foto ${i} — una estampa de la Comarca.`;
+                    }
+
+                    let imgTag = '';
+                    if (fotos[i-1]) {
+                        imgTag = `<div style="margin:12px 0;"><img src="${fotos[i-1].trim()}" style="width:100%; max-height:320px; object-fit:cover; border-radius:12px;"></div>`;
+                    }
+
+                    pages.push(`
+                        <div style="padding:12px 6px; border-bottom:1px solid #eee; margin-bottom:8px;">
+                            <h3 style="font-size:18px; margin:0 0 6px 0; color:#064e3b;">${title}</h3>
+                            ${imgTag}
+                            <p style="margin:6px 0 0 0; line-height:1.4; color:#334155;">${paragraph}</p>
+                        </div>
+                    `);
+                }
+
+                const html = `
+                    <div style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
+                        ${pages.join('\n')}
+                        <div style="padding:12px; margin-top:10px;">
+                            <p style="font-weight:600; color:#065f46;">✨ Despedida</p>
+                            <p style="margin-top:6px; color:#475569;">Gracias por compartir tu viaje. Andes espera verte de nuevo en la Comarca.</p>
+                        </div>
+                    </div>
+                `;
+
+                return { text: html };
+            }
+
+    async function generateStorybookWithAI(images, answers) {
                 const prompt = `
 Eres Andes, un narrador de viajes creativo. Basado en estas fotos y respuestas, crea un storybook de viaje de 6 a 10 páginas en formato HTML listo para WhatsApp.
 - Usa un tono cálido, inspirador y personal.
