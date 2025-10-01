@@ -1136,7 +1136,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         const prompt = `Eres Andes, un narrador de viajes experto. Basado en las siguientes fotos y respuestas, crea una historia emotiva y detallada del viaje del usuario, como si fuera un libro de recuerdos.\n\nDestino: ${q1}\nCompañía: ${q2}\nMomento inolvidable: ${q3}\nInformación adicional: ${extra || "Ninguna"}\n\nDescribe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un tono cálido, poético y personal. La historia debe tener entre 300 y 500 palabras.`;
 
                         try {
-                            const apiKey = "";
+                            const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                             const response = await fetch(apiUrl, {
                                 method: 'POST',
@@ -2245,4 +2245,5 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div>
 </body>
 </html>
+
 
