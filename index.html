@@ -891,6 +891,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const radioIconOverlay = document.getElementById('radio-icon-overlay');
                 const radioStatusText = document.getElementById('radio-status-text');
                 const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
+                
+                // --- STORYBOOK ELEMENTS ---
+                const storybookModal = document.getElementById('storybook-modal');
+                const closeStorybookModal = document.getElementById('close-storybook-modal');
 
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
@@ -995,7 +999,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 setupModalToggle(null, ratingModal, closeRatingModalBtn); 
                 setupModalToggle(null, contributionModal, closeContributionModalBtn);
                 setupModalToggle(null, manageModal, closeManageModalBtn);
-                setupModalToggle(storybookBtn, storybookModal, document.getElementById('close-storybook-modal'));
+                setupModalToggle(storybookBtn, storybookModal, closeStorybookModal);
 
                 adminBtn.addEventListener('click', () => {
                     if (isAdmin) {
@@ -1041,7 +1045,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
 
                 // --- STORYBOOK LOGIC ---
                 function setupStorybook() {
-                    const storybookModal = document.getElementById('storybook-modal');
                     const storybookDropzone = document.getElementById('storybook-dropzone');
                     const storybookFileInput = document.getElementById('storybook-file-input');
                     const storybookPreview = document.getElementById('storybook-preview');
@@ -1227,7 +1230,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         if (!response.ok) throw new Error("No se pudo conectar al SMN a través del proxy.");
                         const data = await response.json();
                         
-                        const cityData = data.find(item => item.station_id === stationId);
+                        const cityData = data.find(item => item.station_id == stationId);
                         
                         if (!cityData || !cityData.weather) {
                            throw new Error("No se encontraron datos para la estación.");
