@@ -147,7 +147,6 @@
             justify-content: center;
             color: white;
         }
-
         /* Estilos para Storybook */
         #storybook-dropzone {
             border: 2px dashed #cbd5e1;
@@ -203,6 +202,24 @@
             white-space: pre-wrap;
             line-height: 1.6;
         }
+        /* Estilos para Postales Mágicas */
+        #postales-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        #postales-dropzone:hover {
+            border-color: var(--emerald-500);
+        }
+        #postales-preview {
+            max-height: 300px;
+            object-fit: cover;
+            margin: 1rem auto;
+            display: block;
+        }
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
@@ -230,13 +247,16 @@
                     <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">📖</span>
                     <span>Crea tu Storybook de viaje</span>
                 </div>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="bg-white text-emerald-600 px-2 py-0.5 rounded-full text-xs font-bold">🎨</span>
+                    <span>Postales Mágicas con IA</span>
+                </div>
             </div>
             <button id="start-chat-btn" class="bg-white text-emerald-600 font-bold py-2.5 px-6 rounded-full text-base shadow-lg hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap">
                 Comenzar
             </button>
         </div>
     </div>
-
     <!-- App principal -->
     <div id="main-app" class="hidden flex flex-col h-dvh">
         <!-- Chat y resto del contenido -->
@@ -292,6 +312,12 @@
                 </svg>
                 <span>Storybook</span>
             </button>
+            <button id="postales-btn" class="flex flex-col items-center text-xs">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Postales</span>
+            </button>
             <button id="ar-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
                 <span>AR</span>
@@ -300,6 +326,46 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                 <span>Admin</span>
             </button>
+        </div>
+
+        <!-- MODAL POSTALES MÁGICAS -->
+        <div id="postales-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
+            <div class="relative top-1/2 -translate-y-1/2 mx-auto p-6 w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">🎨 Postales Mágicas con IA</h3>
+                    <button id="close-postales-modal" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Sube una foto de un paisaje y describe qué elemento mágico quieres añadir (ej: "un castillo flotante", "un unicornio en el lago").
+                </p>
+
+                <div id="postales-dropzone" class="mb-4">
+                    <p>📸 Haz clic para subir tu foto</p>
+                    <input type="file" id="postales-file-input" accept="image/*" class="hidden">
+                </div>
+                <img id="postales-preview" class="hidden rounded-lg mb-4 max-h-64 object-cover mx-auto" />
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Describe tu toque mágico:</label>
+                    <textarea id="postales-prompt" rows="2" class="w-full p-2 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700" placeholder="Ej: un dragón dorado volando entre las montañas..."></textarea>
+                </div>
+
+                <button id="generate-postal-btn" class="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600 mb-4">
+                    Generar Postal Mágica
+                </button>
+
+                <div id="postales-result" class="hidden">
+                    <img id="postales-output" class="w-full rounded-lg shadow" />
+                    <div class="flex gap-3 mt-4">
+                        <button id="download-postal-btn" class="flex-1 bg-blue-500 text-white py-2 rounded-lg">📥 Descargar</button>
+                        <button id="share-postal-whatsapp" class="flex-1 bg-green-500 text-white py-2 rounded-lg">📲 WhatsApp</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- MODAL STORYBOOK -->
@@ -313,16 +379,13 @@
                         </svg>
                     </button>
                 </div>
-
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Sube hasta 10 fotos de tu viaje y responde 3 preguntas. Andes creará una historia única para ti.</p>
-
                 <!-- Subida de fotos -->
                 <div id="storybook-dropzone" class="mb-4">
                     <p>Arrastra tus fotos aquí o haz clic para seleccionar</p>
                     <input type="file" id="storybook-file-input" accept="image/*" multiple class="hidden">
                 </div>
                 <div id="storybook-preview" class="mb-6"></div>
-
                 <!-- Formulario -->
                 <form id="storybook-form" class="space-y-4">
                     <div>
@@ -343,7 +406,6 @@
                     </div>
                     <button type="submit" class="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600">Generar mi historia</button>
                 </form>
-
                 <!-- Resultado -->
                 <div id="storybook-result" class="hidden mt-6">
                     <div id="storybook-story-output"></div>
@@ -354,7 +416,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Modales restantes -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
@@ -768,7 +829,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
             import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
             import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, writeBatch, getDocs, query, orderBy, runTransaction, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
             document.addEventListener('DOMContentLoaded', function() {
                 // --- ELEMENTOS ---
                 const chatWindow = document.getElementById('chat-window');
@@ -805,6 +865,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
                 const storybookBtn = document.getElementById('storybook-btn');
+                const postalesBtn = document.getElementById('postales-btn'); // <-- Nuevo
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
                 const closeManageModalBtn = document.getElementById('close-manage-modal-btn');
                 const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
@@ -834,10 +895,21 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const radioIconOverlay = document.getElementById('radio-icon-overlay');
                 const radioStatusText = document.getElementById('radio-status-text');
                 const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
-                
                 // --- STORYBOOK ELEMENTS ---
                 const storybookModal = document.getElementById('storybook-modal');
                 const closeStorybookModal = document.getElementById('close-storybook-modal');
+                // --- POSTALES MÁGICAS ELEMENTS ---
+                const postalesModal = document.getElementById('postales-modal');
+                const closePostalesModal = document.getElementById('close-postales-modal');
+                const postalesDropzone = document.getElementById('postales-dropzone');
+                const postalesFileInput = document.getElementById('postales-file-input');
+                const postalesPreview = document.getElementById('postales-preview');
+                const postalesPrompt = document.getElementById('postales-prompt');
+                const generatePostalBtn = document.getElementById('generate-postal-btn');
+                const postalesResult = document.getElementById('postales-result');
+                const postalesOutput = document.getElementById('postales-output');
+                const downloadPostalBtn = document.getElementById('download-postal-btn');
+                const sharePostalWhatsapp = document.getElementById('share-postal-whatsapp');
 
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
@@ -867,9 +939,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 let mainRecognition;
                 let isMainMicListening = false;
                 let activeSpeechInput = null;
-
                 // Variables para Storybook
                 let storybookPhotos = [];
+                // Variables para Postales
+                let currentPostalImageBase64 = null;
 
                 // --- INICIALIZAR FIREBASE ---
                 function initializeFirebase() {
@@ -922,7 +995,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         chatWindow.innerHTML = `<div class="ai-message text-red-500 p-4"><strong>Error de Conexión:</strong> No se pudo inicializar la base de datos. Por favor, recarga la página. <br><small>${error.message}</small></div>`;
                     }
                 }
-
                 function getCollectionRef(name) {
                     if (!db) {
                         console.error("Firestore DB not initialized.");
@@ -943,6 +1015,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 setupModalToggle(null, contributionModal, closeContributionModalBtn);
                 setupModalToggle(null, manageModal, closeManageModalBtn);
                 setupModalToggle(storybookBtn, storybookModal, closeStorybookModal);
+                setupModalToggle(postalesBtn, postalesModal, closePostalesModal); // <-- Nuevo
 
                 adminBtn.addEventListener('click', () => {
                     if (isAdmin) {
@@ -986,6 +1059,96 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
                 closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
 
+                // --- POSTALES MÁGICAS LOGIC ---
+                postalesDropzone.addEventListener('click', () => postalesFileInput.click());
+                postalesFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        currentPostalImageBase64 = ev.target.result;
+                        postalesPreview.src = currentPostalImageBase64;
+                        postalesPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                generatePostalBtn.addEventListener('click', async () => {
+                    if (!currentPostalImageBase64) {
+                        alert("Por favor, sube una foto primero.");
+                        return;
+                    }
+                    const prompt = postalesPrompt.value.trim();
+                    if (!prompt) {
+                        alert("Por favor, describe qué quieres añadir.");
+                        return;
+                    }
+
+                    generatePostalBtn.disabled = true;
+                    generatePostalBtn.textContent = "Generando... 🎨";
+
+                    try {
+                        // Convertir a JPEG y limitar tamaño
+                        const img = new Image();
+                        img.src = currentPostalImageBase64;
+                        await new Promise(resolve => img.onload = resolve);
+
+                        const maxWidth = 1024;
+                        const scale = Math.min(1, maxWidth / Math.max(img.width, img.height));
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        const jpegBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+                        // Enviar a tu proxy en Vercel
+                        const proxyResponse = await fetch('https://andes-proxy.vercel.app/api/generate-postal', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ imageBase64: jpegBase64, prompt })
+                        });
+
+                        const proxyData = await proxyResponse.json();
+                        if (!proxyResponse.ok) throw new Error(proxyData.error || 'Error en proxy');
+
+                        // Polling hasta que esté lista
+                        let result;
+                        while (!result?.output) {
+                            await new Promise(r => setTimeout(r, 3000));
+                            const poll = await fetch(proxyData.predictionUrl);
+                            result = await poll.json();
+                            if (result.status === 'failed') throw new Error('Falló la generación.');
+                        }
+
+                        postalesOutput.src = result.output[0];
+                        postalesResult.classList.remove('hidden');
+
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert("Error: " + (error.message || "No se pudo generar la postal."));
+                    } finally {
+                        generatePostalBtn.disabled = false;
+                        generatePostalBtn.textContent = "Generar Postal Mágica";
+                    }
+                });
+
+                downloadPostalBtn.addEventListener('click', () => {
+                    const link = document.createElement('a');
+                    link.href = postalesOutput.src;
+                    link.download = 'postal-magica-andes.jpg';
+                    link.click();
+                });
+
+                sharePostalWhatsapp.addEventListener('click', () => {
+                    const text = encodeURIComponent("¡Mira mi postal mágica creada con Andes! 🌄✨");
+                    const url = postalesOutput.src;
+                    window.open(`https://wa.me/?text=${text}%0A${encodeURIComponent(url)}`, '_blank');
+                });
+
                 // --- STORYBOOK LOGIC ---
                 function setupStorybook() {
                     const storybookDropzone = document.getElementById('storybook-dropzone');
@@ -996,28 +1159,22 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     const storybookStoryOutput = document.getElementById('storybook-story-output');
                     const downloadPdfBtn = document.getElementById('download-pdf-btn');
                     const shareWhatsappBtn = document.getElementById('share-whatsapp-btn');
-
-                    
                     storybookDropzone.addEventListener('click', () => {
                         if (storybookPhotos.length < 10) storybookFileInput.click();
                     });
-
                     storybookFileInput.addEventListener('change', (e) => handleFiles(e.target.files));
                     storybookDropzone.addEventListener('dragover', (e) => {
                         e.preventDefault();
                         storybookDropzone.style.borderColor = '#10b981';
                     });
-
                     storybookDropzone.addEventListener('dragleave', () => {
                         storybookDropzone.style.borderColor = '#cbd5e1';
                     });
-
                     storybookDropzone.addEventListener('drop', (e) => {
                         e.preventDefault();
                         storybookDropzone.style.borderColor = '#cbd5e1';
                         if (storybookPhotos.length < 10) handleFiles(e.dataTransfer.files);
                     });
-
                     function handleFiles(files) {
                         const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
                         const newFiles = validFiles.slice(0, 10 - storybookPhotos.length);
@@ -1031,7 +1188,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         });
                         storybookFileInput.value = '';
                     }
-
                     function renderStorybookPreview() {
                         storybookPreview.innerHTML = '';
                         storybookPhotos.forEach((photo, index) => {
@@ -1041,7 +1197,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             storybookPreview.appendChild(div);
                         });
                     }
-
                     storybookPreview.addEventListener('click', (e) => {
                         const deleteBtn = e.target.closest('.storybook-delete-btn');
                         if (deleteBtn) {
@@ -1049,7 +1204,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             renderStorybookPreview();
                         }
                     });
-
                     storybookForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         storybookDropzone.classList.remove('error');
@@ -1058,23 +1212,23 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             setTimeout(() => storybookDropzone.classList.remove('error'), 2000);
                             return;
                         }
-
                         const q1 = document.getElementById('q1').value;
                         const q2 = document.getElementById('q2').value;
                         const q3 = document.getElementById('q3').value;
                         const extra = document.getElementById('extra').value;
-
                         storybookResult.classList.remove('hidden');
                         storybookStoryOutput.innerHTML = `<div class="flex justify-center items-center h-full"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
-
                         const base64Photos = await Promise.all(storybookPhotos.map(photo => new Promise(resolve => {
                             const reader = new FileReader();
                             reader.onload = () => resolve(reader.result.split(',')[1]);
                             reader.readAsDataURL(photo.file);
                         })));
-
-                        const prompt = `Eres Andes, un narrador de viajes experto. Basado en las siguientes fotos y respuestas, crea una historia emotiva y detallada del viaje del usuario, como si fuera un libro de recuerdos.\n\nDestino: ${q1}\nCompañía: ${q2}\nMomento inolvidable: ${q3}\nInformación adicional: ${extra || "Ninguna"}\n\nDescribe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un tono cálido, poético y personal. La historia debe tener entre 300 y 500 palabras.`;
-
+                        const prompt = `Eres Andes, un narrador de viajes experto. Basado en las siguientes fotos y respuestas, crea una historia emotiva y detallada del viaje del usuario, como si fuera un libro de recuerdos.
+Destino: ${q1}
+Compañía: ${q2}
+Momento inolvidable: ${q3}
+Información adicional: ${extra || "Ninguna"}
+Describe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un tono cálido, poético y personal. La historia debe tener entre 300 y 500 palabras.`;
                         try {
                             const apiKey = ""; // Será inyectada por el entorno de ejecución
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -1100,7 +1254,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             storybookStoryOutput.innerHTML = `<p class="text-red-500">Hubo un error al generar tu historia. Por favor, intenta de nuevo.<br><small>${error.message}</small></p>`;
                         }
                     });
-                    
                     downloadPdfBtn.addEventListener('click', () => {
                         const element = document.createElement('div');
                         element.innerHTML = `
@@ -1114,9 +1267,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         `;
                         html2pdf().from(element).save('mi-viaje-andes.pdf');
                     });
-
                     shareWhatsappBtn.addEventListener('click', () => {
-                        const introText = "¡Mira la historia de mi viaje que creó Andes! 🌄\n\n";
+                        const introText = "¡Mira la historia de mi viaje que creó Andes! 🌄\n";
                         const storyText = storybookStoryOutput.textContent;
                         let fullText = introText + storyText;
                         if (fullText.length > 1500) { // Límite aproximado para evitar problemas
@@ -1128,49 +1280,72 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 }
                 setupStorybook();
 
+                // --- CLIMA (usando Open-Meteo) ---
                 async function getWeatherData(location) {
                     const locationKey = location.toLowerCase().trim();
-                    const smnLocationMap = {
-                        "el bolsón": 87765, 
-                        "lago puelo": 87765,
-                        "el hoyo": 87765,
-                        "epuyén": 87828,
-                        "el maitén": 87828,
-                        "cholila": 87828,
-                        "bariloche": 87765,
-                        "san carlos de bariloche": 87765
+                    // Mapeo de localidades a coordenadas (lat, lon)
+                    const coordsMap = {
+                        "el bolsón": [-41.9669, -71.5333],
+                        "lago puelo": [-42.0000, -71.5000],
+                        "el hoyo": [-41.9333, -71.5167],
+                        "epuyén": [-42.0833, -71.4667],
+                        "el maitén": [-42.1000, -71.3667],
+                        "cholila": [-42.2000, -71.3000],
+                        "bariloche": [-41.1333, -71.3167],
+                        "san carlos de bariloche": [-41.1333, -71.3167]
                     };
-                    const stationId = smnLocationMap[locationKey];
-                
-                    if (!stationId) {
+
+                    const coords = coordsMap[locationKey];
+                    if (!coords) {
                         return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina." };
                     }
-                
-                    try {
-                        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                        const targetUrl = encodeURIComponent('https://ws.smn.gob.ar/map_items/weather');
-                        const response = await fetch(proxyUrl + targetUrl);
 
-                        if (!response.ok) throw new Error("No se pudo conectar al SMN a través del proxy.");
+                    const [lat, lon] = coords;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=America/Argentina/Buenos_Aires&forecast_days=1`;
+
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error("No se pudo obtener el clima.");
                         const data = await response.json();
-                        
-                        const cityData = data.find(item => item.station_id == stationId);
-                        
-                        if (!cityData || !cityData.weather) {
-                           throw new Error("No se encontraron datos para la estación.");
+
+                        if (!data.current) {
+                            throw new Error("Datos climáticos no disponibles.");
                         }
-                        
+
+                        const temp = data.current.temperature_2m;
+                        const weatherCode = data.current.weather_code;
+
+                        // Mapeo básico de códigos a descripciones en español
+                        const weatherDescriptions = {
+                            0: "despejado",
+                            1: "principalmente despejado",
+                            2: "parcialmente nublado",
+                            3: "nublado",
+                            45: "niebla",
+                            48: "niebla con escarcha",
+                            51: "llovizna ligera",
+                            53: "llovizna",
+                            55: "llovizna densa",
+                            61: "lluvia ligera",
+                            63: "lluvia",
+                            65: "lluvia intensa",
+                            71: "nevada ligera",
+                            73: "nevada",
+                            75: "nevada intensa",
+                            95: "tormenta eléctrica",
+                            96: "tormenta con granizo ligero",
+                            99: "tormenta con granizo fuerte"
+                        };
+
+                        const description = weatherDescriptions[weatherCode] || "condiciones climáticas variables";
+
                         return {
-                            data: {
-                                temp: cityData.weather.temperature,
-                                description: cityData.weather.description
-                            },
-                            location: cityData.name,
-                            requestedLocation: location
+                            data: { temp, description },
+                            location: location.charAt(0).toUpperCase() + location.slice(1)
                         };
                     } catch (error) {
-                        console.error("Error fetching SMN weather via proxy:", error);
-                        return { error: "Tuve un problema para conectarme con el Servicio Meteorológico. Intenta de nuevo en un momento." };
+                        console.error("Error fetching weather from Open-Meteo:", error);
+                        return { error: "Tuve un problema para conectarme con el servicio del clima. Intenta de nuevo en un momento." };
                     }
                 }
 
@@ -1180,14 +1355,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     }
                     const temp = Math.round(weatherInfo.data.temp);
                     const desc = weatherInfo.data.description;
-                    const apiLocationName = weatherInfo.location;
-                    const userLocationName = weatherInfo.requestedLocation.charAt(0).toUpperCase() + weatherInfo.requestedLocation.slice(1);
-
-                    let responseText = `🌤️ En ${apiLocationName} (cercano a ${userLocationName}) la temperatura actual es de ${temp}°C y está ${desc.toLowerCase()}.`;
-                    if (apiLocationName.toLowerCase().includes(userLocationName.toLowerCase())) {
-                       responseText = `🌤️ El clima actual en ${userLocationName} es de ${temp}°C. Se presenta ${desc.toLowerCase()}.`;
-                    }
-                    return responseText;
+                    const location = weatherInfo.location;
+                    return `🌤️ El clima actual en ${location} es de ${temp}°C. Se presenta ${desc}.`;
                 }
 
                 function startApp() {
@@ -1205,7 +1374,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     initializeFirebase();
                     updateSuggestions();
                 }
-
                 function showTypingIndicator() {
                     const typingDiv = document.createElement('div');
                     typingDiv.className = 'w-full flex justify-start';
@@ -1220,12 +1388,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                     return typingDiv;
                 }
-
                 function getCommentsCollectionRef(placeId) {
                     if (!placeId) return null;
                     return collection(db, `/artifacts/${appId}/public/data/lugares/${placeId}/comentarios`);
                 }
-
                 function openRatingModal(placeId) {
                     const place = placesCache.find(p => p.id === placeId);
                     if (!place) return;
@@ -1258,7 +1424,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         });
                     }
                 }
-
                 function renderAverageRating(average, count) {
                     const stars = '★'.repeat(Math.round(average)) + '☆'.repeat(5 - Math.round(average));
                     averageRatingContainer.innerHTML = `
@@ -1266,7 +1431,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Basado en ${count} opiniones</p>
                     `;
                 }
-
                 function renderComments(comments) {
                     commentsList.innerHTML = '';
                     if (comments.length === 0) {
@@ -1288,7 +1452,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         commentsList.appendChild(div);
                     });
                 }
-
                 ratingForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const selectedRating = ratingForm.querySelector('input[name="rating"]:checked');
@@ -1313,7 +1476,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         alert('Hubo un error al guardar tu opinión.');
                     }
                 });
-
                 chatForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const userMessage = chatInput.value.trim();
@@ -1322,7 +1484,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     chatInput.value = '';
                     processUserMessage(userMessage);
                 });
-
                 function addMessage(message, sender) {
                     const messageDiv = document.createElement('div');
                     messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
@@ -1340,22 +1501,18 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     chatWindow.appendChild(messageDiv);
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
-
                 async function processUserMessage(userMessage) {
                     const typingIndicator = showTypingIndicator();
                     chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
                     const systemPrompt = generateSystemPrompt();
                     const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
                     chatWindow.removeChild(typingIndicator);
-
                     const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?)(?::(.*?)?)?\]/);
-
                     if (weatherMatch) {
                         const location = weatherMatch[1].trim();
                         const weatherIndicator = showTypingIndicator();
                         const weatherInfo = await getWeatherData(location);
                         const finalText = await formatWeatherResponse(weatherInfo);
-                        
                         chatWindow.removeChild(weatherIndicator);
                         addMessage({ text: finalText }, 'ai');
                         chatHistory.push({ role: "model", parts: [{ text: finalText }] });
@@ -1368,10 +1525,9 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
                     }
                 }
-
                 async function getAIResponse(history, systemInstructions) {
                     try {
-
+                        const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
                         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                         const payload = {
                             contents: history,
@@ -1395,7 +1551,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
                     }
                 }
-
                 function processAIResponseText(text) {
                     let isHtml = false;
                     let isSponsored = false;
@@ -1419,11 +1574,9 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     }
                     return { text: processedText, isHtml, isSponsored };
                 }
-
                 function findPlaceByName(name) {
                     return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
                 }
-
                 function updateSuggestions() {
                     suggestionsContainer.innerHTML = '';
                     const suggestions = [
@@ -1441,7 +1594,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         suggestionsContainer.appendChild(button);
                     });
                 }
-
                 function generateSystemPrompt() {
                     return `
                         Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
@@ -1455,7 +1607,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
                     `;
                 }
-
                 function listenForNewPlaces() {
                     if (!lugaresCollectionRef) return;
                     onSnapshot(lugaresCollectionRef, (snapshot) => {
@@ -1494,7 +1645,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }, (error) => console.error("Error listening for places:", error));
                 }
-
                 function listenForTips() {
                     if (!consejosCollectionRef) return;
                     onSnapshot(query(consejosCollectionRef, orderBy('createdAt', 'desc')), (snapshot) => {
@@ -1507,7 +1657,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }, (error) => console.error("Error listening to tips:", error));
                 }
-
                 function renderTipsList() {
                     if (!rinconList) return;
                     rinconList.innerHTML = '';
@@ -1537,7 +1686,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         rinconList.appendChild(tipElement);
                     });
                 }
-
                 rinconList.addEventListener('click', async (e) => {
                     const deleteBtn = e.target.closest('.delete-tip-btn');
                     if (deleteBtn && isAdmin) {
@@ -1552,7 +1700,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }
                 });
-
                 tipForm.addEventListener('submit', async(e) => {
                     e.preventDefault();
                     const tipText = tipInput.value.trim();
@@ -1572,7 +1719,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         submitBtn.disabled = false;
                     }
                 });
-
                 plannerForm.addEventListener('click', (e) => {
                     const btn = e.target.closest('.planner-option-btn');
                     if (!btn) return;
@@ -1584,7 +1730,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
                     btn.classList.remove('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
                 });
-
                 plannerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
@@ -1613,7 +1758,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         isPlannerResponse: true
                     }, 'ai');
                 });
-
                 function generatePlannerPrompt(style, days, energy) {
                     return `
                         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
@@ -1645,7 +1789,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
                     `;
                 }
-
                 function initMap() {
                     if (mapInitialized) return;
                     map = L.map('map').setView([-41.96, -71.53], 10); 
@@ -1655,7 +1798,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     markersLayer = L.layerGroup().addTo(map);
                     mapInitialized = true;
                 }
-
                 mapBtn.addEventListener('click', () => {
                     mapModal.classList.remove('hidden');
                     if (!mapInitialized) {
@@ -1668,7 +1810,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }, 100); 
                 });
-
                 function updateMapMarkers() {
                     if (!map || !markersLayer) return;
                     markersLayer.clearLayers();
@@ -1704,7 +1845,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     });
                 }
-
                 document.body.addEventListener('click', e => {
                     const placeLink = e.target.closest('.place-link');
                     if (placeLink) {
@@ -1715,7 +1855,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }
                 });
-
                 function showPlaceOnMap(place) {
                     if (!place.latitud || !place.longitud) {
                         console.warn("Intento de mostrar en mapa un lugar sin coordenadas:", place.nombre);
@@ -1739,7 +1878,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }, 200);
                 }
-
                 // --- RADIO ---
                 let isPlaying = false;
                 function setRadioState(state) {
@@ -1755,7 +1893,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         isPlaying = false;
                     }
                 }
-
                 radioBtn.addEventListener('click', () => {
                     if (!isPlaying) {
                         radioPlayer.src = streamUrl;
@@ -1768,16 +1905,13 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         radioPlayer.src = ""; // Detener la carga
                     }
                 });
-
                 radioPlayer.addEventListener('play', () => setRadioState('playing'));
                 radioPlayer.addEventListener('pause', () => setRadioState('paused'));
                 radioPlayer.addEventListener('error', () => {
                     console.error("Error en el stream de radio");
                     setRadioState('stopped');
                 });
-                
                 setRadioState('paused');
-
                 // --- RECONOCIMIENTO DE VOZ ---
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
@@ -1838,7 +1972,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     micBtn.style.display = 'none';
                     document.querySelectorAll('.mic-input-btn').forEach(b => b.style.display = 'none');
                 }
-
                 // --- GESTIÓN DE CONTENIDO (BACKUP, etc.) ---
                 const downloadBackupBtn = document.getElementById('download-backup-btn');
                 const restoreBackupBtn = document.getElementById('restore-backup-btn');
@@ -1846,7 +1979,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const confirmRestoreModal = document.getElementById('confirm-restore-modal');
                 const cancelRestoreBtn = document.getElementById('cancel-restore-btn');
                 const confirmRestoreBtn = document.getElementById('confirm-restore-btn');
-
                 downloadBackupBtn.addEventListener('click', () => {
                     if (placesCache.length === 0) {
                         alert("No hay datos para respaldar.");
@@ -1878,22 +2010,18 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     link.click();
                     document.body.removeChild(link);
                 });
-
                 restoreBackupBtn.addEventListener('click', () => {
                     backupFileInput.click();
                 });
-
                 backupFileInput.addEventListener('change', (event) => {
                     if (event.target.files.length > 0) {
                         confirmRestoreModal.classList.remove('hidden');
                     }
                 });
-
                 cancelRestoreBtn.addEventListener('click', () => {
                     confirmRestoreModal.classList.add('hidden');
                     backupFileInput.value = '';
                 });
-
                 confirmRestoreBtn.addEventListener('click', async () => {
                     confirmRestoreModal.classList.add('hidden');
                     const file = backupFileInput.files[0];
@@ -1938,7 +2066,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     };
                     reader.readAsText(file);
                 });
-
                 // --- RENDER MANAGEMENT LIST ---
                 function renderManagementList() {
                     if (!manageList) return;
@@ -2022,7 +2149,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         manageList.innerHTML += localidadHtml;
                     });
                 }
-
                 manageList.addEventListener('click', (e) => {
                     const editBtn = e.target.closest('.edit-btn');
                     const deleteBtn = e.target.closest('.delete-btn');
@@ -2096,12 +2222,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }
                 });
-
                 cancelDeleteBtn.addEventListener('click', () => {
                     confirmDeleteModal.classList.add('hidden');
                     deleteAction = null;
                 });
-
                 confirmDeleteBtn.addEventListener('click', async () => {
                     if(deleteAction && deleteAction.type === 'place'){
                         try {
@@ -2113,12 +2237,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     confirmDeleteModal.classList.add('hidden');
                     deleteAction = null;
                 });
-
                 cancelRubroDeleteBtn.addEventListener('click', () => {
                     confirmRubroDeleteModal.classList.add('hidden');
                     deleteAction = null;
                 });
-
                 confirmRubroDeleteBtn.addEventListener('click', async () => {
                     if(deleteAction && (deleteAction.type === 'localidad' || deleteAction.type === 'subtipo')){
                         const batch = writeBatch(db);
@@ -2134,7 +2256,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     confirmRubroDeleteModal.classList.add('hidden');
                     deleteAction = null;
                 });
-
                 async function updateBatch(fieldToUpdate, oldValue, newValue, filterLocalidad) {
                     const batch = writeBatch(db);
                     let placesToUpdate;
@@ -2166,4 +2287,3 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div>
 </body>
 </html>
-
