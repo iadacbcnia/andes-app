@@ -1426,208 +1426,59 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     "gualjaina": { lat: -42.77, lon: -70.45 },
                     "corcovado": { lat: -43.53, lon: -71.47 }
                 };
-                async function getWeatherData(location) {
-    const locationKey = location.toLowerCase();
-    if (!comarcaCoordinates[locationKey]) {
-        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
-    }
-    const coords = comarcaCoordinates[locationKey];
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
-    try {
-        const response = await fetch(weatherUrl);
-        if (!response.ok) {
-            return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
-        }
-        const data = await response.json();
-        return { data, location };
-    } catch (error) {
-        console.error("Error fetching weather:", error);
-        return { error: "Tuve un problema para conectarme con el servicio del clima." };
-    }
-}
                 async function formatWeatherResponse(weatherInfo, timeframe) {
-    let relevantData = { lugar: weatherInfo.location };
-
-    // Mapeo de weather_code a descripciones (opcional, para más detalle)
-    const weatherDescriptions = {
-        0: "Cielo despejado",
-        1: "Mayormente despejado",
-        2: "Parcialmente nublado",
-        3: "Nublado",
-        45: "Niebla",
-        48: "Niebla con escarcha",
-        51: "Llovizna ligera",
-        53: "Llovizna moderada",
-        55: "Llovizna densa",
-        61: "Lluvia ligera",
-        63: "Lluvia moderada",
-        65: "Lluvia fuerte",
-        71: "Nevada ligera",
-        73: "Nevada moderada",
-        75: "Nevada fuerte",
-        95: "Tormenta",
-        96: "Tormenta con granizo ligero",
-        99: "Tormenta con granizo fuerte"
+    // Mapeo de weather_code a emojis y descripciones simples
+    const weatherEmojis = {
+        0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️",
+        51: "🌦️", 53: "🌦️", 55: "🌦️", 61: "🌧️", 63: "🌧️", 65: "🌧️",
+        71: "❄️", 73: "❄️", 75: "❄️", 95: "⛈️", 96: "⛈️", 99: "⛈️"
     };
+
+    const weatherDescriptions = {
+        0: "Cielo despejado", 1: "Mayormente despejado", 2: "Parcialmente nublado",
+        3: "Nublado", 45: "Niebla", 48: "Niebla con escarcha",
+        51: "Llovizna ligera", 53: "Llovizna moderada", 55: "Llovizna densa",
+        61: "Lluvia ligera", 63: "Lluvia moderada", 65: "Lluvia fuerte",
+        71: "Nevada ligera", 73: "Nevada moderada", 75: "Nevada fuerte",
+        95: "Tormenta", 96: "Tormenta con granizo ligero", 99: "Tormenta con granizo fuerte"
+    };
+
+    let responseText = "";
 
     if (timeframe === 'hoy') {
-        relevantData.tipo = 'actual';
-        relevantData.temp = Math.round(weatherInfo.data.current.temperature_2m);
-        relevantData.sensacion = Math.round(weatherInfo.data.current.apparent_temperature);
-        relevantData.humedad = weatherInfo.data.current.relative_humidity_2m;
-        relevantData.viento = weatherInfo.data.current.wind_speed_10m;
-        const code = weatherInfo.data.current.weather_code;
-        relevantData.descripcion = weatherDescriptions[code] || "Clima variable";
-    } else if (timeframe === 'mañana') {
-        relevantData.tipo = 'pronóstico para mañana';
-        relevantData.temp_max = Math.round(weatherInfo.data.daily.temperature_2m_max[1]);
-        relevantData.temp_min = Math.round(weatherInfo.data.daily.temperature_2m_min[1]);
-        const code = weatherInfo.data.daily.weather_code[1];
-        relevantData.descripcion = weatherDescriptions[code] || "Clima variable";
-    } else if (timeframe === 'semana') {
-        relevantData.tipo = 'pronóstico semanal';
-        relevantData.resumen = [];
-        for (let i = 0; i < Math.min(5, weatherInfo.data.daily.time.length); i++) {
-            const date = new Date(weatherInfo.data.daily.time[i]);
-            const dia = date.toLocaleDateString('es-AR', { weekday: 'long' });
-            const temp_max = Math.round(weatherInfo.data.daily.temperature_2m_max[i]);
-            const temp_min = Math.round(weatherInfo.data.daily.temperature_2m_min[i]);
-            const code = weatherInfo.data.daily.weather_code[i];
-            const desc = weatherDescriptions[code] || "Clima variable";
-            relevantData.resumen.push({ dia, temp_max, temp_min, descripcion: desc });
+        const current = weatherInfo.data.current;
+        const code = current.weather_code;
+        const temp = Math.round(current.temperature_2m);
+        const feelsLike = Math.round(current.apparent_temperature);
+        const desc = weatherDescriptions[code] || "Clima variable";
+        const emoji = weatherEmojis[code] || "🌤️";
+        responseText = `En ${weatherInfo.location} ahora hay ${desc.toLowerCase()} ${emoji}. La temperatura es de ${temp}°C (se siente como ${feelsLike}°C).`;
+    } 
+    else if (timeframe === 'mañana') {
+        const daily = weatherInfo.data.daily;
+        const code = daily.weather_code[1];
+        const max = Math.round(daily.temperature_2m_max[1]);
+        const min = Math.round(daily.temperature_2m_min[1]);
+        const desc = weatherDescriptions[code] || "Clima variable";
+        const emoji = weatherEmojis[code] || "🌤️";
+        responseText = `Mañana en ${weatherInfo.location} se espera ${desc.toLowerCase()} ${emoji}, con una máxima de ${max}°C y una mínima de ${min}°C.`;
+    } 
+    else if (timeframe === 'semana') {
+        const daily = weatherInfo.data.daily;
+        responseText = `Pronóstico para los próximos días en ${weatherInfo.location}:\n`;
+        for (let i = 0; i < Math.min(5, daily.time.length); i++) {
+            const date = new Date(daily.time[i]);
+            const dayName = date.toLocaleDateString('es-AR', { weekday: 'long' });
+            const code = daily.weather_code[i];
+            const max = Math.round(daily.temperature_2m_max[i]);
+            const min = Math.round(daily.temperature_2m_min[i]);
+            const desc = weatherDescriptions[code] || "variable";
+            const emoji = weatherEmojis[code] || "🌤️";
+            responseText += `\n• ${dayName}: ${desc} ${emoji} (${max}°/${min}°C)`;
         }
     }
 
-    const prompt = `
-        Eres Andes, un guía turístico amigable y conversador. Te daré datos del clima en formato JSON.
-        Tu tarea es convertir estos datos en una respuesta natural, amigable y útil para un turista.
-        Usa un tono canchero y cercano, y siempre incluye un emoji relevante. No digas "según los datos".
-        Datos del clima:
-        ${JSON.stringify(relevantData)}
-    `;
-    const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
-    const response = await getAIResponse(history, prompt);
-    return response.text;
-}
-                chatForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const userMessage = chatInput.value.trim();
-                    if (userMessage === '') return;
-                    addMessage({ text: userMessage }, 'user');
-                    chatInput.value = '';
-                    processUserMessage(userMessage);
-                });
-                chatWindow.addEventListener('click', function(e) {
-                    const placeLink = e.target.closest('.place-link');
-                    const ratePlaceButton = e.target.closest('.rate-place-btn');
-                    const viewOnMapButton = e.target.closest('.view-on-map-btn');
-                    if (placeLink) {
-                        const placeId = placeLink.dataset.id;
-                        const place = placesCache.find(p => p.id === placeId);
-                        if (place) {
-                            const aiMessage = formatPlaceForAI(place);
-                            addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
-                        }
-                    }
-                    if (ratePlaceButton) {
-                        const placeId = ratePlaceButton.dataset.id;
-                        openRatingModal(placeId);
-                    }
-                    if (viewOnMapButton) {
-                        const placeId = viewOnMapButton.dataset.id;
-                        const placeToShow = placesCache.find(p => p.id === placeId);
-                        if (placeToShow) {
-                            showPlaceOnMap(placeToShow);
-                        }
-                    }
-                });
-                function addMessage(message, sender) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
-                    const messageContent = document.createElement('div');
-                    messageContent.className = `${sender === 'user' ? 'user-message' : 'ai-message'} w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
-                    if (message.isHtml) {
-                        messageContent.innerHTML = message.text;
-                    } else if (message.isPlannerResponse) {
-                        messageContent.innerHTML = `<h3 class="font-bold text-lg mb-2">✨ Tu Plan de Viaje Personalizado</h3>${message.text}`;
-                    } else {
-                        messageContent.textContent = message.text;
-                    }
-                    if (sender === 'ai' && message.isSponsored) {
-                        messageContent.classList.add('sponsored-message');
-                    }
-                    messageDiv.appendChild(messageContent);
-                    chatWindow.appendChild(messageDiv);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
-                async function processUserMessage(userMessage) {
-                    const typingIndicator = showTypingIndicator();
-                    chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
-                    const systemPrompt = generateSystemPrompt();
-                    const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-                    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?):(.*?)\]/);
-                    if (weatherMatch) {
-                        const location = weatherMatch[1].trim();
-                        const timeframe = weatherMatch[2].trim();
-                        const weatherInfo = await getWeatherData(location);
-                        let finalText;
-                        if (weatherInfo.error) {
-                            finalText = weatherInfo.error;
-                        } else {
-                            finalText = await formatWeatherResponse(weatherInfo, timeframe);
-                        }
-                        chatWindow.removeChild(typingIndicator);
-                        addMessage({ text: finalText }, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-                    } else {
-                        chatWindow.removeChild(typingIndicator);
-                        addMessage({
-                            text: aiResponseData.text,
-                            isHtml: aiResponseData.isHtml,
-                            isSponsored: aiResponseData.isSponsored
-                        }, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
-                    }
-                }
-                function showTypingIndicator() {
-                    const typingDiv = document.createElement('div');
-                    typingDiv.className = 'w-full flex justify-start';
-                    typingDiv.innerHTML = `
-                        <div class="ai-message w-fit p-3 rounded-2xl shadow">
-                            <div class="typing-indicator">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                    `;
-                    chatWindow.appendChild(typingDiv);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                    return typingDiv;
-                }
-                async function getAIResponse(history, systemInstructions) {
-  try {
-    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-    const payload = {
-      contents: history,
-      systemInstruction: { parts: [{ text: systemInstructions }] }
-    };
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-      const errorBody = await response.json();
-      console.error("Error de la API:", errorBody);
-      throw new Error(`API call failed with status: ${response.status}`);
-    }
-    const result = await response.json();
-    const text = result.candidates[0].content.parts[0].text;
-    return processAIResponseText(text);
-  } catch (error) {
-    console.error("Error calling AI API:", error);
-    return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-  }
+    return responseText;
 }
                 function processAIResponseText(text) {
                     let isHtml = false;
@@ -2182,6 +2033,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
+
 
 
 
