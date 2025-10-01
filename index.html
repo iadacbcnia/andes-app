@@ -892,15 +892,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const radioStatusText = document.getElementById('radio-status-text');
                 const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
 
-                // --- STORYBOOK ELEMENTS ---
-                const storybookModal = document.getElementById('storybook-modal');
-                const storybookDropzone = document.getElementById('storybook-dropzone');
-                const storybookFileInput = document.getElementById('storybook-file-input');
-                const storybookPreview = document.getElementById('storybook-preview');
-                const storybookForm = document.getElementById('storybook-form');
-                const storybookResult = document.getElementById('storybook-result');
-                const storybookStoryOutput = document.getElementById('storybook-story-output');
-                
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
@@ -1136,7 +1127,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         const prompt = `Eres Andes, un narrador de viajes experto. Basado en las siguientes fotos y respuestas, crea una historia emotiva y detallada del viaje del usuario, como si fuera un libro de recuerdos.\n\nDestino: ${q1}\nCompañía: ${q2}\nMomento inolvidable: ${q3}\nInformación adicional: ${extra || "Ninguna"}\n\nDescribe los paisajes, emociones, colores, sonidos y momentos especiales. Usa un tono cálido, poético y personal. La historia debe tener entre 300 y 500 palabras.`;
 
                         try {
-                            const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
+                            const apiKey = ""; // Será inyectada por el entorno de ejecución
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                             const response = await fetch(apiUrl, {
                                 method: 'POST',
@@ -1176,11 +1167,18 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     });
                     
                     storybookResult.addEventListener('click', (e) => {
-                        if (e.target.id === 'download-pdf-btn') {
+                        const downloadPdfBtn = e.target.closest('#download-pdf-btn');
+                        const shareWhatsappBtn = e.target.closest('#share-whatsapp-btn');
+                        
+                        if (downloadPdfBtn) {
                             const storyContainer = document.getElementById('storybook-result-container');
                             const q1 = document.getElementById('q1').value || 'viaje';
                              if (storyContainer) {
                                 const elementToPrint = storyContainer.cloneNode(true);
+                                // Asegurarnos de que el texto sea negro en el PDF
+                                const textElement = elementToPrint.querySelector('.storybook-story-text');
+                                if (textElement) textElement.style.color = '#000';
+
                                 html2pdf().from(elementToPrint).set({
                                     margin: 0.5,
                                     filename: `mi-viaje-${q1.replace(/\s+/g, '-')}.pdf`,
@@ -1190,16 +1188,12 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                 }).save();
                             }
                         }
-                        if (e.target.id === 'share-whatsapp-btn') {
+                        if (shareWhatsappBtn) {
                             const storyTextElement = storybookResult.querySelector('.storybook-story-text');
                             if(storyTextElement) {
                                 const introText = "¡Mira la historia de mi viaje que creó Andes! 🌄\n\n";
                                 const storyText = storyTextElement.textContent;
-                                let shortStory = storyText;
-                                if (storyText.length > 1500) {
-                                    shortStory = storyText.substring(0, 1500) + '... [Lee la historia completa en el PDF]';
-                                }
-                                const text = encodeURIComponent(introText + shortStory);
+                                const text = encodeURIComponent(introText + storyText);
                                 window.open(`https://wa.me/?text=${text}`, '_blank');
                             }
                         }
@@ -2245,5 +2239,3 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div>
 </body>
 </html>
-
-
