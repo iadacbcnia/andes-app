@@ -1432,7 +1432,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
                     }
                     const coords = comarcaCoordinates[locationKey];
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=America/Argentina/Buenos_Aires&forecast_days=7`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m;
                     try {
                         const response = await fetch(url);
                         if (!response.ok) {
@@ -2155,3 +2155,4 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
+
