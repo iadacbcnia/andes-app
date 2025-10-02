@@ -1427,24 +1427,24 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     "corcovado": { lat: -43.53, lon: -71.47 }
                 };
                 async function getWeatherData(location) {
-                    const locationKey = location.toLowerCase();
-                    if (!comarcaCoordinates[locationKey]) {
-                        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
-                    }
-                    const coords = comarcaCoordinates[locationKey];
-                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
-                    try {
-                        const response = await fetch(weatherUrl);
-                        if (!response.ok) {
-                            return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
-                        }
-                        const data = await response.json();
-                        return { data, location };
-                    } catch (error) {
-                        console.error("Error fetching weather:", error);
-                        return { error: "Tuve un problema para conectarme con el servicio del clima." };
-                    }
-                }
+    const locationKey = location.toLowerCase();
+    if (!comarcaCoordinates[locationKey]) {
+        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
+    }
+    const coords = comarcaCoordinates[locationKey];
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
+        }
+        const data = await response.json();
+        return { data, location };
+    } catch (error) {
+        console.error("Error fetching weather:", error);
+        return { error: "Tuve un problema para conectarme con el servicio del clima." };
+    }
+}
                 async function formatWeatherResponse(weatherInfo, timeframe) {
                     const weatherEmojis = {
                         0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️",
@@ -1682,18 +1682,22 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     });
                 }
                 function generateSystemPrompt() {
-                    return `
-                        Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
-                        REGLAS FUNDAMENTALES:
-                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:Nombre de la Localidad]. Por ejemplo, si preguntan "cómo está el tiempo en El Bolsón", tu respuesta debe ser exactamente: [CLIMA:El Bolsón]. No añadas nada más.
-                        2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
-                            \`\`\`json
-                            ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
-                            \`\`\`
-                        3.  **CÓMO RESPONDER SOBRE LUGARES:** Menciona lugares de la base de datos entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
-                        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
-                    `;
-                }
+    return `
+        Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
+        REGLAS FUNDAMENTALES:
+        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:NombreDeLaLocalidad:timeframe], donde "timeframe" es "hoy", "mañana" o "semana". 
+            - Ejemplo 1: si preguntan "¿qué clima hace en El Hoyo?", responde: [CLIMA:El Hoyo:hoy]
+            - Ejemplo 2: si preguntan "¿cómo estará el clima mañana en Lago Puelo?", responde: [CLIMA:Lago Puelo:mañana]
+            - Ejemplo 3: si preguntan "pronóstico para la semana en El Bolsón", responde: [CLIMA:El Bolsón:semana]
+            - **Nunca** añadas texto antes o después del código. Solo el código.
+        2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
+            \`\`\`json
+            ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
+            \`\`\`
+        3.  **CÓMO RESPONDER SOBRE LUGARES:** Menciona lugares de la base de datos entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
+        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
+    `;
+}
                 plannerForm.addEventListener('click', (e) => {
                     const btn = e.target.closest('.planner-option-btn');
                     if (!btn) return;
@@ -2166,3 +2170,4 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
+
