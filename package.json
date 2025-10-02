@@ -2,10 +2,6 @@
   "name": "andes-app",
   "version": "1.0.0",
   "description": "Scraping para Andes Turismo",
-  "main": "pages/api/scrape-andes.js",
-  "scripts": {
-    "start": "node pages/api/scrape-andes.js"
-  },
   "dependencies": {
     "firebase-admin": "^12.0.0",
     "cheerio": "^1.0.0-rc.12",
