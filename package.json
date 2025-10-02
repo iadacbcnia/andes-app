@@ -1,0 +1,17 @@
+{
+  "name": "proyecto-andes-app-completo",
+  "version": "1.0.0",
+  "main": "scrape-elhoyo.js.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "firebase-admin": "^13.5.0",
+    "node-fetch": "^3.3.2"
+  }
+}
