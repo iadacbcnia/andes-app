@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Andes App - Turismo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
+    header { text-align: center; margin-bottom: 30px; }
+    #alertas-andes {
+      margin: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏔️ Andes App</h1>
+    <p>Información oficial para turistas en áreas naturales protegidas</p>
+  </header>
+
+  <!-- CONTENEDOR DE ALERTAS -->
+  <div id="alertas-andes">
+    <h3>⚠️ Alertas Oficiales</h3>
+    <div id="lista-alertas">Cargando...</div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // 🔑 Reemplazá estos valores con los de tu app Firebase
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY""AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
+      authDomain: "andes-app-turismo.firebaseapp.com",
+      projectId: "andes-app-turismo",
+      storageBucket: "andes-app-turismo.appspot.com",
+      messagingSenderId: "117915381709",
+      appId: "1:685878856963:web:660823dfdac24a0c39ed36"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function cargarAlertas() {
+      try {
+        const snapshot = await db.collection('actualizacionesOficiales')
+          .orderBy('fechaScraping', 'desc')
+          .limit(5)
+          .get();
+
+        const lista = document.getElementById('lista-alertas');
+        if (snapshot.empty) {
+          lista.innerHTML = "<p>No hay alertas recientes.</p>";
+          return;
+        }
+
+        let html = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const fecha = new Date(data.fechaScraping).toLocaleDateString('es-AR');
+          
+          if (data.parque === "ANP Río Azul" && data.novedades) {
+            data.novedades.forEach(nov => {
+              html += `<div style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 6px;">
+                <strong>${nov.titulo}</strong><br>
+                <small>${nov.contenido || "Sin detalles."}</small><br>
+                <em>Actualizado: ${fecha}</em>
+              </div>`;
+            });
+          } else if (data.parque === "El Hoyo") {
+            html += `<div style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 6px;">
+              <strong>📍 ${data.parque}</strong><br>
+              Estado: <b>${data.estado}</b><br>
+              <em>Actualizado: ${fecha}</em>
+            </div>`;
+          }
+        });
+
+        lista.innerHTML = html;
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById('lista-alertas').innerHTML = 
+          "<p>⚠️ No se pudieron cargar las alertas.</p>";
+      }
+    }
+
+    cargarAlertas();
+  </script>
+</body>
+</html>
