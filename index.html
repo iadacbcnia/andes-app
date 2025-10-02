@@ -245,6 +245,32 @@
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">1</span>
+                            Localidades a visitar
+                        </label>
+                        <div id="planner-localidades-group" class="grid grid-cols-2 gap-2 mt-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Bolsón" class="h-4 w-4 text-emerald-600 rounded" checked> El Bolsón
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Lago Puelo" class="h-4 w-4 text-emerald-600 rounded"> Lago Puelo
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Hoyo" class="h-4 w-4 text-emerald-600 rounded"> El Hoyo
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Epuyén" class="h-4 w-4 text-emerald-600 rounded"> Epuyén
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Maitén" class="h-4 w-4 text-emerald-600 rounded"> El Maitén
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Cholila" class="h-4 w-4 text-emerald-600 rounded"> Cholila
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
                             Tu estilo de viaje
                         </label>
                         <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
@@ -264,14 +290,14 @@
                     </div>
                     <div>
                         <label for="planner-days" class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
                             ¿Cuántos días te quedas?
                         </label>
                         <input type="number" id="planner-days" value="3" min="1" max="14" class="mt-1 block w-full p-3 border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-lg shadow-sm text-base text-center font-bold text-xl focus:border-emerald-500 focus:ring-emerald-500">
                     </div>
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
                             Tu nivel de energía
                         </label>
                         <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
@@ -1427,24 +1453,24 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     "corcovado": { lat: -43.53, lon: -71.47 }
                 };
                 async function getWeatherData(location) {
-    const locationKey = location.toLowerCase();
-    if (!comarcaCoordinates[locationKey]) {
-        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
-    }
-    const coords = comarcaCoordinates[locationKey];
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
-        }
-        const data = await response.json();
-        return { data, location };
-    } catch (error) {
-        console.error("Error fetching weather:", error);
-        return { error: "Tuve un problema para conectarme con el servicio del clima." };
-    }
-}
+                    const locationKey = location.toLowerCase();
+                    if (!comarcaCoordinates[locationKey]) {
+                        return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
+                    }
+                    const coords = comarcaCoordinates[locationKey];
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
+                        }
+                        const data = await response.json();
+                        return { data, location };
+                    } catch (error) {
+                        console.error("Error fetching weather:", error);
+                        return { error: "Tuve un problema para conectarme con el servicio del clima." };
+                    }
+                }
                 async function formatWeatherResponse(weatherInfo, timeframe) {
                     const weatherEmojis = {
                         0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️",
@@ -1464,10 +1490,9 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         const current = weatherInfo.data.current;
                         const code = current.weather_code;
                         const temp = Math.round(current.temperature_2m);
-                        const feelsLike = Math.round(current.apparent_temperature);
                         const desc = weatherDescriptions[code] || "Clima variable";
                         const emoji = weatherEmojis[code] || "🌤️";
-                        responseText = `En ${weatherInfo.location} ahora hay ${desc.toLowerCase()} ${emoji}. La temperatura es de ${temp}°C (se siente como ${feelsLike}°C).`;
+                        responseText = `En ${weatherInfo.location} ahora hay ${desc.toLowerCase()} ${emoji}. La temperatura es de ${temp}°C.`;
                     } 
                     else if (timeframe === 'mañana') {
                         const daily = weatherInfo.data.daily;
@@ -1682,22 +1707,22 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     });
                 }
                 function generateSystemPrompt() {
-    return `
-        Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
-        REGLAS FUNDAMENTALES:
-        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:NombreDeLaLocalidad:timeframe], donde "timeframe" es "hoy", "mañana" o "semana". 
-            - Ejemplo 1: si preguntan "¿qué clima hace en El Hoyo?", responde: [CLIMA:El Hoyo:hoy]
-            - Ejemplo 2: si preguntan "¿cómo estará el clima mañana en Lago Puelo?", responde: [CLIMA:Lago Puelo:mañana]
-            - Ejemplo 3: si preguntan "pronóstico para la semana en El Bolsón", responde: [CLIMA:El Bolsón:semana]
-            - **Nunca** añadas texto antes o después del código. Solo el código.
-        2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
-            \`\`\`json
-            ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
-            \`\`\`
-        3.  **CÓMO RESPONDER SOBRE LUGARES:** Menciona lugares de la base de datos entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
-        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
-    `;
-}
+                    return `
+                        Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
+                        REGLAS FUNDAMENTALES:
+                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:NombreDeLaLocalidad:timeframe], donde "timeframe" es "hoy", "mañana" o "semana". 
+                            - Ejemplo 1: si preguntan "¿qué clima hace en El Hoyo?", responde: [CLIMA:El Hoyo:hoy]
+                            - Ejemplo 2: si preguntan "¿cómo estará el clima mañana en Lago Puelo?", responde: [CLIMA:Lago Puelo:mañana]
+                            - Ejemplo 3: si preguntan "pronóstico para la semana en El Bolsón", responde: [CLIMA:El Bolsón:semana]
+                            - **Nunca** añadas texto antes o después del código. Solo el código.
+                        2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
+                            \`\`\`json
+                            ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
+                            \`\`\`
+                        3.  **CÓMO RESPONDER SOBRE LUGARES:** Menciona lugares de la base de datos entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
+                        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
+                    `;
+                }
                 plannerForm.addEventListener('click', (e) => {
                     const btn = e.target.closest('.planner-option-btn');
                     if (!btn) return;
@@ -1711,24 +1736,31 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 });
                 plannerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
+                    const selectedLocalidades = Array.from(document.querySelectorAll('#planner-localidades-group input[type="checkbox"]:checked'))
+                        .map(cb => cb.value);
+                    if (selectedLocalidades.length === 0) {
+                        alert("Por favor, selecciona al menos una localidad.");
+                        return;
+                    }
                     const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
                     const style = selectedStyleBtn ? selectedStyleBtn.dataset.value : 'Aventura';
                     const days = document.getElementById('planner-days').value;
                     const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
                     const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
                     plannerModal.classList.add('hidden');
-                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+                    const userMessage = `Quiero un plan de viaje para ${days} días en ${selectedLocalidades.join(', ')}, con un estilo ${style} y nivel de energía ${energy}.`;
                     addMessage({ text: userMessage }, 'user');
                     const typingIndicator = showTypingIndicator();
                     const plannerHistory = [{
                         role: "user",
                         parts: [{ text: `
+                            - Localidades: ${selectedLocalidades.join(', ')}
                             - Estilo de Viaje: ${style}
                             - Duración: ${days} días
                             - Nivel de Energía: ${energy}
                         ` }]
                     }];
-                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
+                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy, selectedLocalidades);
                     const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
                     chatWindow.removeChild(typingIndicator);
                     addMessage({
@@ -1736,11 +1768,13 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         isPlannerResponse: true
                     }, 'ai');
                 });
-                function generatePlannerPrompt(style, days, energy) {
+                function generatePlannerPrompt(style, days, energy, localidades) {
+                    const localidadesStr = localidades.join(', ');
                     return `
                         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
                         Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
                         PREFERENCIAS DEL USUARIO:
+                        - Localidades a visitar: ${localidadesStr}
                         - Estilo de Viaje: ${style}
                         - Duración: ${days} días
                         - Nivel de Energía: ${energy}
@@ -1751,20 +1785,21 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         INSTRUCCIONES PARA CREAR EL ITINERARIO:
                         1.  **Formato Obligatorio:** Usa Markdown. Crea un título para cada día (ej: "**Día 1: Aventura y Sabores**"). Para cada día, sugiere 2 o 3 actividades/lugares. Usa listas con guiones.
                         2.  **Selección Inteligente:**
-                            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
-                            - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
-                            - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
-                        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1** del plan, enfócate en sugerir actividades y lugares para comer. **NO** sugieras un "alojamiento", ya que se asume que el viajero ya lo tiene resuelto para su llegada. La única excepción es que encuentres un alojamiento marcado como auspiciante de alta categoría (lo cual se indicará en el futuro).
-                        4.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
-                        5.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
-                        6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
-                        EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
+                            - **Solo usa lugares de las localidades indicadas**: ${localidadesStr}.
+                            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*.
+                            - **Logística:** Agrupa actividades en la misma localidad o cerca para evitar viajes largos.
+                            - **Variedad:** Incluye una mezcla de actividades, gastronomía y paisajes.
+                        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1**, enfócate en actividades y lugares para comer. **NO** sugieras alojamiento.
+                        4.  **Menciona Lugares Correctamente:** Usa corchetes dobles: [[Nombre Exacto del Lugar]].
+                        5.  **Descripción Atractiva:** Frases cortas y atractivas.
+                        6.  **No Saludes ni Despidas:** Empieza directamente con "**Día 1:...**".
+                        EJEMPLO DE RESPUESTA (para un plan de 2 días en El Bolsón y Lago Puelo, Aventura, Alto):
                         **Día 1: Montaña y Cerveza Artesanal**
-                        - Comienza el día con el trekking al [[Cajón del Azul]]. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
-                        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]]. Tienen una vista espectacular.
-                        **Día 2: Cultura y Sabor Local**
-                        - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
-                        - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
+                        - Comienza el día con el trekking al [[Cajón del Azul]] en El Bolsón. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
+                        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]] en El Bolsón. Tienen una vista espectacular.
+                        **Día 2: Naturaleza y Sabores en Lago Puelo**
+                        - Explora el Parque Nacional Lago Puelo y disfruta de sus senderos.
+                        - Para la cena, prueba las empanadas caseras en [[El Rincón del Lago]].
                     `;
                 }
                 const downloadBackupBtn = document.getElementById('download-backup-btn');
@@ -2170,4 +2205,3 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
-
