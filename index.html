@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com?v=2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
     <style>
         :root {
             --emerald-500: #10b981;
@@ -58,9 +57,6 @@
         .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label, .star-rating:not(:checked) > label:hover, .star-rating:not(:checked) > label:hover ~ label { color: #f59e0b; }
         #map { height: 100%; width: 100%; }
-        .ar-top-bar { position: absolute; top: 0; left: 0; right: 0; padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .ar-pill { background-color: rgba(0, 0, 0, 0.6); color: white; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; }
-        #ar-status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; color: white; background-color: rgba(0,0,0,0.7); padding: 1rem; border-radius: 0.5rem; text-align: center; }
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
@@ -149,7 +145,6 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
-
     <!-- Pantalla de Bienvenida -->
     <div id="welcome-screen" class="flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full min-h-[100dvh] fixed inset-0 z-50 transition-opacity duration-500 box-border">
         <div class="max-w-sm w-full flex flex-col items-center justify-center" style="max-height: calc(100dvh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 80px)); overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 80px); padding-top: env(safe-area-inset-top, 10px);">
@@ -175,10 +170,8 @@
             </button>
         </div>
     </div>
-
     <!-- App principal (oculta al inicio) -->
     <div id="main-app" class="hidden flex flex-col h-dvh">
-
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
             <div class="w-full flex justify-start">
                 <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
@@ -225,18 +218,13 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
                 <span>Mapa</span>
             </button>
-            <button id="ar-btn" class="flex flex-col items-center text-xs">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
-                <span>AR</span>
-            </button>
             <button id="admin-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                 <span>Admin</span>
             </button>
         </div>
 
-        <!-- Todos los modales y el resto del código JS se mantienen igual -->
-        <!-- Copiado 1:1 del archivo original -->
+        <!-- Modales -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
                 <div class="text-center mb-8">
@@ -257,6 +245,32 @@
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">1</span>
+                            Localidades a visitar
+                        </label>
+                        <div id="planner-localidades-group" class="grid grid-cols-2 gap-2 mt-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Bolsón" class="h-4 w-4 text-emerald-600 rounded" checked> El Bolsón
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Lago Puelo" class="h-4 w-4 text-emerald-600 rounded"> Lago Puelo
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Hoyo" class="h-4 w-4 text-emerald-600 rounded"> El Hoyo
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Epuyén" class="h-4 w-4 text-emerald-600 rounded"> Epuyén
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="El Maitén" class="h-4 w-4 text-emerald-600 rounded"> El Maitén
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Cholila" class="h-4 w-4 text-emerald-600 rounded"> Cholila
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
                             Tu estilo de viaje
                         </label>
                         <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
@@ -276,14 +290,14 @@
                     </div>
                     <div>
                         <label for="planner-days" class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">2</span>
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
                             ¿Cuántos días te quedas?
                         </label>
                         <input type="number" id="planner-days" value="3" min="1" max="14" class="mt-1 block w-full p-3 border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-lg shadow-sm text-base text-center font-bold text-xl focus:border-emerald-500 focus:ring-emerald-500">
                     </div>
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">3</span>
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
                             Tu nivel de energía
                         </label>
                         <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
@@ -440,11 +454,6 @@
                                 <input type="url" id="lugar-imagen" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto.jpg">
                             </div>
                             <div>
-                                <label for="lugar-imagen360" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL de Imagen 360° (Opcional)</label>
-                                <input type="url" id="lugar-imagen360" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="https://ejemplo.com/foto_360.jpg">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pega aquí el link a una foto equirectangular (formato 360°).</p>
-                            </div>
-                            <div>
                                 <label for="lugar-descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Principal</label>
                                 <div class="relative w-full mt-1">
                                    <textarea id="lugar-descripcion" rows="3" required class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm"></textarea>
@@ -464,9 +473,22 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-center">
-                                <input id="lugar-sponsor" type="checkbox" class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
-                                <label for="lugar-sponsor" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">⭐ Es un lugar recomendado</label>
+                            <div class="mt-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nivel de Recomendación</label>
+                                <div class="flex items-center space-x-4">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="nivel-recomendacion" value="1" class="h-4 w-4 text-amber-500"> ⭐ Nivel 1
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="nivel-recomendacion" value="2" class="h-4 w-4 text-amber-500"> ⭐⭐ Nivel 2
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="nivel-recomendacion" value="3" class="h-4 w-4 text-amber-500"> ⭐⭐⭐ Nivel 3
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="nivel-recomendacion" value="0" class="h-4 w-4 text-gray-400" checked> Sin destacar
+                                    </label>
+                                </div>
                             </div>
                             <div class="pt-4 flex justify-end">
                                 <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px]">Añadir Lugar</button>
@@ -619,31 +641,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 <div id="map"></div>
             </div>
         </div>
-        <div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
-            <div class="absolute top-0 right-0 p-2 z-10">
-                <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
-            <a-scene id="vr-scene" embedded>
-                <a-sky id="vr-sky" radius="100"></a-sky>
-            </a-scene>
-        </div>
-        <div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
-            <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
-                <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div id="ar-permissions-pill" class="ar-pill"></div>
-            </div>
-            <div id="ar-status"></div>
-            <div id="ar-modal-content">
-            </div>
-        </div>
         <audio id="radio-player" preload="none"></audio>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -661,8 +658,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const rinconModal = document.getElementById('rincon-modal');
                 const ratingModal = document.getElementById('rating-modal');
                 const mapModal = document.getElementById('map-modal');
-                const vrModal = document.getElementById('vr-modal');
-                const arModal = document.getElementById('ar-modal');
                 const passwordModal = document.getElementById('password-modal');
                 const adminPanelModal = document.getElementById('admin-panel-modal');
                 const plannerModal = document.getElementById('planner-modal');
@@ -681,7 +676,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const commentInput = document.getElementById('comment-input');
                 const rinconBtn = document.getElementById('rincon-btn');
                 const mapBtn = document.getElementById('map-btn');
-                const arBtn = document.getElementById('ar-btn');
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
@@ -689,8 +683,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
                 const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
                 const closeMapModalBtn = document.getElementById('close-map-modal-btn');
-                const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
-                const closeArModalBtn = document.getElementById('close-ar-modal-btn');
                 const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
                 const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
                 const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
@@ -703,14 +695,12 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const tipForm = document.getElementById('tip-form');
                 const tipInput = document.getElementById('tip-input');
                 const plannerForm = document.getElementById('planner-form');
-                const vrSky = document.getElementById('vr-sky');
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
                 const submitButton = chatForm.querySelector('button[type="submit"]');
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
-                
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 let db;
                 let auth;
@@ -845,9 +835,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     manageModal.classList.remove('hidden');
                     adminPanelModal.classList.add('hidden');
                 });
-                arBtn.addEventListener('click', () => arModal.classList.remove('hidden'));
-                closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
-                closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
                 closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
                 const tabSingle = document.getElementById('tab-single');
                 const tabBulk = document.getElementById('tab-bulk');
@@ -979,7 +966,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         imagenURL: '',
                         imagen360URL: '',
                         datosClave: '',
-                        esAuspiciante: false,
+                        nivelRecomendacion: 0,
                         createdAt: serverTimestamp()
                     };
                     try {
@@ -1062,6 +1049,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     submitBtn.textContent = 'Guardando...';
                     const tipoSelect = document.getElementById('lugar-tipo');
                     const selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+                    const nivelRecomendacion = parseInt(document.querySelector('input[name="nivel-recomendacion"]:checked')?.value || 0);
                     const placeData = {
                         tipo: tipoSelect.value,
                         subtipo: selectedOption.dataset.subtype || '',
@@ -1072,10 +1060,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         latitud: document.getElementById('lugar-latitud').value,
                         longitud: document.getElementById('lugar-longitud').value,
                         imagenURL: document.getElementById('lugar-imagen').value,
-                        imagen360URL: document.getElementById('lugar-imagen360').value,
+                        imagen360URL: '',
                         descripcion: document.getElementById('lugar-descripcion').value,
                         datosClave: document.getElementById('lugar-datos-clave').value,
-                        esAuspiciante: document.getElementById('lugar-sponsor').checked
+                        nivelRecomendacion: nivelRecomendacion
                     };
                     try {
                         if (!lugaresCollectionRef) throw new Error("La referencia a la base de datos no está lista.");
@@ -1253,9 +1241,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                     <div class="p-2 space-y-2">
                             `;
                             placesInSubtipo.sort((a, b) => a.nombre.localeCompare(b.nombre)).forEach(place => {
+                                const stars = '⭐'.repeat(place.nivelRecomendacion || 0);
                                 localidadHtml += `
                                         <div class="flex justify-between items-center p-2 rounded-md bg-gray-50 dark:bg-slate-600/50">
-                                            <span class="truncate pr-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</span>
+                                            <span class="truncate pr-2">${stars} ${place.nombre}</span>
                                             <div class="flex-shrink-0 flex items-center gap-2">
                                                 <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-500" data-edit-type="place" data-id="${place.id}" title="Editar Lugar">
                                                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
@@ -1292,8 +1281,12 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                 document.getElementById('lugar-descripcion').value = placeToEdit.descripcion || '';
                                 document.getElementById('lugar-datos-clave').value = placeToEdit.datosClave || '';
                                 document.getElementById('lugar-imagen').value = placeToEdit.imagenURL || '';
-                                document.getElementById('lugar-imagen360').value = placeToEdit.imagen360URL || '';
-                                document.getElementById('lugar-sponsor').checked = placeToEdit.esAuspiciante || false;
+                                const nivelRecomendacion = placeToEdit.nivelRecomendacion || 0;
+                                document.querySelectorAll('input[name="nivel-recomendacion"]').forEach(radio => {
+                                    if (parseInt(radio.value) === nivelRecomendacion) {
+                                        radio.checked = true;
+                                    }
+                                });
                                 const tipoSelect = document.getElementById('lugar-tipo');
                                 for(let i=0; i < tipoSelect.options.length; i++) {
                                     const option = tipoSelect.options[i];
@@ -1465,53 +1458,66 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         return { error: "Lo siento, solo puedo darte el clima de las localidades de la Comarca Andina y alrededores." };
                     }
                     const coords = comarcaCoordinates[locationKey];
-                    const apiKey = "a6200921f878ea692204d518fa54b6d9";
-                    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${coords.lat}&lon=${coords.lon}&exclude=minutely,hourly,alerts&appid=${apiKey}&units=metric&lang=es`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Argentina/Buenos_Aires&forecast_days=5`;
                     try {
                         const response = await fetch(url);
                         if (!response.ok) {
                             return { error: "Uhm, parece que el servicio meteorológico no está respondiendo. Intenta más tarde." };
                         }
                         const data = await response.json();
-                        return { data: data, location: location };
+                        return { data, location };
                     } catch (error) {
                         console.error("Error fetching weather:", error);
                         return { error: "Tuve un problema para conectarme con el servicio del clima." };
                     }
                 }
                 async function formatWeatherResponse(weatherInfo, timeframe) {
-                    let relevantData = {
-                        lugar: weatherInfo.location
+                    const weatherEmojis = {
+                        0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️",
+                        51: "🌦️", 53: "🌦️", 55: "🌦️", 61: "🌧️", 63: "🌧️", 65: "🌧️",
+                        71: "❄️", 73: "❄️", 75: "❄️", 95: "⛈️", 96: "⛈️", 99: "⛈️"
                     };
+                    const weatherDescriptions = {
+                        0: "Cielo despejado", 1: "Mayormente despejado", 2: "Parcialmente nublado",
+                        3: "Nublado", 45: "Niebla", 48: "Niebla con escarcha",
+                        51: "Llovizna ligera", 53: "Llovizna moderada", 55: "Llovizna densa",
+                        61: "Lluvia ligera", 63: "Lluvia moderada", 65: "Lluvia fuerte",
+                        71: "Nevada ligera", 73: "Nevada moderada", 75: "Nevada fuerte",
+                        95: "Tormenta", 96: "Tormenta con granizo ligero", 99: "Tormenta con granizo fuerte"
+                    };
+                    let responseText = "";
                     if (timeframe === 'hoy') {
-                        relevantData.tipo = 'actual';
-                        relevantData.temp = Math.round(weatherInfo.data.current.temp);
-                        relevantData.descripcion = weatherInfo.data.current.weather[0].description;
-                    } else if (timeframe === 'mañana') {
-                        relevantData.tipo = 'pronóstico para mañana';
-                        const tomorrow = weatherInfo.data.daily[1];
-                        relevantData.temp_max = Math.round(tomorrow.temp.max);
-                        relevantData.temp_min = Math.round(tomorrow.temp.min);
-                        relevantData.descripcion = tomorrow.weather[0].description;
-                    } else if (timeframe === 'semana') {
-                        relevantData.tipo = 'pronóstico semanal';
-                        relevantData.resumen = weatherInfo.data.daily.map(day => ({
-                            dia: new Date(day.dt * 1000).toLocaleDateString('es-AR', { weekday: 'long' }),
-                            temp_max: Math.round(day.temp.max),
-                            temp_min: Math.round(day.temp.min),
-                            descripcion: day.weather[0].description
-                        }));
+                        const current = weatherInfo.data.current;
+                        const code = current.weather_code;
+                        const temp = Math.round(current.temperature_2m);
+                        const desc = weatherDescriptions[code] || "Clima variable";
+                        const emoji = weatherEmojis[code] || "🌤️";
+                        responseText = `En ${weatherInfo.location} ahora hay ${desc.toLowerCase()} ${emoji}. La temperatura es de ${temp}°C.`;
+                    } 
+                    else if (timeframe === 'mañana') {
+                        const daily = weatherInfo.data.daily;
+                        const code = daily.weather_code[1];
+                        const max = Math.round(daily.temperature_2m_max[1]);
+                        const min = Math.round(daily.temperature_2m_min[1]);
+                        const desc = weatherDescriptions[code] || "Clima variable";
+                        const emoji = weatherEmojis[code] || "🌤️";
+                        responseText = `Mañana en ${weatherInfo.location} se espera ${desc.toLowerCase()} ${emoji}, con una máxima de ${max}°C y una mínima de ${min}°C.`;
+                    } 
+                    else if (timeframe === 'semana') {
+                        const daily = weatherInfo.data.daily;
+                        responseText = `Pronóstico para los próximos días en ${weatherInfo.location}:\n`;
+                        for (let i = 0; i < Math.min(5, daily.time.length); i++) {
+                            const date = new Date(daily.time[i]);
+                            const dayName = date.toLocaleDateString('es-AR', { weekday: 'long' });
+                            const code = daily.weather_code[i];
+                            const max = Math.round(daily.temperature_2m_max[i]);
+                            const min = Math.round(daily.temperature_2m_min[i]);
+                            const desc = weatherDescriptions[code] || "variable";
+                            const emoji = weatherEmojis[code] || "🌤️";
+                            responseText += `\n• ${dayName}: ${desc} ${emoji} (${max}°/${min}°C)`;
+                        }
                     }
-                    const prompt = `
-                        Eres Andes, un guía turístico amigable y conversador. Te daré datos del clima en formato JSON.
-                        Tu tarea es convertir estos datos en una respuesta natural, amigable y útil para un turista.
-                        Usa un tono canchero y cercano, y siempre incluye un emoji relevante. No digas "según los datos".
-                        Datos del clima:
-                        ${JSON.stringify(relevantData)}
-                    `;
-                    const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
-                    const response = await getAIResponse(history, prompt);
-                    return response.text;
+                    return responseText;
                 }
                 chatForm.addEventListener('submit', (e) => {
                     e.preventDefault();
@@ -1523,7 +1529,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 });
                 chatWindow.addEventListener('click', function(e) {
                     const placeLink = e.target.closest('.place-link');
-                    const view360Button = e.target.closest('.view-360-btn');
                     const ratePlaceButton = e.target.closest('.rate-place-btn');
                     const viewOnMapButton = e.target.closest('.view-on-map-btn');
                     if (placeLink) {
@@ -1532,15 +1537,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         if (place) {
                             const aiMessage = formatPlaceForAI(place);
                             addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
-                        }
-                    }
-                    if (view360Button) {
-                        const imageUrl = view360Button.dataset.image;
-                        if (imageUrl && vrSky) {
-                            vrSky.setAttribute('src', imageUrl);
-                            vrModal.classList.remove('hidden');
-                        } else {
-                            addMessage({text: "Lo siento, este lugar no tiene una imagen 360° disponible."}, 'ai');
                         }
                     }
                     if (ratePlaceButton) {
@@ -1619,30 +1615,25 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 }
                 async function getAIResponse(history, systemInstructions) {
   try {
-    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
+    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
     const payload = {
       contents: history,
       systemInstruction: { parts: [{ text: systemInstructions }] }
     };
-
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
     if (!response.ok) {
       const errorBody = await response.json();
       console.error("Error de la API:", errorBody);
       throw new Error(`API call failed with status: ${response.status}`);
     }
-
     const result = await response.json();
     const text = result.candidates[0].content.parts[0].text;
     return processAIResponseText(text);
-
   } catch (error) {
     console.error("Error calling AI API:", error);
     return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
@@ -1656,7 +1647,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         const foundPlace = findPlaceByName(placeName.trim());
                         if (foundPlace) {
                             isHtml = true;
-                            if (foundPlace.esAuspiciante) isSponsored = true;
+                            if (foundPlace.nivelRecomendacion > 0) isSponsored = true;
                             return `<a class="place-link" data-id="${foundPlace.id}">${placeName}</a>`;
                         }
                         return placeName;
@@ -1675,10 +1666,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
                 }
                 function formatPlaceForAI(place) {
-                    let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
+                    const stars = '⭐'.repeat(place.nivelRecomendacion || 0);
+                    let html = `<h3 class="font-bold text-lg mb-2">${stars} ${place.nombre}</h3>`;
                     html += `<p class="text-sm">${place.descripcion}</p>`;
-                    if (place.datosClave) {2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded text-gray-800 dark:text-gray-100"> <strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>datos clave:
-                                html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded text-gray-800 dark:text-gray-100"> <strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+                    if (place.datosClave) {
+                        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
                     }
                     if (place.direccion || place.telefono) {
                         html += `<div class="mt-2 text-xs">`;
@@ -1690,9 +1682,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
                     }
                     html += `<div class="mt-3 flex flex-wrap gap-2">`;
-                    if (place.imagen360URL) {
-                        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
-                    }
                     html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
                     if (place.latitud && place.longitud) {
                         html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
@@ -1721,7 +1710,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     return `
                         Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
                         REGLAS FUNDAMENTALES:
-                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:Nombre de la Localidad]. Por ejemplo, si preguntan "cómo está el tiempo en El Bolsón", tu respuesta debe ser exactamente: [CLIMA:El Bolsón]. No añadas nada más.
+                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:NombreDeLaLocalidad:timeframe], donde "timeframe" es "hoy", "mañana" o "semana". 
+                            - Ejemplo 1: si preguntan "¿qué clima hace en El Hoyo?", responde: [CLIMA:El Hoyo:hoy]
+                            - Ejemplo 2: si preguntan "¿cómo estará el clima mañana en Lago Puelo?", responde: [CLIMA:Lago Puelo:mañana]
+                            - Ejemplo 3: si preguntan "pronóstico para la semana en El Bolsón", responde: [CLIMA:El Bolsón:semana]
+                            - **Nunca** añadas texto antes o después del código. Solo el código.
                         2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
                             \`\`\`json
                             ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
@@ -1743,24 +1736,31 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 });
                 plannerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
+                    const selectedLocalidades = Array.from(document.querySelectorAll('#planner-localidades-group input[type="checkbox"]:checked'))
+                        .map(cb => cb.value);
+                    if (selectedLocalidades.length === 0) {
+                        alert("Por favor, selecciona al menos una localidad.");
+                        return;
+                    }
                     const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
                     const style = selectedStyleBtn ? selectedStyleBtn.dataset.value : 'Aventura';
                     const days = document.getElementById('planner-days').value;
                     const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
                     const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
                     plannerModal.classList.add('hidden');
-                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+                    const userMessage = `Quiero un plan de viaje para ${days} días en ${selectedLocalidades.join(', ')}, con un estilo ${style} y nivel de energía ${energy}.`;
                     addMessage({ text: userMessage }, 'user');
                     const typingIndicator = showTypingIndicator();
                     const plannerHistory = [{
                         role: "user",
                         parts: [{ text: `
+                            - Localidades: ${selectedLocalidades.join(', ')}
                             - Estilo de Viaje: ${style}
                             - Duración: ${days} días
                             - Nivel de Energía: ${energy}
                         ` }]
                     }];
-                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
+                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy, selectedLocalidades);
                     const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
                     chatWindow.removeChild(typingIndicator);
                     addMessage({
@@ -1768,11 +1768,13 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         isPlannerResponse: true
                     }, 'ai');
                 });
-                function generatePlannerPrompt(style, days, energy) {
+                function generatePlannerPrompt(style, days, energy, localidades) {
+                    const localidadesStr = localidades.join(', ');
                     return `
                         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
                         Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
                         PREFERENCIAS DEL USUARIO:
+                        - Localidades a visitar: ${localidadesStr}
                         - Estilo de Viaje: ${style}
                         - Duración: ${days} días
                         - Nivel de Energía: ${energy}
@@ -1783,20 +1785,21 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         INSTRUCCIONES PARA CREAR EL ITINERARIO:
                         1.  **Formato Obligatorio:** Usa Markdown. Crea un título para cada día (ej: "**Día 1: Aventura y Sabores**"). Para cada día, sugiere 2 o 3 actividades/lugares. Usa listas con guiones.
                         2.  **Selección Inteligente:**
-                            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
-                            - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
-                            - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
-                        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1** del plan, enfócate en sugerir actividades y lugares para comer. **NO** sugieras un "alojamiento", ya que se asume que el viajero ya lo tiene resuelto para su llegada. La única excepción es que encuentres un alojamiento marcado como auspiciante de alta categoría (lo cual se indicará en el futuro).
-                        4.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
-                        5.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
-                        6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
-                        EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
+                            - **Solo usa lugares de las localidades indicadas**: ${localidadesStr}.
+                            - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*.
+                            - **Logística:** Agrupa actividades en la misma localidad o cerca para evitar viajes largos.
+                            - **Variedad:** Incluye una mezcla de actividades, gastronomía y paisajes.
+                        3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1**, enfócate en actividades y lugares para comer. **NO** sugieras alojamiento.
+                        4.  **Menciona Lugares Correctamente:** Usa corchetes dobles: [[Nombre Exacto del Lugar]].
+                        5.  **Descripción Atractiva:** Frases cortas y atractivas.
+                        6.  **No Saludes ni Despidas:** Empieza directamente con "**Día 1:...**".
+                        EJEMPLO DE RESPUESTA (para un plan de 2 días en El Bolsón y Lago Puelo, Aventura, Alto):
                         **Día 1: Montaña y Cerveza Artesanal**
-                        - Comienza el día con el trekking al [[Cajón del Azul]]. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
-                        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]]. Tienen una vista espectacular.
-                        **Día 2: Cultura y Sabor Local**
-                        - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
-                        - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
+                        - Comienza el día con el trekking al [[Cajón del Azul]] en El Bolsón. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
+                        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]] en El Bolsón. Tienen una vista espectacular.
+                        **Día 2: Naturaleza y Sabores en Lago Puelo**
+                        - Explora el Parque Nacional Lago Puelo y disfruta de sus senderos.
+                        - Para la cena, prueba las empanadas caseras en [[El Rincón del Lago]].
                     `;
                 }
                 const downloadBackupBtn = document.getElementById('download-backup-btn');
@@ -1813,7 +1816,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     const headers = [
                         'id', 'tipo', 'subtipo', 'localidad', 'nombre', 'direccion', 'telefono', 
                         'latitud', 'longitud', 'imagenURL', 'imagen360URL', 'descripcion', 
-                        'datosClave', 'esAuspiciante'
+                        'datosClave', 'nivelRecomendacion'
                     ];
                     const escapeCSV = (value) => {
                         if (value === null || value === undefined) return '';
@@ -1823,7 +1826,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                         return str;
                     };
-                    let csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n';
+                    let csvContent = "text/csv;charset=utf-8," + headers.join(',') + '\n';
                     placesCache.forEach(place => {
                         const row = headers.map(header => escapeCSV(place[header]));
                         csvContent += row.join(',') + '\n';
@@ -1871,8 +1874,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                 const newPlace = {};
                                 headers.forEach((header, index) => {
                                     if (header !== 'id') {
-                                        if (header === 'esAuspiciante') {
-                                            newPlace[header] = values[index] === 'true';
+                                        if (header === 'nivelRecomendacion') {
+                                            newPlace[header] = parseInt(values[index]) || 0;
                                         } else {
                                             newPlace[header] = values[index] || '';
                                         }
@@ -2077,58 +2080,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         highlightMarker.bindPopup(popupContent).openPopup();
                     }, 200);
                 }
-                arModal.addEventListener('show.bs.modal', function () {
-                    console.log("AR Modal is being shown");
-                });
-                arBtn.addEventListener('click', async () => {
-                    const arStatus = document.getElementById('ar-status');
-                    const arContent = document.getElementById('ar-modal-content');
-                    const arTopBar = document.getElementById('ar-top-bar');
-                    arStatus.textContent = "Iniciando modo AR...";
-                    arContent.innerHTML = ''; 
-                    if (typeof AFRAME === 'undefined') {
-                        arStatus.textContent = "Error: La librería de Realidad Aumentada no pudo cargarse.";
-                        return;
-                    }
-                    const sceneEl = document.createElement('a-scene');
-                    sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
-                    sceneEl.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false;');
-                    sceneEl.setAttribute('renderer', 'antialias: true; alpha: true');
-                    const cameraEl = document.createElement('a-camera');
-                    cameraEl.setAttribute('gps-new-camera', 'gpsMinDistance: 5');
-                    sceneEl.appendChild(cameraEl);
-                    placesCache.forEach(place => {
-                        if (place.latitud && place.longitud) {
-                            const entityEl = document.createElement('a-entity');
-                            entityEl.setAttribute('gps-new-entity-place', `latitude: ${place.latitud}; longitude: ${place.longitud}`);
-                            entityEl.setAttribute('look-at', '[gps-new-camera]');
-                            const box = document.createElement('a-box');
-                            box.setAttribute('scale', '10 10 10');
-                            box.setAttribute('material', 'color: red');
-                            box.setAttribute('position', '0 50 0'); 
-                            entityEl.appendChild(box);
-                            const text = document.createElement('a-text');
-                            text.setAttribute('value', place.nombre);
-                            text.setAttribute('scale', '50 50 50');
-                            text.setAttribute('position', '0 65 0');
-                            text.setAttribute('align', 'center');
-                            entityEl.appendChild(text);
-                            sceneEl.appendChild(entityEl);
-                        }
-                    });
-                    arContent.appendChild(sceneEl);
-                    sceneEl.addEventListener('loaded', function () {
-                        arStatus.style.display = 'none';
-                        arTopBar.style.display = 'flex';
-                    });
-                    arModal.classList.remove('hidden');
-                });
-                closeArModalBtn.addEventListener('click', () => {
-                    arModal.classList.add('hidden');
-                    document.getElementById('ar-modal-content').innerHTML = ''; 
-                    document.getElementById('ar-status').style.display = 'block';
-                    document.getElementById('ar-top-bar').style.display = 'none';
-                });
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     mainRecognition = new SpeechRecognition();
@@ -2234,7 +2185,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     setRadioState('stopped');
                 });
                 setRadioState('paused');
-                // --- FUNCIÓN CORREGIDA PARA EL BOTÓN COMENZAR ---
                 function startApp() {
                     const welcomeScreen = document.getElementById('welcome-screen');
                     const mainApp = document.getElementById('main-app');
