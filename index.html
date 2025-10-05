@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Andes - Tu Guía en la Comarca</title>
-    <script src="https://cdn.tailwindcss.com?v=3"></script>
+    <script src="https://cdn.tailwindcss.com?v=2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- AFRAME ya no se usa, pero lo dejamos por si acaso (opcional) -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
     <style>
         :root {
@@ -17,23 +18,20 @@
             --gray-100: #f3f4f6;
             --white: #ffffff;
         }
-        html, body {
-            overscroll-behavior: none;
-        }
         .dark {
             --bg-color: var(--slate-800);
             --text-color: var(--gray-100);
             --card-bg: var(--slate-700);
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color, var(--gray-100));
-            color: var(--text-color, var(--slate-900));
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
+    font-family: 'Inter', sans-serif;
+    background-color: #1e293b; /* slate-800 */
+    color: #f3f4f6; /* gray-100 */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+}
         .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
         .ai-message {
             background-color: var(--slate-700);
@@ -42,6 +40,10 @@
             padding: 1rem;
             line-height: 1.5;
         }
+        .ai-message .bg-gray-100 {
+    background-color: #334155 !important; /* slate-700 */
+    color: #f3f4f6 !important; /* gray-100 */
+}
         .sponsored-message {
             background-color: var(--card-bg, var(--white));
             border: 2px solid #facc15;
@@ -66,30 +68,85 @@
             animation: pulse-red 1.5s infinite;
             border-radius: 50%;
         }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #1e293b; /* slate-800 - mismo fondo que el cuerpo */
+    border-top: 1px solid #334155; /* slate-700 */
+    padding: 0.5rem 0;
+    z-index: 50;
+}
+        .bottom-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #f3f4f6; /* gray-100 - texto blanco */
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+        .bottom-nav-btn.active, .bottom-nav-btn:hover {
+    color: #10b981; /* emerald-500 */
+}
+        .bottom-nav-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-bottom: 0.25rem;
         }
-        #toast-notification {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e293b; /* slate-800 */
+        }
+        .input-container {
+    padding: 1rem;
+    background-color: #1e293b; /* slate-800 */
+    border-top: 1px solid #334155; /* slate-700 */
+}
+        .radio-player-container {
+            padding: 0.5rem 1rem;
+            background-color: var(--card-bg, var(--white));
+            border-top: 1px solid var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .radio-logo-container {
+            position: relative;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: black;
+            border-radius: 50%;
+        }
+        .radio-logo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        .radio-icon-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            font-weight: 500;
-            z-index: 100;
-            transition: bottom 0.5s ease-in-out;
-        }
-        #toast-notification.show {
-            bottom: 80px; /* Adjust based on your bottom nav height */
         }
     </style>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
-<body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
+<body class="dark bg-slate-800 text-gray-100">
     <!-- Pantalla de Bienvenida -->
     <div id="welcome-screen" class="flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full min-h-[100dvh] fixed inset-0 z-50 transition-opacity duration-500 box-border">
         <div class="max-w-sm w-full flex flex-col items-center justify-center" style="max-height: calc(100dvh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 80px)); overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 80px); padding-top: env(safe-area-inset-top, 10px);">
@@ -163,12 +220,14 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
                 <span>Mapa</span>
             </button>
+            <!-- ✅ BOTÓN DE AR ELIMINADO -->
             <button id="admin-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                 <span>Admin</span>
             </button>
         </div>
 
+        <!-- ✅ MODAL DE PLANIFICADOR ACTUALIZADO CON SELECCIÓN DE LOCALIDADES -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
                 <div class="text-center mb-8">
@@ -181,9 +240,9 @@
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 4 datos para diseñarte un plan a medida.</p>
                 </div>
                 <button id="close-planner-modal-btn" class="absolute top-4 left-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                   </svg>
                 </button>
                 <form id="planner-form" class="space-y-6">
                     <div>
@@ -228,11 +287,12 @@
                                 <span class="font-semibold">Medio</span>
                             </button>
                             <button type="button" data-value="Alto" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
-                                <span class="text-2xl">⚡️</span>
+                                <span class="text-2xl">⚡</span>
                                 <span class="font-semibold">Alto</span>
                             </button>
                         </div>
                     </div>
+                    <!-- ✅ NUEVO PASO: SELECCIÓN DE LOCALIDADES -->
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
@@ -273,11 +333,21 @@
                             Generar Mi Plan
                         </button>
                     </div>
+                    <!-- Botón de Compartir por WhatsApp -->
+<div id="whatsapp-share-container" class="mt-4 hidden">
+    <button id="whatsapp-share-btn" class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 w-full">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H2zm11 11.5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H7a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1z"/>
+            <path d="M10 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2zM18 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2z"/>
+        </svg>
+        Compartir por WhatsApp
+    </button>
+</div>
                 </form>
             </div>
         </div>
 
-        <!-- Resto de modales (password, admin, contribution, etc.) -->
+        <!-- Resto de modales (password, admin, contribution, etc.) SIN CAMBIOS -->
         <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
                 <div class="mt-3 text-center">
@@ -417,15 +487,17 @@
                                    <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
                                    </button>
-                                </div>
+                               </div>
                             </div>
                             <div>
                                 <label for="lugar-datos-clave" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Datos Clave / Puntos a Destacar (Opcional)</label>
                                 <div class="relative w-full mt-1">
-                                    <textarea id="lugar-datos-clave" rows="3" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="Ej: Horario: 9 a 18hs.&#10;No se aceptan mascotas.&#10;Aclaración: No hay un laberinto para niños."></textarea>
+                                    <textarea id="lugar-datos-clave" rows="3" class="block w-full p-2 pr-10 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="Ej: Horario: 9 a 18hs.
+No se aceptan mascotas.
+Aclaración: No hay un laberinto para niños."></textarea>
                                     <button type="button" class="absolute top-0 right-0 flex items-center pt-3 pr-3 mic-input-btn text-gray-500 hover:text-emerald-500">
-                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
-                                    </button>
+                                       <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
+                                   </button>
                                 </div>
                             </div>
                             <div class="flex items-center">
@@ -478,8 +550,7 @@
                     </div>
                 </div>
                 <div id="manage-list" class="flex-grow overflow-y-auto pr-2">
-                    <!-- Contenido dinámico -->
-                </div>
+                    </div>
                 <div class="items-center px-4 py-3 text-right mt-4 border-t dark:border-slate-600">
                     <button id="close-manage-modal-btn" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-600">Cerrar</button>
                 </div>
@@ -503,8 +574,7 @@
                     </div>
                 </form>
                 <div id="rincon-list" class="flex-grow overflow-y-auto pr-2 space-y-4">
-                    <!-- Contenido dinámico -->
-                </div>
+                    </div>
             </div>
         </div>
         <div id="rating-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
@@ -572,19 +642,6 @@
                 </div>
             </div>
         </div>
-        <!-- ✅ NUEVO MODAL PARA REEMPLAZAR prompt() -->
-        <div id="input-prompt-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-[70] transition-opacity duration-300">
-            <div class="relative top-40 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-slate-800">
-                <h3 id="input-prompt-title" class="text-lg font-medium text-gray-900 dark:text-gray-100">Renombrar</h3>
-                <div class="mt-2">
-                    <input type="text" id="input-prompt-field" class="w-full p-2 rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700">
-                </div>
-                <div class="mt-4 flex justify-end space-x-2">
-                    <button id="cancel-input-prompt-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancelar</button>
-                    <button id="confirm-input-prompt-btn" class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">Aceptar</button>
-                </div>
-            </div>
-        </div>
         <div id="map-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full hidden z-[80] transition-opacity duration-300 flex flex-col">
             <div class="bg-white dark:bg-slate-800 p-3 flex justify-between items-center shadow-md">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Mapa Interactivo de la Comarca</h3>
@@ -610,17 +667,13 @@
                 <a-sky id="vr-sky" radius="100"></a-sky>
             </a-scene>
         </div>
+        <!-- ✅ MODAL DE AR ELIMINADO -->
 
         <audio id="radio-player" preload="none"></audio>
-        
-        <!-- ✅ NUEVO ELEMENTO PARA NOTIFICACIONES -->
-        <div id="toast-notification" class=""></div>
-
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
             import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
             import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, writeBatch, getDocs, query, orderBy, runTransaction, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-            
             document.addEventListener('DOMContentLoaded', function() {
                 // --- OBTENER ELEMENTOS DEL HTML ---
                 const chatWindow = document.getElementById('chat-window');
@@ -634,6 +687,7 @@
                 const ratingModal = document.getElementById('rating-modal');
                 const mapModal = document.getElementById('map-modal');
                 const vrModal = document.getElementById('vr-modal');
+                // ✅ arModal eliminado
                 const passwordModal = document.getElementById('password-modal');
                 const adminPanelModal = document.getElementById('admin-panel-modal');
                 const plannerModal = document.getElementById('planner-modal');
@@ -652,6 +706,7 @@
                 const commentInput = document.getElementById('comment-input');
                 const rinconBtn = document.getElementById('rincon-btn');
                 const mapBtn = document.getElementById('map-btn');
+                // ✅ arBtn eliminado
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
@@ -660,6 +715,7 @@
                 const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
                 const closeMapModalBtn = document.getElementById('close-map-modal-btn');
                 const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
+                // ✅ closeArModalBtn eliminado
                 const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
                 const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
                 const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
@@ -676,19 +732,9 @@
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
                 const submitButton = chatForm.querySelector('button[type="submit"]');
-
-                // ✅ NUEVOS ELEMENTOS PARA MODALES Y NOTIFICACIONES
-                const toast = document.getElementById('toast-notification');
-                const inputPromptModal = document.getElementById('input-prompt-modal');
-                const inputPromptTitle = document.getElementById('input-prompt-title');
-                const inputPromptField = document.getElementById('input-prompt-field');
-                const cancelInputPromptBtn = document.getElementById('cancel-input-prompt-btn');
-                const confirmInputPromptBtn = document.getElementById('confirm-input-prompt-btn');
-
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
-
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 let db;
                 let auth;
@@ -720,7 +766,6 @@
                 const radioIconOverlay = document.getElementById('radio-icon-overlay');
                 const radioStatusText = document.getElementById('radio-status-text');
                 const streamUrl = 'https://streaming6.locucionar.com:24140/stream';
-                
                 function initializeFirebase() {
                     try {
                         let firebaseConfig;
@@ -729,8 +774,7 @@
                             firebaseConfig = JSON.parse(__firebase_config);
                             initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                         } else {
-                            // Fallback config for local testing if needed
-                             firebaseConfig = {
+                            firebaseConfig = {
                                 apiKey: "AIzaSyB2Z9PnT0bz9SI47_BW1BcW1tjqbQjYnC0",
                                 authDomain: "andes-app-turismo.firebaseapp.com",
                                 projectId: "andes-app-turismo",
@@ -753,7 +797,7 @@
                                 if (lugaresCollectionRef) listenForNewPlaces();
                                 if (consejosCollectionRef) listenForTips();
                             } else {
-                                try {
+                                 try {
                                     if (initialAuthToken) {
                                         await signInWithCustomToken(auth, initialAuthToken);
                                     } else {
@@ -772,7 +816,6 @@
                         chatWindow.innerHTML = `<div class="ai-message text-red-500 p-4"><strong>Error de Conexión:</strong> No se pudo inicializar la base de datos. Por favor, recarga la página. <br><small>${error.message}</small></div>`;
                     }
                 }
-
                 function getCollectionRef(name) {
                     if (!db) {
                         console.error("Firestore DB not initialized.");
@@ -781,59 +824,6 @@
                     const path = `/artifacts/${appId}/public/data/${name}`;
                     return collection(db, path);
                 };
-
-                // --- ✅ NUEVAS FUNCIONES PARA NOTIFICACIONES Y PROMPTS ---
-                function showToast(message, isError = false) {
-                    toast.textContent = message;
-                    toast.className = `bg-gray-800 text-white`;
-                    if (isError) {
-                        toast.classList.add('bg-red-600');
-                    } else {
-                        toast.classList.add('bg-emerald-600');
-                    }
-                    toast.classList.add('show');
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                    }, 3000);
-                }
-
-                function showInputPrompt({ title, initialValue = '', callback }) {
-                    inputPromptTitle.textContent = title;
-                    inputPromptField.value = initialValue;
-                    inputPromptModal.classList.remove('hidden');
-
-                    const confirmHandler = () => {
-                        const value = inputPromptField.value;
-                        closePrompt();
-                        callback(value);
-                    };
-
-                    const cancelHandler = () => {
-                        closePrompt();
-                        callback(null); // Indicate cancellation
-                    };
-                    
-                    const closePrompt = () => {
-                        inputPromptModal.classList.add('hidden');
-                        confirmInputPromptBtn.removeEventListener('click', confirmHandler);
-                        cancelInputPromptBtn.removeEventListener('click', cancelHandler);
-                        inputPromptField.removeEventListener('keydown', keydownHandler);
-                    }
-
-                    const keydownHandler = (e) => {
-                        if (e.key === 'Enter') {
-                            confirmHandler();
-                        } else if (e.key === 'Escape') {
-                            cancelHandler();
-                        }
-                    }
-
-                    confirmInputPromptBtn.addEventListener('click', confirmHandler);
-                    cancelInputPromptBtn.addEventListener('click', cancelHandler);
-                    inputPromptField.addEventListener('keydown', keydownHandler);
-                    inputPromptField.focus();
-                }
-                
                 function setupModalToggle(openBtn, modal, closeBtn) {
                     if (openBtn) openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
                     if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
@@ -879,7 +869,7 @@
                     manageModal.classList.remove('hidden');
                     adminPanelModal.classList.add('hidden');
                 });
-                
+                // ✅ EVENTOS DE AR ELIMINADOS
                 closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
                 closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
                 const tabSingle = document.getElementById('tab-single');
@@ -1162,17 +1152,20 @@
                         }
                     }, (error) => console.error("Error listening to tips:", error));
                 }
-
                 rinconList.addEventListener('click', async (e) => {
                     const deleteBtn = e.target.closest('.delete-tip-btn');
                     if (deleteBtn && isAdmin) {
                         const tipId = deleteBtn.dataset.id;
-                        deleteAction = { type: 'tip', id: tipId, name: 'este consejo' };
-                        deleteConfirmationText.textContent = `¿Estás seguro de que quieres eliminar este consejo? Esta acción no se puede deshacer.`;
-                        confirmDeleteModal.classList.remove('hidden');
+                        if (confirm("¿Eliminar este consejo? Esta acción no se puede deshacer.")) {
+                            try {
+                                await deleteDoc(doc(consejosCollectionRef, tipId));
+                            } catch (error) {
+                                console.error("Error al eliminar consejo:", error);
+                                alert("No se pudo eliminar el consejo.");
+                            }
+                        }
                     }
                 });
-
                 tipForm.addEventListener('submit', async(e) => {
                     e.preventDefault();
                     const tipText = tipInput.value.trim();
@@ -1192,7 +1185,6 @@
                         submitBtn.disabled = false;
                     }
                 });
-
                 function renderTipsList() {
                     if (!rinconList) return;
                     rinconList.innerHTML = '';
@@ -1285,18 +1277,18 @@
                             `;
                             placesInSubtipo.sort((a, b) => a.nombre.localeCompare(b.nombre)).forEach(place => {
                                 localidadHtml += `
-                                            <div class="flex justify-between items-center p-2 rounded-md bg-gray-50 dark:bg-slate-600/50">
-                                                <span class="truncate pr-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</span>
-                                                <div class="flex-shrink-0 flex items-center gap-2">
-                                                    <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-500" data-edit-type="place" data-id="${place.id}" title="Editar Lugar">
-                                                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
-                                                    </button>
-                                                    <button class="delete-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50" data-delete-type="place" data-id="${place.id}" data-name="${place.nombre}" title="Eliminar Lugar">
-                                                        <svg class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" /></svg>
-                                                    </button>
-                                                </div>
+                                        <div class="flex justify-between items-center p-2 rounded-md bg-gray-50 dark:bg-slate-600/50">
+                                            <span class="truncate pr-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</span>
+                                            <div class="flex-shrink-0 flex items-center gap-2">
+                                                <button class="edit-btn p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-slate-500" data-edit-type="place" data-id="${place.id}" title="Editar Lugar">
+                                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a1 1 0 00.46-.293l10.5-10.5a1.5 1.5 0 00-2.121-2.121L2.988 14.304a1 1 0 00-.293.46zM13.262 2.621l1.118 1.118-9.9 9.9-1.118-1.118a.5.5 0 010-.707l.707-.707a.5.5 0 01.707 0l9.394-9.394z" /></svg>
+                                                </button>
+                                                <button class="delete-btn p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50" data-delete-type="place" data-id="${place.id}" data-name="${place.nombre}" title="Eliminar Lugar">
+                                                    <svg class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.365.468a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" /></svg>
+                                                </button>
                                             </div>
-                                        `;
+                                        </div>
+                                    `;
                             });
                             localidadHtml += `</div></details>`;
                         });
@@ -1340,27 +1332,17 @@
                             }
                         } else if (type === 'localidad') {
                             const oldLocalidad = editBtn.dataset.localidad;
-                            showInputPrompt({
-                                title: `Renombrar localidad "${oldLocalidad}"`,
-                                initialValue: oldLocalidad,
-                                callback: (newLocalidad) => {
-                                    if (newLocalidad && newLocalidad.trim() !== '' && newLocalidad !== oldLocalidad) {
-                                        updateBatch('localidad', oldLocalidad, newLocalidad, null);
-                                    }
-                                }
-                            });
+                            const newLocalidad = prompt(`Renombrar localidad "${oldLocalidad}":`, oldLocalidad);
+                            if (newLocalidad && newLocalidad.trim() !== '' && newLocalidad !== oldLocalidad) {
+                                updateBatch('localidad', oldLocalidad, newLocalidad, null);
+                            }
                         } else if (type === 'subtipo') {
                             const localidad = editBtn.dataset.localidad;
                             const oldSubtipo = editBtn.dataset.subtipo;
-                            showInputPrompt({
-                                title: `Renombrar rubro "${oldSubtipo}" en ${localidad}`,
-                                initialValue: oldSubtipo,
-                                callback: (newSubtipo) => {
-                                    if (newSubtipo && newSubtipo.trim() !== '' && newSubtipo !== oldSubtipo) {
-                                        updateBatch('subtipo', oldSubtipo, newSubtipo, localidad);
-                                    }
-                                }
-                            });
+                            const newSubtipo = prompt(`Renombrar rubro "${oldSubtipo}" en ${localidad}:`, oldSubtipo);
+                            if (newSubtipo && newSubtipo.trim() !== '' && newSubtipo !== oldSubtipo) {
+                                updateBatch('subtipo', oldSubtipo, newSubtipo, localidad);
+                            }
                         }
                     }
                     if (deleteBtn) {
@@ -1368,7 +1350,7 @@
                         if(type === 'place'){
                             const placeId = deleteBtn.dataset.id;
                             const placeName = deleteBtn.dataset.name;
-                            deleteAction = { type: 'place', id: placeId, name: placeName };
+                            deleteAction = { type: 'place', id: placeId };
                             deleteConfirmationText.textContent = `¿Estás seguro de que quieres eliminar "${placeName}"? Esta acción no se puede deshacer.`;
                             confirmDeleteModal.classList.remove('hidden');
                         } else if(type === 'localidad'){
@@ -1392,12 +1374,11 @@
                     deleteAction = null;
                 });
                 confirmDeleteBtn.addEventListener('click', async () => {
-                    if(deleteAction && (deleteAction.type === 'place' || deleteAction.type === 'tip')){
+                    if(deleteAction && deleteAction.type === 'place'){
                         try {
-                            const collectionRef = deleteAction.type === 'place' ? lugaresCollectionRef : consejosCollectionRef;
-                            await deleteDoc(doc(collectionRef, deleteAction.id));
+                            await deleteDoc(doc(lugaresCollectionRef, deleteAction.id));
                         } catch (error) {
-                            console.error(`Error al eliminar el ${deleteAction.type}:`, error);
+                            console.error("Error al eliminar el lugar:", error);
                         }
                     }
                     confirmDeleteModal.classList.add('hidden');
@@ -1637,11 +1618,35 @@
                         chatHistory.push({ role: "model", parts: [{ text: finalText }] });
                     } else {
                         chatWindow.removeChild(typingIndicator);
-                        addMessage({
-                            text: aiResponseData.text,
-                            isHtml: aiResponseData.isHtml,
-                            isSponsored: aiResponseData.isSponsored
-                        }, 'ai');
+                        const message = {
+    text: aiResponseData.text,
+    isPlannerResponse: true
+};
+addMessage(message, 'ai');
+
+// Mostrar el botón de compartir por WhatsApp
+setTimeout(() => {
+    const whatsappBtnContainer = document.getElementById('whatsapp-share-container');
+    const whatsappBtn = document.getElementById('whatsapp-share-btn');
+    if (whatsappBtnContainer && whatsappBtn) {
+        whatsappBtnContainer.classList.remove('hidden');
+        whatsappBtn.addEventListener('click', () => {
+            // Obtener el texto del último mensaje (el plan)
+            const lastMessageDiv = chatWindow.lastElementChild.querySelector('.ai-message');
+            let planText = lastMessageDiv.innerText || lastMessageDiv.textContent;
+
+            // Limpiar el texto (opcional: quitar los asteriscos y otros formatos)
+            planText = planText.replace(/\*\*/g, '').replace(/[\n\r]+/g, ' ').trim();
+
+            // Codificar el texto para URL
+            const encodedPlan = encodeURIComponent(planText);
+
+            // Abrir WhatsApp Web con el mensaje prellenado
+            const whatsappUrl = `https://wa.me/?text=${encodedPlan}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    }
+}, 500); // Esperar un poco para asegurar que el mensaje se haya renderizado
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
                     }
                 }
@@ -1659,38 +1664,32 @@
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                     return typingDiv;
                 }
-                
-                // ✅ FUNCIÓN getAIResponse CORREGIDA
                 async function getAIResponse(history, systemInstructions) {
-                    try {
-                        const apiKey = ""; // Dejar vacío para que el entorno lo proporcione
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                        const payload = {
-                          contents: history,
-                          systemInstruction: { parts: [{ text: systemInstructions }] }
-                        };
-                        const response = await fetch(apiUrl, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify(payload)
-                        });
-                        if (!response.ok) {
-                          const errorBody = await response.json();
-                          console.error("Error de la API:", errorBody);
-                          throw new Error(`La llamada a la API falló con estado: ${response.status}`);
-                        }
-                        const result = await response.json();
-                        if (!result.candidates || !result.candidates[0] || !result.candidates[0].content || !result.candidates[0].content.parts || !result.candidates[0].content.parts[0].text) {
-                            throw new Error("Respuesta inesperada de la API de IA.");
-                        }
-                        const text = result.candidates[0].content.parts[0].text;
-                        return processAIResponseText(text);
-                    } catch (error) {
-                        console.error("Error llamando a la API de IA:", error);
-                        return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-                    }
-                }
-
+  try {
+    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    const payload = {
+      contents: history,
+      systemInstruction: { parts: [{ text: systemInstructions }] }
+    };
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const errorBody = await response.json();
+      console.error("Error de la API:", errorBody);
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+    const result = await response.json();
+    const text = result.candidates[0].content.parts[0].text;
+    return processAIResponseText(text);
+  } catch (error) {
+    console.error("Error calling AI API:", error);
+    return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
+  }
+}
                 function processAIResponseText(text) {
                     let isHtml = false;
                     let isSponsored = false;
@@ -1764,13 +1763,13 @@
                     return `
                         Eres "Andes", un asistente de IA amigable y experto en la Comarca Andina.
                         REGLAS FUNDAMENTALES:
-                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica para "hoy", "mañana" o "la semana", tu ÚNICA RESPUESTA debe ser el código [CLIMA:Nombre de la Localidad:periodo]. Por ejemplo, si preguntan "cómo está el tiempo en El Bolsón para mañana", tu respuesta debe ser exactamente: [CLIMA:El Bolsón:mañana]. No añadas nada más.
+                        1.  **REGLA DEL CLIMA (MUY IMPORTANTE):** Si el usuario pregunta por el clima, el tiempo o la temperatura en una localidad específica, tu ÚNICA RESPUESTA debe ser el código [CLIMA:Nombre de la Localidad]. Por ejemplo, si preguntan "cómo está el tiempo en El Bolsón", tu respuesta debe ser exactamente: [CLIMA:El Bolsón]. No añadas nada más.
                         2.  **USA TU CONOCIMIENTO INTERNO:** Para todo lo demás, usa tu base de datos de lugares.
                             \`\`\`json
                             ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
                             \`\`\`
                         3.  **CÓMO RESPONDER SOBRE LUGARES:** Menciona lugares de la base de datos entre corchetes dobles, así: [[Nombre Exacto del Lugar]].
-                        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares de tu base de conocimiento, usa tu conocimiento general para responder de forma conversacional.
+                        4.  **SI NO SABES, BUSCA EN LA WEB:** Si la pregunta no es sobre el clima ni sobre lugares, usa tu conocimiento general.
                     `;
                 }
                 plannerForm.addEventListener('click', (e) => {
@@ -1784,7 +1783,6 @@
                     btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
                     btn.classList.remove('bg-gray-50', 'dark:bg-slate-700', 'border-gray-200', 'dark:border-slate-600');
                 });
-                
                 plannerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const selectedStyleBtn = document.querySelector('#planner-style-group .bg-emerald-500');
@@ -1792,13 +1790,14 @@
                     const days = document.getElementById('planner-days').value;
                     const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
                     const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
-                    
+
+                    // ✅ NUEVO: obtener localidades seleccionadas
                     const selectedLocalidades = Array.from(document.querySelectorAll('.planner-localidad-checkbox:checked'))
                         .map(cb => cb.value);
                     const localidades = selectedLocalidades.length > 0 ? selectedLocalidades : ["El Bolsón", "Lago Puelo", "El Hoyo", "Epuyén", "El Maitén", "Cholila"];
 
                     plannerModal.classList.add('hidden');
-                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}, visitando estas localidades: ${localidades.join(', ')}.`;
+                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style}, nivel de energía ${energy}, visitando estas localidades: ${localidades.join(', ')}.`;
                     addMessage({ text: userMessage }, 'user');
                     const typingIndicator = showTypingIndicator();
                     const plannerHistory = [{
@@ -1818,7 +1817,6 @@
                         isPlannerResponse: true
                     }, 'ai');
                 });
-
                 function generatePlannerPrompt(style, days, energy, localidades) {
                     return `
                         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
@@ -1846,7 +1844,6 @@
                         6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
                     `;
                 }
-
                 const downloadBackupBtn = document.getElementById('download-backup-btn');
                 const restoreBackupBtn = document.getElementById('restore-backup-btn');
                 const backupFileInput = document.getElementById('backup-file-input');
@@ -1855,7 +1852,7 @@
                 const confirmRestoreBtn = document.getElementById('confirm-restore-btn');
                 downloadBackupBtn.addEventListener('click', () => {
                     if (placesCache.length === 0) {
-                        showToast("No hay datos para respaldar.", true);
+                        alert("No hay datos para respaldar.");
                         return;
                     }
                     const headers = [
@@ -1930,10 +1927,10 @@
                                 addBatch.set(doc(lugaresCollectionRef), newPlace);
                             }
                             await addBatch.commit();
-                            showToast('Restauración completada con éxito.');
+                            alert('Restauración completada con éxito.');
                         } catch (error) {
                             console.error("Error durante la restauración: ", error);
-                            showToast('Ocurrió un error durante la restauración.', true);
+                            alert('Ocurrió un error durante la restauración.');
                         } finally {
                             backupFileInput.value = '';
                         }
@@ -2009,7 +2006,7 @@
                     const selectedRating = ratingForm.querySelector('input[name="rating"]:checked');
                     const commentText = commentInput.value.trim();
                     if (!selectedRating && commentText === '') {
-                        showToast('Por favor, selecciona una valoración o escribe un comentario.', true);
+                        alert('Por favor, selecciona una valoración o escribe un comentario.');
                         return;
                     }
                     if (!currentPlaceIdForRating) return;
@@ -2025,7 +2022,7 @@
                         ratingForm.reset();
                     } catch (error) {
                         console.error("Error al guardar la valoración:", error);
-                        showToast('Hubo un error al guardar tu opinión.', true);
+                        alert('Hubo un error al guardar tu opinión.');
                     }
                 });
                 let highlightedMarkerLayer = null; 
@@ -2125,6 +2122,7 @@
                         highlightMarker.bindPopup(popupContent).openPopup();
                     }, 200);
                 }
+                // ✅ FUNCIONALIDAD DE AR ELIMINADA
 
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
@@ -2184,7 +2182,6 @@
                     micBtn.style.display = 'none';
                     document.querySelectorAll('.mic-input-btn').forEach(b => b.style.display = 'none');
                 }
-
                 let isPlaying = false;
                 function setRadioState(state) {
                     if (state === 'playing') {
@@ -2203,13 +2200,13 @@
                         radioLogo.classList.add('opacity-70');
                         radioStatusText.textContent = 'En pausa';
                         isPlaying = false;
-                    } else { // stopped or error
+                    } else {
                         radioIconOverlay.innerHTML = `
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 11-16 0 8 8 0 0116 0zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                             </svg>`;
                         radioLogo.classList.add('opacity-70');
-                        radioStatusText.textContent = 'Click para escuchar';
+                        radioStatusText.textContent = 'Error de stream';
                         isPlaying = false;
                     }
                 }
@@ -2222,6 +2219,7 @@
                         });
                     } else {
                         radioPlayer.pause();
+                        setRadioState('paused');
                     }
                 });
                 radioPlayer.addEventListener('play', () => setRadioState('playing'));
@@ -2231,7 +2229,7 @@
                     setRadioState('stopped');
                 });
                 setRadioState('paused');
-                
+                // --- FUNCIÓN CORREGIDA PARA EL BOTÓN COMENZAR ---
                 function startApp() {
                     const welcomeScreen = document.getElementById('welcome-screen');
                     const mainApp = document.getElementById('main-app');
@@ -2244,13 +2242,11 @@
                 if (startChatBtn) {
                     startChatBtn.addEventListener('click', startApp);
                 } else {
-                    // Fallback if welcome screen is not present for some reason
-                    startApp();
+                    initializeFirebase();
+                    updateSuggestions();
                 }
             });
         </script>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
-
-
