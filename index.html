@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com?v=2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- AFRAME ya no se usa, pero lo dejamos por si acaso (opcional) -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
     <style>
         :root {
@@ -58,14 +59,6 @@
         .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; }
         .star-rating input:checked ~ label, .star-rating:not(:checked) > label:hover, .star-rating:not(:checked) > label:hover ~ label { color: #f59e0b; }
         #map { height: 100%; width: 100%; }
-        .ar-top-bar { position: absolute; top: 0; left: 0; right: 0; padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .ar-pill { background-color: rgba(0, 0, 0, 0.6); color: white; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; }
-        #ar-status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; color: white; background-color: rgba(0,0,0,0.7); padding: 1rem; border-radius: 0.5rem; text-align: center; }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
         .mic-listening {
             color: #ef4444;
             animation: pulse-red 1.5s infinite;
@@ -149,7 +142,6 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css?v=2">
 </head>
 <body class="dark bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
-
     <!-- Pantalla de Bienvenida -->
     <div id="welcome-screen" class="flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-700 text-white w-full min-h-[100dvh] fixed inset-0 z-50 transition-opacity duration-500 box-border">
         <div class="max-w-sm w-full flex flex-col items-center justify-center" style="max-height: calc(100dvh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 80px)); overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 80px); padding-top: env(safe-area-inset-top, 10px);">
@@ -175,10 +167,8 @@
             </button>
         </div>
     </div>
-
     <!-- App principal (oculta al inicio) -->
     <div id="main-app" class="hidden flex flex-col h-dvh">
-
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
             <div class="w-full flex justify-start">
                 <div class="ai-message w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow">
@@ -225,18 +215,14 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
                 <span>Mapa</span>
             </button>
-            <button id="ar-btn" class="flex flex-col items-center text-xs">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 1a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 1zM4.879 4.879a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061L4.879 5.94a.75.75 0 010-1.06zM1 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H1.75A.75.75 0 011 8zm3.879 4.182a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.061a.75.75 0 011.06 0zM8 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 15zm4.182-3.879a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15 8a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0115 8zm3.121-3.121a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 5a5 5 0 100 10 5 5 0 000-10zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clip-rule="evenodd" /></svg>
-                <span>AR</span>
-            </button>
+            <!-- ✅ BOTÓN DE AR ELIMINADO -->
             <button id="admin-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                 <span>Admin</span>
             </button>
         </div>
 
-        <!-- Todos los modales y el resto del código JS se mantienen igual -->
-        <!-- Copiado 1:1 del archivo original -->
+        <!-- ✅ MODAL DE PLANIFICADOR ACTUALIZADO CON SELECCIÓN DE LOCALIDADES -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
                 <div class="text-center mb-8">
@@ -246,7 +232,7 @@
                         </svg>
                     </div>
                     <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100">Crea tu Aventura Perfecta</h3>
-                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 3 datos para diseñarte un plan a medida.</p>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Solo necesitamos 4 datos para diseñarte un plan a medida.</p>
                 </div>
                 <button id="close-planner-modal-btn" class="absolute top-4 left-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-gray-200">
                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -301,6 +287,39 @@
                             </button>
                         </div>
                     </div>
+                    <!-- ✅ NUEVO PASO: SELECCIÓN DE LOCALIDADES -->
+                    <div>
+                        <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
+                            ¿Qué localidades querés visitar?
+                        </label>
+                        <div id="planner-localidades-group" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="El Bolsón" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>El Bolsón</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="Lago Puelo" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>Lago Puelo</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="El Hoyo" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>El Hoyo</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="Epuyén" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>Epuyén</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="El Maitén" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>El Maitén</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                                <input type="checkbox" name="localidad" value="Cholila" class="planner-localidad-checkbox h-5 w-5 text-emerald-500 rounded" checked>
+                                <span>Cholila</span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="pt-6">
                         <button type="submit" class="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:bg-emerald-600 text-lg transition-transform transform hover:scale-105 shadow-lg">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -312,6 +331,8 @@
                 </form>
             </div>
         </div>
+
+        <!-- Resto de modales (password, admin, contribution, etc.) SIN CAMBIOS -->
         <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
                 <div class="mt-3 text-center">
@@ -631,19 +652,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 <a-sky id="vr-sky" radius="100"></a-sky>
             </a-scene>
         </div>
-        <div id="ar-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[100] transition-opacity duration-300">
-            <div id="ar-top-bar" class="ar-top-bar" style="display: none;">
-                <button id="close-ar-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div id="ar-permissions-pill" class="ar-pill"></div>
-            </div>
-            <div id="ar-status"></div>
-            <div id="ar-modal-content">
-            </div>
-        </div>
+        <!-- ✅ MODAL DE AR ELIMINADO -->
+
         <audio id="radio-player" preload="none"></audio>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -662,7 +672,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const ratingModal = document.getElementById('rating-modal');
                 const mapModal = document.getElementById('map-modal');
                 const vrModal = document.getElementById('vr-modal');
-                const arModal = document.getElementById('ar-modal');
+                // ✅ arModal eliminado
                 const passwordModal = document.getElementById('password-modal');
                 const adminPanelModal = document.getElementById('admin-panel-modal');
                 const plannerModal = document.getElementById('planner-modal');
@@ -681,7 +691,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const commentInput = document.getElementById('comment-input');
                 const rinconBtn = document.getElementById('rincon-btn');
                 const mapBtn = document.getElementById('map-btn');
-                const arBtn = document.getElementById('ar-btn');
+                // ✅ arBtn eliminado
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
@@ -690,7 +700,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
                 const closeMapModalBtn = document.getElementById('close-map-modal-btn');
                 const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
-                const closeArModalBtn = document.getElementById('close-ar-modal-btn');
+                // ✅ closeArModalBtn eliminado
                 const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
                 const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
                 const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
@@ -710,7 +720,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 chatInput.disabled = true;
                 chatInput.placeholder = "Conectando...";
                 submitButton.disabled = true;
-                
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 let db;
                 let auth;
@@ -845,8 +854,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     manageModal.classList.remove('hidden');
                     adminPanelModal.classList.add('hidden');
                 });
-                arBtn.addEventListener('click', () => arModal.classList.remove('hidden'));
-                closeArModalBtn.addEventListener('click', () => arModal.classList.add('hidden'));
+                // ✅ EVENTOS DE AR ELIMINADOS
                 closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
                 closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
                 const tabSingle = document.getElementById('tab-single');
@@ -1621,28 +1629,23 @@ Aclaración: No hay un laberinto para niños."></textarea>
   try {
     const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
     const payload = {
       contents: history,
       systemInstruction: { parts: [{ text: systemInstructions }] }
     };
-
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
     if (!response.ok) {
       const errorBody = await response.json();
       console.error("Error de la API:", errorBody);
       throw new Error(`API call failed with status: ${response.status}`);
     }
-
     const result = await response.json();
     const text = result.candidates[0].content.parts[0].text;
     return processAIResponseText(text);
-
   } catch (error) {
     console.error("Error calling AI API:", error);
     return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
@@ -1748,8 +1751,14 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     const days = document.getElementById('planner-days').value;
                     const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
                     const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
+
+                    // ✅ NUEVO: obtener localidades seleccionadas
+                    const selectedLocalidades = Array.from(document.querySelectorAll('.planner-localidad-checkbox:checked'))
+                        .map(cb => cb.value);
+                    const localidades = selectedLocalidades.length > 0 ? selectedLocalidades : ["El Bolsón", "Lago Puelo", "El Hoyo", "Epuyén", "El Maitén", "Cholila"];
+
                     plannerModal.classList.add('hidden');
-                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style} y nivel de energía ${energy}.`;
+                    const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style}, nivel de energía ${energy}, visitando estas localidades: ${localidades.join(', ')}.`;
                     addMessage({ text: userMessage }, 'user');
                     const typingIndicator = showTypingIndicator();
                     const plannerHistory = [{
@@ -1758,9 +1767,10 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             - Estilo de Viaje: ${style}
                             - Duración: ${days} días
                             - Nivel de Energía: ${energy}
+                            - Localidades a visitar: ${localidades.join(', ')}
                         ` }]
                     }];
-                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy);
+                    const plannerSystemPrompt = generatePlannerPrompt(style, days, energy, localidades);
                     const aiResponseData = await getAIResponse(plannerHistory, plannerSystemPrompt);
                     chatWindow.removeChild(typingIndicator);
                     addMessage({
@@ -1768,7 +1778,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         isPlannerResponse: true
                     }, 'ai');
                 });
-                function generatePlannerPrompt(style, days, energy) {
+                function generatePlannerPrompt(style, days, energy, localidades) {
                     return `
                         Eres "Andes Planner", un experto en crear itinerarios de viaje para la Comarca Andina del Paralelo 42.
                         Recibirás las preferencias del usuario y tu ÚNICA tarea es crear un itinerario detallado, día por día.
@@ -1776,6 +1786,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         - Estilo de Viaje: ${style}
                         - Duración: ${days} días
                         - Nivel de Energía: ${energy}
+                        - Localidades a visitar: ${localidades.join(', ')}
+
                         BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
                         \`\`\`json
                         ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
@@ -1786,17 +1798,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             - **Coherencia:** Elige lugares y actividades que coincidan con el *Estilo de Viaje* y *Nivel de Energía*. (Ej: si es "Relax" y "Bajo", no sugieras escalar una montaña).
                             - **Logística:** Agrupa actividades que estén en la misma localidad o cerca para evitar viajes largos e innecesarios en un mismo día.
                             - **Variedad:** Intenta incluir una mezcla de actividades, gastronomía y paisajes a lo largo del plan.
+                            - **Respetar localidades:** Solo sugiere lugares que estén en las localidades indicadas: ${localidades.join(', ')}.
                         3.  **REGLA ESPECIAL DÍA 1:** Para el **Día 1** del plan, enfócate en sugerir actividades y lugares para comer. **NO** sugieras un "alojamiento", ya que se asume que el viajero ya lo tiene resuelto para su llegada. La única excepción es que encuentres un alojamiento marcado como auspiciante de alta categoría (lo cual se indicará en el futuro).
                         4.  **Menciona Lugares Correctamente:** Cuando sugieras un lugar de tu base de conocimiento, menciónalo entre corchetes dobles: [[Nombre Exacto del Lugar]]. Esto es MUY IMPORTANTE.
                         5.  **Descripción Atractiva:** Para cada sugerencia, escribe una o dos frases cortas y atractivas que expliquen por qué es un buen plan.
                         6.  **No Saludes ni Despidas:** No digas "Hola", ni "Aquí está tu plan", ni "espero que te guste". Ve directo al itinerario. Tu respuesta debe empezar directamente con "**Día 1:...**".
-                        EJEMPLO DE RESPUESTA (para un plan de 2 días, Aventura, Alto):
-                        **Día 1: Montaña y Cerveza Artesanal**
-                        - Comienza el día con el trekking al [[Cajón del Azul]]. Es una caminata exigente pero el paisaje del río encajonado es una recompensa increíble.
-                        - Por la tarde, relájate y recarga energías en [[Patagonia Cervecería]]. Tienen una vista espectacular.
-                        **Día 2: Cultura y Sabor Local**
-                        - Recorre la famosa [[Feria de Artesanos de El Bolsón]] para descubrir productos locales únicos.
-                        - Para la cena, te recomiendo probar las pastas caseras en [[Jauja]].
                     `;
                 }
                 const downloadBackupBtn = document.getElementById('download-backup-btn');
@@ -2077,58 +2083,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         highlightMarker.bindPopup(popupContent).openPopup();
                     }, 200);
                 }
-                arModal.addEventListener('show.bs.modal', function () {
-                    console.log("AR Modal is being shown");
-                });
-                arBtn.addEventListener('click', async () => {
-                    const arStatus = document.getElementById('ar-status');
-                    const arContent = document.getElementById('ar-modal-content');
-                    const arTopBar = document.getElementById('ar-top-bar');
-                    arStatus.textContent = "Iniciando modo AR...";
-                    arContent.innerHTML = ''; 
-                    if (typeof AFRAME === 'undefined') {
-                        arStatus.textContent = "Error: La librería de Realidad Aumentada no pudo cargarse.";
-                        return;
-                    }
-                    const sceneEl = document.createElement('a-scene');
-                    sceneEl.setAttribute('vr-mode-ui', 'enabled: false');
-                    sceneEl.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false;');
-                    sceneEl.setAttribute('renderer', 'antialias: true; alpha: true');
-                    const cameraEl = document.createElement('a-camera');
-                    cameraEl.setAttribute('gps-new-camera', 'gpsMinDistance: 5');
-                    sceneEl.appendChild(cameraEl);
-                    placesCache.forEach(place => {
-                        if (place.latitud && place.longitud) {
-                            const entityEl = document.createElement('a-entity');
-                            entityEl.setAttribute('gps-new-entity-place', `latitude: ${place.latitud}; longitude: ${place.longitud}`);
-                            entityEl.setAttribute('look-at', '[gps-new-camera]');
-                            const box = document.createElement('a-box');
-                            box.setAttribute('scale', '10 10 10');
-                            box.setAttribute('material', 'color: red');
-                            box.setAttribute('position', '0 50 0'); 
-                            entityEl.appendChild(box);
-                            const text = document.createElement('a-text');
-                            text.setAttribute('value', place.nombre);
-                            text.setAttribute('scale', '50 50 50');
-                            text.setAttribute('position', '0 65 0');
-                            text.setAttribute('align', 'center');
-                            entityEl.appendChild(text);
-                            sceneEl.appendChild(entityEl);
-                        }
-                    });
-                    arContent.appendChild(sceneEl);
-                    sceneEl.addEventListener('loaded', function () {
-                        arStatus.style.display = 'none';
-                        arTopBar.style.display = 'flex';
-                    });
-                    arModal.classList.remove('hidden');
-                });
-                closeArModalBtn.addEventListener('click', () => {
-                    arModal.classList.add('hidden');
-                    document.getElementById('ar-modal-content').innerHTML = ''; 
-                    document.getElementById('ar-status').style.display = 'block';
-                    document.getElementById('ar-top-bar').style.display = 'none';
-                });
+                // ✅ FUNCIONALIDAD DE AR ELIMINADA
+
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     mainRecognition = new SpeechRecognition();
@@ -2255,5 +2211,3 @@ Aclaración: No hay un laberinto para niños."></textarea>
     </div> <!-- Cierre de #main-app -->
 </body>
 </html>
-
-
