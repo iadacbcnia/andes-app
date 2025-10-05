@@ -7,13 +7,10 @@
     <script src="https://cdn.tailwindcss.com?v=2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=2" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- AFRAME ya no se usa, pero lo dejamos por si acaso (opcional) -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js?v=2"></script>
     <style>
         :root {
             --emerald-500: #10b981;
             --slate-800: #1e293b;
-            --slate-900: #0f172a;
             --slate-700: #334155;
             --gray-100: #f3f4f6;
             --white: #ffffff;
@@ -24,33 +21,44 @@
             --card-bg: var(--slate-700);
         }
         body {
-    font-family: 'Inter', sans-serif;
-    background-color: #1e293b; /* slate-800 */
-    color: #f3f4f6; /* gray-100 */
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    padding-bottom: env(safe-area-inset-bottom);
-}
-        .user-message { background-color: var(--emerald-500); color: white; border-radius: 20px 20px 5px 20px; }
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-800);
+            color: var(--gray-100);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .user-message { 
+            background-color: var(--emerald-500); 
+            color: white; 
+            border-radius: 20px 20px 5px 20px; 
+        }
         .ai-message {
             background-color: var(--slate-700);
-            color: #ffffff;
-            border-radius: 20px 20px 20px 5px;
-            padding: 1rem;
-            line-height: 1.5;
+            color: var(--gray-100);
+            border-radius: 16px;
+            padding: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
         }
         .ai-message .bg-gray-100 {
-    background-color: #334155 !important; /* slate-700 */
-    color: #f3f4f6 !important; /* gray-100 */
-}
+            background-color: var(--slate-700) !important;
+            color: var(--gray-100) !important;
+        }
         .sponsored-message {
-            background-color: var(--card-bg, var(--white));
+            background-color: var(--slate-700);
             border: 2px solid #facc15;
             box-shadow: 0 4px 14px 0 rgba(250, 204, 21, 0.3);
         }
-        .place-link { color: var(--emerald-500); font-weight: 500; cursor: pointer; }
-        .place-link:hover { text-decoration: underline; }
+        .place-link { 
+            color: var(--emerald-500); 
+            font-weight: 500; 
+            cursor: pointer; 
+        }
+        .place-link:hover { 
+            text-decoration: underline; 
+        }
         .typing-indicator span {
             height: 8px; width: 8px; background-color: #9ca3af;
             border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both;
@@ -68,31 +76,36 @@
             animation: pulse-red 1.5s infinite;
             border-radius: 50%;
         }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
         .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: #1e293b; /* slate-800 - mismo fondo que el cuerpo */
-    border-top: 1px solid #334155; /* slate-700 */
-    padding: 0.5rem 0;
-    z-index: 50;
-}
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: var(--slate-800);
+            border-top: 1px solid var(--slate-700);
+            padding: 0.5rem 0;
+            z-index: 50;
+        }
         .bottom-nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: #f3f4f6; /* gray-100 - texto blanco */
-    font-size: 0.75rem;
-    padding: 0.25rem;
-    cursor: pointer;
-    transition: color 0.2s;
-}
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--gray-100);
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
         .bottom-nav-btn.active, .bottom-nav-btn:hover {
-    color: #10b981; /* emerald-500 */
-}
+            color: var(--emerald-500);
+        }
         .bottom-nav-btn svg {
             width: 1.5rem;
             height: 1.5rem;
@@ -104,16 +117,16 @@
             padding: 1rem;
             display: flex;
             flex-direction: column;
-            background-color: #1e293b; /* slate-800 */
+            background-color: var(--slate-800);
         }
         .input-container {
-    padding: 1rem;
-    background-color: #1e293b; /* slate-800 */
-    border-top: 1px solid #334155; /* slate-700 */
-}
+            padding: 1rem;
+            background-color: var(--slate-800);
+            border-top: 1px solid var(--slate-700);
+        }
         .radio-player-container {
             padding: 0.5rem 1rem;
-            background-color: var(--card-bg, var(--white));
+            background-color: var(--slate-700);
             border-top: 1px solid var(--slate-700);
             display: flex;
             align-items: center;
@@ -141,6 +154,62 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+        }
+        .planner-day-card, .place-card {
+            background-color: var(--slate-700);
+            color: var(--gray-100);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .planner-day-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--emerald-500);
+        }
+        .place-card h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .place-card .data-key {
+            background-color: var(--slate-700);
+            border: 1px solid var(--emerald-500);
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        .place-card .data-key strong {
+            color: var(--emerald-500);
+        }
+        .place-card .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .place-card button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 9999px;
+        }
+        .whatsapp-share-container {
+            margin-top: 1rem;
+            display: none;
+        }
+        .whatsapp-share-btn {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #25D366;
             color: white;
         }
     </style>
@@ -181,11 +250,11 @@
                 </div>
             </div>
         </div>
-        <div class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+        <div class="p-4 bg-slate-800 border-t border-slate-700">
             <div id="suggestions" class="flex flex-wrap gap-2 mb-2"></div>
             <form id="chat-form" class="flex items-center gap-2">
                 <div class="relative w-full">
-                    <input type="text" id="chat-input" placeholder="Conectando..." class="w-full p-3 pr-20 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none" disabled>
+                    <input type="text" id="chat-input" placeholder="Conectando..." class="w-full p-3 pr-20 rounded-lg border border-slate-600 bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none" disabled>
                     <button type="button" id="mic-btn" class="absolute inset-y-0 right-10 flex items-center p-3 text-gray-500 hover:text-emerald-500">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"/><path d="M5.5 9.5a.5.5 0 01.5.5v1a4 4 0 004 4h.5a.5.5 0 010 1h-.5a5 5 0 01-5-5v-1a.5.5 0 01.5-.5z"/><path d="M10 15a1 1 0 001-1v-1a1 1 0 10-2 0v1a1 1 0 001 1z"/></svg>
                     </button>
@@ -195,7 +264,7 @@
                 </button>
             </form>
         </div>
-        <div class="bg-gray-100 dark:bg-slate-700 p-2 border-t border-gray-200 dark:border-slate-600">
+        <div class="bg-slate-700 p-2 border-t border-slate-600">
             <button id="radio-btn" class="w-full flex items-center justify-center">
                 <div id="radio-logo-container" class="relative flex-shrink-0 w-8 h-8">
                     <img id="radio-logo" src="https://i.postimg.cc/8cLnSv8c/Logo-Fm-Paraiso-42.png" alt="Logo FM Paraíso 42" class="w-full h-full rounded-full object-cover transition-opacity duration-300 opacity-70">
@@ -207,7 +276,7 @@
                 </div>
             </button>
         </div>
-        <div class="flex justify-around items-center p-2 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-600">
+        <div class="flex justify-around items-center p-2 bg-slate-800 border-t border-slate-600">
             <button id="planner-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
                 <span>Plan</span>
@@ -220,14 +289,13 @@
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.1.4-.223.654-.369.26-.15.552-.333.865-.55C12.864 17.113 14 15.823 14 14c0-2.21-1.79-4-4-4S6 11.79 6 14c0 1.823 1.136 3.113 1.966 3.868.313.217.605.4.865.55.254.146.468.269.654.369a5.741 5.741 0 00.28.14l.018.008.006.003zM10 11.25a2.75 2.75 0 100 5.5 2.75 2.75 0 000-5.5z" clip-rule="evenodd" /><path d="M10 2C4.477 2 0 6.477 0 12s4.477 10 10 10 10-4.477 10-10S15.523 2 10 2zM8 14a2 2 0 114 0 2 2 0 01-4 0z" /></svg>
                 <span>Mapa</span>
             </button>
-            <!-- ✅ BOTÓN DE AR ELIMINADO -->
             <button id="admin-btn" class="flex flex-col items-center text-xs">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg>
                 <span>Admin</span>
             </button>
         </div>
 
-        <!-- ✅ MODAL DE PLANIFICADOR ACTUALIZADO CON SELECCIÓN DE LOCALIDADES -->
+        <!-- Modal del Planificador -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
                 <div class="text-center mb-8">
@@ -292,7 +360,7 @@
                             </button>
                         </div>
                     </div>
-                    <!-- ✅ NUEVO PASO: SELECCIÓN DE LOCALIDADES -->
+                    <!-- NUEVO: Selección de Localidades -->
                     <div>
                         <label class="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
                             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white font-bold mr-3">4</span>
@@ -334,20 +402,23 @@
                         </button>
                     </div>
                     <!-- Botón de Compartir por WhatsApp -->
-<div id="whatsapp-share-container" class="mt-4 hidden">
-    <button id="whatsapp-share-btn" class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 w-full">
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M2 3a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H2zm11 11.5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H7a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1z"/>
-            <path d="M10 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2zM18 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2z"/>
-        </svg>
-        Compartir por WhatsApp
-    </button>
-</div>
+                    <div id="whatsapp-share-container" class="mt-4 hidden">
+                        <button id="whatsapp-share-btn" class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 w-full">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H2zm11 11.5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H7a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1z"/>
+                                <path d="M10 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2zM18 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2z"/>
+                            </svg>
+                            Compartir por WhatsApp
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
 
-        <!-- Resto de modales (password, admin, contribution, etc.) SIN CAMBIOS -->
+        <!-- Resto de modales y código JS (sin cambios en su estructura) -->
+        <!-- Se incluyen todos los modales: password, admin, contribution, manage, rincon, rating, map, etc. -->
+        <!-- El código JavaScript está optimizado para que el botón de WhatsApp funcione correctamente -->
+
         <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-20 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white dark:bg-slate-800">
                 <div class="mt-3 text-center">
@@ -655,20 +726,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 <div id="map"></div>
             </div>
         </div>
-        <div id="vr-modal" class="fixed inset-0 bg-black h-full w-full hidden z-[90] transition-opacity duration-300 flex flex-col">
-            <div class="absolute top-0 right-0 p-2 z-10">
-                <button id="close-vr-modal-btn" class="p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
-            <a-scene id="vr-scene" embedded>
-                <a-sky id="vr-sky" radius="100"></a-sky>
-            </a-scene>
-        </div>
-        <!-- ✅ MODAL DE AR ELIMINADO -->
-
         <audio id="radio-player" preload="none"></audio>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -686,8 +743,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const rinconModal = document.getElementById('rincon-modal');
                 const ratingModal = document.getElementById('rating-modal');
                 const mapModal = document.getElementById('map-modal');
-                const vrModal = document.getElementById('vr-modal');
-                // ✅ arModal eliminado
                 const passwordModal = document.getElementById('password-modal');
                 const adminPanelModal = document.getElementById('admin-panel-modal');
                 const plannerModal = document.getElementById('planner-modal');
@@ -706,7 +761,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const commentInput = document.getElementById('comment-input');
                 const rinconBtn = document.getElementById('rincon-btn');
                 const mapBtn = document.getElementById('map-btn');
-                // ✅ arBtn eliminado
                 const adminBtn = document.getElementById('admin-btn');
                 const plannerBtn = document.getElementById('planner-btn');
                 const closeContributionModalBtn = document.getElementById('close-contribution-modal-btn');
@@ -714,8 +768,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const closeRinconModalBtn = document.getElementById('close-rincon-modal-btn');
                 const closeRatingModalBtn = document.getElementById('close-rating-modal-btn');
                 const closeMapModalBtn = document.getElementById('close-map-modal-btn');
-                const closeVrModalBtn = document.getElementById('close-vr-modal-btn');
-                // ✅ closeArModalBtn eliminado
                 const closePasswordModalBtn = document.getElementById('close-password-modal-btn');
                 const closeAdminPanelBtn = document.getElementById('close-admin-panel-btn');
                 const closePlannerModalBtn = document.getElementById('close-planner-modal-btn');
@@ -728,7 +780,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const tipForm = document.getElementById('tip-form');
                 const tipInput = document.getElementById('tip-input');
                 const plannerForm = document.getElementById('planner-form');
-                const vrSky = document.getElementById('vr-sky');
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
                 const submitButton = chatForm.querySelector('button[type="submit"]');
@@ -869,8 +920,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     manageModal.classList.remove('hidden');
                     adminPanelModal.classList.add('hidden');
                 });
-                // ✅ EVENTOS DE AR ELIMINADOS
-                closeVrModalBtn.addEventListener('click', () => vrModal.classList.add('hidden'));
                 closeMapModalBtn.addEventListener('click', () => mapModal.classList.add('hidden'));
                 const tabSingle = document.getElementById('tab-single');
                 const tabBulk = document.getElementById('tab-bulk');
@@ -1546,7 +1595,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 });
                 chatWindow.addEventListener('click', function(e) {
                     const placeLink = e.target.closest('.place-link');
-                    const view360Button = e.target.closest('.view-360-btn');
                     const ratePlaceButton = e.target.closest('.rate-place-btn');
                     const viewOnMapButton = e.target.closest('.view-on-map-btn');
                     if (placeLink) {
@@ -1555,15 +1603,6 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         if (place) {
                             const aiMessage = formatPlaceForAI(place);
                             addMessage({ text: aiMessage, isHtml: true, placeId: place.id }, 'ai');
-                        }
-                    }
-                    if (view360Button) {
-                        const imageUrl = view360Button.dataset.image;
-                        if (imageUrl && vrSky) {
-                            vrSky.setAttribute('src', imageUrl);
-                            vrModal.classList.remove('hidden');
-                        } else {
-                            addMessage({text: "Lo siento, este lugar no tiene una imagen 360° disponible."}, 'ai');
                         }
                     }
                     if (ratePlaceButton) {
@@ -1586,7 +1625,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                     if (message.isHtml) {
                         messageContent.innerHTML = message.text;
                     } else if (message.isPlannerResponse) {
-                        messageContent.innerHTML = `<h3 class="font-bold text-lg mb-2">✨ Tu Plan de Viaje Personalizado</h3>${message.text}`;
+                        messageContent.innerHTML = message.text;
                     } else {
                         messageContent.textContent = message.text;
                     }
@@ -1618,35 +1657,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         chatHistory.push({ role: "model", parts: [{ text: finalText }] });
                     } else {
                         chatWindow.removeChild(typingIndicator);
-                        const message = {
-    text: aiResponseData.text,
-    isPlannerResponse: true
-};
-addMessage(message, 'ai');
-
-// Mostrar el botón de compartir por WhatsApp
-setTimeout(() => {
-    const whatsappBtnContainer = document.getElementById('whatsapp-share-container');
-    const whatsappBtn = document.getElementById('whatsapp-share-btn');
-    if (whatsappBtnContainer && whatsappBtn) {
-        whatsappBtnContainer.classList.remove('hidden');
-        whatsappBtn.addEventListener('click', () => {
-            // Obtener el texto del último mensaje (el plan)
-            const lastMessageDiv = chatWindow.lastElementChild.querySelector('.ai-message');
-            let planText = lastMessageDiv.innerText || lastMessageDiv.textContent;
-
-            // Limpiar el texto (opcional: quitar los asteriscos y otros formatos)
-            planText = planText.replace(/\*\*/g, '').replace(/[\n\r]+/g, ' ').trim();
-
-            // Codificar el texto para URL
-            const encodedPlan = encodeURIComponent(planText);
-
-            // Abrir WhatsApp Web con el mensaje prellenado
-            const whatsappUrl = `https://wa.me/?text=${encodedPlan}`;
-            window.open(whatsappUrl, '_blank');
-        });
-    }
-}, 500); // Esperar un poco para asegurar que el mensaje se haya renderizado
+                        addMessage({
+                            text: aiResponseData.text,
+                            isHtml: aiResponseData.isHtml,
+                            isSponsored: aiResponseData.isSponsored
+                        }, 'ai');
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
                     }
                 }
@@ -1665,31 +1680,31 @@ setTimeout(() => {
                     return typingDiv;
                 }
                 async function getAIResponse(history, systemInstructions) {
-  try {
-    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-    const payload = {
-      contents: history,
-      systemInstruction: { parts: [{ text: systemInstructions }] }
-    };
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-      const errorBody = await response.json();
-      console.error("Error de la API:", errorBody);
-      throw new Error(`API call failed with status: ${response.status}`);
-    }
-    const result = await response.json();
-    const text = result.candidates[0].content.parts[0].text;
-    return processAIResponseText(text);
-  } catch (error) {
-    console.error("Error calling AI API:", error);
-    return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-  }
-}
+                    try {
+                        const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                        const payload = {
+                            contents: history,
+                            systemInstruction: { parts: [{ text: systemInstructions }] }
+                        };
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!response.ok) {
+                            const errorBody = await response.json();
+                            console.error("Error de la API:", errorBody);
+                            throw new Error(`API call failed with status: ${response.status}`);
+                        }
+                        const result = await response.json();
+                        const text = result.candidates[0].content.parts[0].text;
+                        return processAIResponseText(text);
+                    } catch (error) {
+                        console.error("Error calling AI API:", error);
+                        return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
+                    }
+                }
                 function processAIResponseText(text) {
                     let isHtml = false;
                     let isSponsored = false;
@@ -1717,10 +1732,11 @@ setTimeout(() => {
                     return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
                 }
                 function formatPlaceForAI(place) {
-                    let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
-                    html += `<p class="text-sm">${place.descripcion}</p>`;
+                    let html = `<div class="place-card">`;
+                    html += `<h3>${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
+                    html += `<p>${place.descripcion}</p>`;
                     if (place.datosClave) {
-                        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+                        html += `<div class="data-key"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
                     }
                     if (place.direccion || place.telefono) {
                         html += `<div class="mt-2 text-xs">`;
@@ -1728,17 +1744,12 @@ setTimeout(() => {
                         if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
                         html += `</div>`;
                     }
-                    if (place.imagenURL) {
-                        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
-                    }
-                    html += `<div class="mt-3 flex flex-wrap gap-2">`;
-                    if (place.imagen360URL) {
-                        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
-                    }
+                    html += `<div class="buttons">`;
                     html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
                     if (place.latitud && place.longitud) {
                         html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
                     }
+                    html += `</div>`;
                     html += `</div>`;
                     return html;
                 }
@@ -1816,6 +1827,30 @@ setTimeout(() => {
                         text: aiResponseData.text,
                         isPlannerResponse: true
                     }, 'ai');
+
+                    // Mostrar el botón de compartir por WhatsApp
+                    setTimeout(() => {
+                        const whatsappBtnContainer = document.getElementById('whatsapp-share-container');
+                        const whatsappBtn = document.getElementById('whatsapp-share-btn');
+                        if (whatsappBtnContainer && whatsappBtn) {
+                            whatsappBtnContainer.classList.remove('hidden');
+                            // Eliminar cualquier listener anterior para evitar duplicados
+                            const newBtn = whatsappBtn.cloneNode(true);
+                            whatsappBtn.parentNode.replaceChild(newBtn, whatsappBtn);
+                            newBtn.addEventListener('click', () => {
+                                // Obtener el texto del último mensaje (el plan)
+                                const lastMessageDiv = chatWindow.lastElementChild.querySelector('.ai-message');
+                                let planText = lastMessageDiv.innerText || lastMessageDiv.textContent;
+                                // Limpiar el texto
+                                planText = planText.replace(/\*\*/g, '').replace(/[\n\r]+/g, ' ').trim();
+                                // Codificar el texto para URL
+                                const encodedPlan = encodeURIComponent(planText);
+                                // Abrir WhatsApp Web
+                                const whatsappUrl = `https://wa.me/?text=${encodedPlan}`;
+                                window.open(whatsappUrl, '_blank');
+                            });
+                        }
+                    }, 500);
                 });
                 function generatePlannerPrompt(style, days, energy, localidades) {
                     return `
@@ -2122,8 +2157,6 @@ setTimeout(() => {
                         highlightMarker.bindPopup(popupContent).openPopup();
                     }, 200);
                 }
-                // ✅ FUNCIONALIDAD DE AR ELIMINADA
-
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     mainRecognition = new SpeechRecognition();
