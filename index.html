@@ -242,6 +242,17 @@
         </div>
     </div>
     <!-- App principal (oculta al inicio) -->
+    </div>
+                    <!-- Botón de Compartir por WhatsApp -->
+                    <div id="whatsapp-share-container" class="mt-4 hidden">
+                        <button id="whatsapp-share-btn" class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 w-full">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H2zm11 11.5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H7a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1z"/>
+                                <path d="M10 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2zM18 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2z"/>
+                            </svg>
+                            Compartir por WhatsApp
+                        </button>
+                    </div>
     <div id="main-app" class="hidden flex flex-col h-dvh">
         <div id="chat-window" class="flex-1 p-4 overflow-y-auto space-y-4">
             <div class="w-full flex justify-start">
@@ -400,17 +411,7 @@
                             </svg>
                             Generar Mi Plan
                         </button>
-                    </div>
-                    <!-- Botón de Compartir por WhatsApp -->
-                    <div id="whatsapp-share-container" class="mt-4 hidden">
-                        <button id="whatsapp-share-btn" class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 w-full">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H2zm11 11.5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H7a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1zm-5 0a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1a1 1 0 011 1v1z"/>
-                                <path d="M10 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2zM18 12c0-1.104-.896-2-2-2s-2 .896-2 2c0 1.104.896 2 2 2s2-.896 2-2z"/>
-                            </svg>
-                            Compartir por WhatsApp
-                        </button>
-                    </div>
+                    
                 </form>
             </div>
         </div>
@@ -1662,6 +1663,30 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             isHtml: aiResponseData.isHtml,
                             isSponsored: aiResponseData.isSponsored
                         }, 'ai');
+                        // Mostrar el botón de WhatsApp SOLO después de generar un plan
+setTimeout(() => {
+    const whatsappBtnContainer = document.getElementById('whatsapp-share-container');
+    const whatsappBtn = document.getElementById('whatsapp-share-btn');
+    if (whatsappBtnContainer && whatsappBtn) {
+        whatsappBtnContainer.classList.remove('hidden');
+        // Asegurar que el botón esté en el DOM del chat
+        const chatWindow = document.getElementById('chat-window');
+        chatWindow.appendChild(whatsappBtnContainer);
+        
+        // Asignar la funcionalidad al botón
+        whatsappBtn.onclick = () => {
+            // Obtener el texto del último mensaje (el plan)
+            const lastMessageDiv = chatWindow.lastElementChild.querySelector('.ai-message');
+            let planText = lastMessageDiv?.innerText || "Mi plan de viaje con Andes";
+            // Limpiar el texto (opcional: quitar los asteriscos y otros formatos)
+            planText = planText.replace(/\*\*/g, '').replace(/[\n\r]+/g, ' ').trim();
+            // Codificar el texto para URL
+            const encodedPlan = encodeURIComponent(planText);
+            // Abrir WhatsApp Web con el mensaje prellenado
+            window.open(`https://wa.me/?text=${encodedPlan}`, '_blank');
+        };
+    }
+}, 500); // Esperar 500ms para que el mensaje se renderice
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
                     }
                 }
