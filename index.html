@@ -1677,8 +1677,8 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 function formatPlaceForAI(place) {
                     let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
                     html += `<p class="text-sm">${place.descripcion}</p>`;
-                    if (place.datosClave) {2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded text-gray-800 dark:text-gray-100"> <strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>datos clave:
-                                html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded text-gray-800 dark:text-gray-100"> <strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+                    if (place.datosClave) {
+                        html += `<div class="mt-2 text-xs bg-gray-100 dark:bg-slate-700 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
                     }
                     if (place.direccion || place.telefono) {
                         html += `<div class="mt-2 text-xs">`;
