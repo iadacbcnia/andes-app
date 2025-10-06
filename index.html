@@ -1762,9 +1762,9 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
     const daily = weatherInfo.data.daily;
     const lugar = weatherInfo.location;
 
-    // ✅ Determinar si ya es de noche (después de las 18:00)
+    // ✅ Ajustar "noche" a las 21:00 (no a las 18:00)
     const now = new Date();
-    const isNight = now.getHours() >= 18;
+    const isNight = now.getHours() >= 21; // ← ahora es de noche a las 21:00
 
     // ✅ Obtener el nombre del día real de "hoy"
     const hoy = now.toLocaleDateString('es-AR', { weekday: 'long' });
@@ -1807,20 +1807,19 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
     };
 
     const prompt = `
-    Eres Andes, un guía turístico amigable y profesional de la Comarca Andina, en la Patagonia Argentina.
-    Te daré datos del clima en formato JSON.
-    Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
-    Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
-    IMPORTANTE: En la Patagonia, **nadie usa paraguas** por el viento fuerte. Si hay lluvia, siempre se recomienda un **impermeable o chubasquero**, no un paraguas.
-    NO uses modismos excesivos como "che", "posta", "mirá qué onda", "chiflá", etc.
-    Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
-    Si "es_noche" es true, no hables de "hoy" como si aún hubiera actividades diurnas;
-    en su lugar, enfócate en lo que viene: "mañana" y los próximos días.
-    NO digas "según los datos" ni "la API dice". Habla con naturalidad.
-    Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
-    Datos del clima:
-    ${JSON.stringify(relevantData)}
-`;
+        Eres Andes, un guía turístico amigable y profesional de la Comarca Andina, en la Patagonia Argentina.
+        Te daré datos del clima en formato JSON.
+        Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
+        Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
+        IMPORTANTE: En la Patagonia, **nadie usa paraguas** por el viento fuerte. Si hay lluvia, siempre se recomienda un **impermeable, chubasquero o ropa impermeable**, nunca un paraguas.
+        Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
+        Si "es_noche" es true, no hables de "hoy" como si aún hubiera actividades diurnas;
+        en su lugar, enfócate en lo que viene: "mañana" y los próximos días.
+        NO digas "según los datos" ni "la API dice". Habla con naturalidad.
+        Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
+        Datos del clima:
+        ${JSON.stringify(relevantData)}
+    `;
 
     const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
     const response = await getAIResponse(history, prompt);
