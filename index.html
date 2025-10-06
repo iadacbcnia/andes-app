@@ -1886,42 +1886,13 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                         chatWindow.removeChild(typingIndicator);
                         addMessage({ text: finalText }, 'ai');
                         chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-                    } else {
-                        chatWindow.removeChild(typingIndicator);
-
-// Si la respuesta contiene [CLIMA:...], NO es un plan, es una consulta normal.
-if (weatherMatch) {
-    addMessage({ text: finalText }, 'ai');
-} else {
-    // Para cualquier otra respuesta, NO es un plan personalizado.
-    addMessage({ text: aiResponseData.text }, 'ai');
-}
-
-// Mostrar el botón de compartir por WhatsApp
-setTimeout(() => {
-    const whatsappBtnContainer = document.getElementById('whatsapp-share-container');
-    const whatsappBtn = document.getElementById('whatsapp-share-btn');
-    if (whatsappBtnContainer && whatsappBtn) {
-        whatsappBtnContainer.classList.remove('hidden');
-        whatsappBtn.addEventListener('click', () => {
-            // Obtener el texto del último mensaje (el plan)
-            const lastMessageDiv = chatWindow.lastElementChild.querySelector('.ai-message');
-            let planText = lastMessageDiv.innerText || lastMessageDiv.textContent;
-
-            // Limpiar el texto (opcional: quitar los asteriscos y otros formatos)
-            planText = planText.replace(/\*\*/g, '').replace(/[\n\r]+/g, ' ').trim();
-
-            // Codificar el texto para URL
-            const encodedPlan = encodeURIComponent(planText);
-
-            // Abrir WhatsApp Web con el mensaje prellenado
-            const whatsappUrl = `https://wa.me/?text=${encodedPlan}`;
-            window.open(whatsappUrl, '_blank');
-        });
-    }
-}, 500); // Esperar un poco para asegurar que el mensaje se haya renderizado
-                        chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
-                    }
+                                    } else {
+                    chatWindow.removeChild(typingIndicator);
+                    // ✅ Solo el planificador debe tener isPlannerResponse: true
+                    // Las respuestas normales NO lo tienen.
+                    addMessage({ text: aiResponseData.text, isHtml: aiResponseData.isHtml, isSponsored: aiResponseData.isSponsored }, 'ai');
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
+                }
                 }
                 function showTypingIndicator() {
                     const typingDiv = document.createElement('div');
