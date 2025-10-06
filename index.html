@@ -44,6 +44,41 @@
     background-color: #334155 !important; /* slate-700 */
     color: #f3f4f6 !important; /* gray-100 */
 }
+        /* ✅ Corrección para botones del planificador en modo oscuro */
+        .planner-option-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            border: 2px solid #475569; /* slate-600 */
+            border-radius: 0.5rem;
+            background-color: #334155; /* slate-700 */
+            color: #f3f4f6; /* gray-100 */
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .planner-option-btn:hover {
+            background-color: #475569; /* slate-600 */
+            border-color: #64748b; /* slate-500 */
+        }
+        .planner-option-btn.selected,
+        .planner-option-btn.bg-emerald-500 {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+        .planner-option-btn svg {
+            width: 2rem;
+            height: 2rem;
+            margin-bottom: 0.5rem;
+            fill: currentColor;
+        }
+        .planner-option-btn span {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
         /* Corrección para campos de formulario en modo oscuro */
         .dark input, .dark textarea, .dark select {
             background-color: #334155 !important;
@@ -279,11 +314,11 @@
                             Tu estilo de viaje
                         </label>
                         <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
-                            <button type="button" data-value="Aventura" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-emerald-500 text-white border-emerald-500">
+                            <button type="button" data-value="Aventura" class="planner-option-btn flex flex-col items-center justify-center gap-2">
                                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
                                 <span class="font-semibold">Aventura</span>
                             </button>
-                            <button type="button" data-value="Relax" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <button type="button" data-value="Relax" class="planner-option-btn flex flex-col items-center justify-center gap-2">
                                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>
                                 <span class="font-semibold">Relax</span>
                             </button>
@@ -306,7 +341,7 @@
                             Tu nivel de energía
                         </label>
                         <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
-                            <button type="button" data-value="Bajo" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <button type="button" data-value="Bajo" class="planner-option-btn flex flex-col items-center justify-center gap-2">
                                 <span class="text-2xl">🐢</span>
                                 <span class="font-semibold">Bajo</span>
                             </button>
