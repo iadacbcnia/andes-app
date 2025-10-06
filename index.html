@@ -1799,7 +1799,6 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
     const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
     const response = await getAIResponse(history, prompt);
     return response.text;
-}
                     
                 }
                 chatForm.addEventListener('submit', (e) => {
