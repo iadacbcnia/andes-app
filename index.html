@@ -1892,34 +1892,31 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
     chatWindow.appendChild(messageDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
-                async function processUserMessage(userMessage) {
-    const typingIndicator = showTypingIndicator();
-    chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
-    const systemPrompt = generateSystemPrompt();
-    const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-    
-    // ✅ Procesar clima
-    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?)\]/);
-    if (weatherMatch) {
-        const location = weatherMatch[1].trim();
-        const weatherInfo = await getWeatherData(location);
-        let finalText;
-        if (weatherInfo.error) {
-            finalText = weatherInfo.error;
-        } else {
-            finalText = await formatWeatherResponse(weatherInfo, 'semana');
-        }
-        chatWindow.removeChild(typingIndicator);
-        addMessage({ text: finalText, isHtml: true }, 'ai');
-        chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-        return;
-    }
-    
-    // ✅ Procesar respuestas normales (¡ESTE BLOQUE FALTABA!)
-    chatWindow.removeChild(typingIndicator);
-    addMessage({ text: aiResponseData.text, isHtml: aiResponseData.isHtml, isSponsored: aiResponseData.isSponsored }, 'ai');
-    chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
-}
+                                async function processUserMessage(userMessage) {
+                    const typingIndicator = showTypingIndicator();
+                    chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+                    const systemPrompt = generateSystemPrompt();
+                    const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
+                    // ✅ Procesar clima
+                    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?)\]/);
+                    if (weatherMatch) {
+                        const location = weatherMatch[1].trim();
+                        const weatherInfo = await getWeatherData(location);
+                        let finalText;
+                        if (weatherInfo.error) {
+                            finalText = weatherInfo.error;
+                        } else {
+                            finalText = await formatWeatherResponse(weatherInfo, 'semana');
+                        }
+                        chatWindow.removeChild(typingIndicator);
+                        addMessage({ text: finalText, isHtml: true }, 'ai');
+                        chatHistory.push({ role: "model", parts: [{ text: finalText }] });
+                        return;
+                    }
+                    // ✅ Procesar respuestas normales
+                    chatWindow.removeChild(typingIndicator);
+                    addMessage({ text: aiResponseData.text, isHtml: aiResponseData.isHtml, isSponsored: aiResponseData.isSponsored }, 'ai');
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
                 }
                 function showTypingIndicator() {
                     const typingDiv = document.createElement('div');
