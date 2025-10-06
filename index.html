@@ -80,16 +80,17 @@
             animation: pulse-red 1.5s infinite;
             border-radius: 50%;
         }
-        .bottom-nav {
+                .bottom-nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: #1e293b; /* slate-800 - mismo fondo que el cuerpo */
+    background-color: #1e293b; /* slate-800 */
     border-top: 1px solid #334155; /* slate-700 */
     padding: 0.5rem 0;
     z-index: 50;
 }
-        .bottom-nav-btn {
+
+.bottom-nav-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -100,16 +101,31 @@
     font-size: 0.75rem;
     padding: 0.25rem;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
 }
-        .bottom-nav-btn.active, .bottom-nav-btn:hover {
+
+.bottom-nav-btn.active,
+.bottom-nav-btn:hover {
     color: #10b981; /* emerald-500 */
+    transform: scale(1.05);
 }
-        .bottom-nav-btn svg {
-            width: 1.5rem;
-            height: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
+
+.bottom-nav-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.25rem;
+    fill: currentColor; /* Para que el SVG siga el color del texto */
+}
+
+/* ✅ AÑADIMOS ESTO PARA QUE SE VEAN BIEN EN MODO OSCURO */
+.bottom-nav-btn:not(.active):not(:hover) {
+    opacity: 0.8;
+}
+
+.bottom-nav-btn.active,
+.bottom-nav-btn:hover {
+    opacity: 1;
+}
         .chat-container {
             flex: 1;
             overflow-y: auto;
