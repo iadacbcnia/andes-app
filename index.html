@@ -1757,57 +1757,7 @@ const weatherCodeToDescription = {
     99: "Tormenta con granizo intenso"
 };
 
-async function formatWeatherResponse(weatherInfo, timeframe) {
-    const current = weatherInfo.data.current;
-    const daily = weatherInfo.data.daily;
-    const lugar = weatherInfo.location;
-
-    // ✅ Obtener el nombre del día ACTUAL (hoy)
-    const hoy = new Date().toLocaleDateString('es-AR', { weekday: 'long' });
-
-    // Clima actual
-    const tempActual = Math.round(current.temperature_2m);
-    const climaActualDesc = weatherCodeToDescription[current.weather_code] || "Clima actual";
-
-    // Resumen semanal (7 días), empezando por HOY
-    const resumenSemanal = [];
-    for (let i = 0; i < Math.min(7, daily.time.length); i++) {
-        const fecha = new Date(daily.time[i]);
-        const dia = i === 0 ? hoy : fecha.toLocaleDateString('es-AR', { weekday: 'long' });
-        resumenSemanal.push({
-            dia: dia,
-            temp_max: Math.round(daily.temperature_2m_max[i]),
-            temp_min: Math.round(daily.temperature_2m_min[i]),
-            descripcion: weatherCodeToDescription[daily.weather_code[i]] || "Clima"
-        });
-    }
-
-    const relevantData = {
-        lugar: lugar,
-        clima_actual: {
-            temperatura: tempActual,
-            descripcion: climaActualDesc
-        },
-        pronostico_semanal: resumenSemanal
-    };
-
-    const prompt = `
-        Eres Andes, un guía turístico amigable y profesional de la Comarca Andina.
-        Te daré datos del clima en formato JSON.
-        Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
-        Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
-        NO uses modismos excesivos como "che", "posta", "mirá qué onda", "chiflá", etc.
-        Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
-        NO digas "según los datos" ni "la API dice". Habla con naturalidad.
-        Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
-        Datos del clima:
-        ${JSON.stringify(relevantData)}
-    `;
-
-    const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
-    const response = await getAIResponse(history, prompt);
-    return response.text;
-}
+async function formatWeatherResponse
                 chatForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const userMessage = chatInput.value.trim();
