@@ -1757,7 +1757,74 @@ const weatherCodeToDescription = {
     99: "Tormenta con granizo intenso"
 };
 
-async function formatWeatherResponse
+async function formatWeatherResponse(weatherInfo, timeframe) {
+    const current = weatherInfo.data.current;
+    const daily = weatherInfo.data.daily;
+    const lugar = weatherInfo.location;
+
+    // ✅ Determinar si ya es de noche (después de las 18:00)
+    const now = new Date();
+    const isNight = now.getHours() >= 18;
+
+    // ✅ Obtener el nombre del día real de "hoy"
+    const hoy = now.toLocaleDateString('es-AR', { weekday: 'long' });
+
+    // ✅ Clima actual
+    const tempActual = Math.round(current.temperature_2m);
+    const climaActualDesc = weatherCodeToDescription[current.weather_code] || "Clima actual";
+
+    // ✅ Construir el pronóstico semanal, ajustando el inicio
+    const resumenSemanal = [];
+    const startIndex = isNight ? 1 : 0; // si es de noche, empezamos desde mañana
+    const daysToShow = 7;
+
+    for (let i = startIndex; i < Math.min(startIndex + daysToShow, daily.time.length); i++) {
+        const fecha = new Date(daily.time[i]);
+        let dia;
+        if (i === 0) {
+            dia = hoy;
+        } else if (i === 1 && isNight) {
+            dia = "Mañana";
+        } else {
+            dia = fecha.toLocaleDateString('es-AR', { weekday: 'long' });
+        }
+        resumenSemanal.push({
+            dia: dia,
+            temp_max: Math.round(daily.temperature_2m_max[i]),
+            temp_min: Math.round(daily.temperature_2m_min[i]),
+            descripcion: weatherCodeToDescription[daily.weather_code[i]] || "Clima"
+        });
+    }
+
+    const relevantData = {
+        lugar: lugar,
+        clima_actual: {
+            temperatura: tempActual,
+            descripcion: climaActualDesc,
+            es_noche: isNight
+        },
+        pronostico_semanal: resumenSemanal
+    };
+
+    const prompt = `
+        Eres Andes, un guía turístico amigable y profesional de la Comarca Andina.
+        Te daré datos del clima en formato JSON.
+        Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
+        Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
+        NO uses modismos excesivos como "che", "posta", "mirá qué onda", "chiflá", etc.
+        Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
+        Si "es_noche" es true, no hables de "hoy" como si aún hubiera actividades diurnas;
+        en su lugar, enfócate en lo que viene: "mañana" y los próximos días.
+        NO digas "según los datos" ni "la API dice". Habla con naturalidad.
+        Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
+        Datos del clima:
+        ${JSON.stringify(relevantData)}
+    `;
+
+    const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
+    const response = await getAIResponse(history, prompt);
+    return response.text;
+}
                 chatForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const userMessage = chatInput.value.trim();
