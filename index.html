@@ -1807,19 +1807,20 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
     };
 
     const prompt = `
-        Eres Andes, un guía turístico amigable y profesional de la Comarca Andina.
-        Te daré datos del clima en formato JSON.
-        Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
-        Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
-        NO uses modismos excesivos como "che", "posta", "mirá qué onda", "chiflá", etc.
-        Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
-        Si "es_noche" es true, no hables de "hoy" como si aún hubiera actividades diurnas;
-        en su lugar, enfócate en lo que viene: "mañana" y los próximos días.
-        NO digas "según los datos" ni "la API dice". Habla con naturalidad.
-        Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
-        Datos del clima:
-        ${JSON.stringify(relevantData)}
-    `;
+    Eres Andes, un guía turístico amigable y profesional de la Comarca Andina, en la Patagonia Argentina.
+    Te daré datos del clima en formato JSON.
+    Tu tarea es convertirlos en una respuesta útil, clara y amable para un turista.
+    Usa un tono cálido, respetuoso y servicial. Incluye un emoji relevante.
+    IMPORTANTE: En la Patagonia, **nadie usa paraguas** por el viento fuerte. Si hay lluvia, siempre se recomienda un **impermeable o chubasquero**, no un paraguas.
+    NO uses modismos excesivos como "che", "posta", "mirá qué onda", "chiflá", etc.
+    Evita ser demasiado informal o confianzudo. Sé cercano, pero profesional.
+    Si "es_noche" es true, no hables de "hoy" como si aún hubiera actividades diurnas;
+    en su lugar, enfócate en lo que viene: "mañana" y los próximos días.
+    NO digas "según los datos" ni "la API dice". Habla con naturalidad.
+    Responde en español rioplatense neutro (ej: "hace", "está", "bueno", "ideal").
+    Datos del clima:
+    ${JSON.stringify(relevantData)}
+`;
 
     const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
     const response = await getAIResponse(history, prompt);
@@ -1930,30 +1931,47 @@ chatHistory.push({ role: "model", parts: [{ text: finalText }] });
                     return typingDiv;
                 }
                 async function getAIResponse(history, systemInstructions) {
-  try {
-    const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas"; // Tu clave real
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-    const payload = {
-      contents: history,
-      systemInstruction: { parts: [{ text: systemInstructions }] }
-    };
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-      const errorBody = await response.json();
-      console.error("Error de la API:", errorBody);
-      throw new Error(`API call failed with status: ${response.status}`);
+    const TIMEOUT_MS = 15000; // 15 segundos
+
+    try {
+        const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        // ✅ Crear un Promise que se rechaza si pasa el timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+        const payload = {
+            contents: history,
+            systemInstruction: { parts: [{ text: systemInstructions }] }
+        };
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal // ← vincular el abort
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            console.error("Error de la API:", errorBody);
+            throw new Error(`API falló con estado: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Lo siento, no pude generar una respuesta.";
+        return processAIResponseText(text);
+
+    } catch (error) {
+        console.error("Error en getAIResponse:", error);
+        if (error.name === 'AbortError') {
+            return { text: "Uff, la respuesta está tardando más de lo normal. ¿Podrías repetir la pregunta o intentar con otra?" };
+        }
+        return { text: "Lo siento, tuve un problema técnico. Por favor, intenta de nuevo en unos segundos." };
     }
-    const result = await response.json();
-    const text = result.candidates[0].content.parts[0].text;
-    return processAIResponseText(text);
-  } catch (error) {
-    console.error("Error calling AI API:", error);
-    return { text: "Lo siento, tuve un problema para conectarme. Por favor, intenta de nuevo más tarde." };
-  }
 }
                 function processAIResponseText(text) {
                     let isHtml = false;
