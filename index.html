@@ -1843,24 +1843,30 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                     }
                 });
                 function addMessage(message, sender) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
-                    const messageContent = document.createElement('div');
-                    messageContent.className = `${sender === 'user' ? 'user-message' : 'ai-message'} w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
-                    if (message.isHtml) {
-                        messageContent.innerHTML = message.text;
-                    } else if (message.isPlannerResponse) {
-                        messageContent.innerHTML = `<h3 class="font-bold text-lg mb-2">✨ Tu Plan de Viaje Personalizado</h3>${message.text}`;
-                    } else {
-                        messageContent.textContent = message.text;
-                    }
-                    if (sender === 'ai' && message.isSponsored) {
-                        messageContent.classList.add('sponsored-message');
-                    }
-                    messageDiv.appendChild(messageContent);
-                    chatWindow.appendChild(messageDiv);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `w-full flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+    const messageContent = document.createElement('div');
+    messageContent.className = `${sender === 'user' ? 'user-message' : 'ai-message'} w-fit max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl shadow`;
+    
+    if (message.isHtml) {
+        messageContent.innerHTML = message.text;
+    } else {
+        // Solo si es un plan, añadimos el encabezado
+        if (message.isPlannerResponse) {
+            messageContent.innerHTML = `<h3 class="font-bold text-lg mb-2">✨ Tu Plan de Viaje Personalizado</h3>${message.text}`;
+        } else {
+            messageContent.textContent = message.text;
+        }
+    }
+
+    if (sender === 'ai' && message.isSponsored) {
+        messageContent.classList.add('sponsored-message');
+    }
+
+    messageDiv.appendChild(messageContent);
+    chatWindow.appendChild(messageDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
                 async function processUserMessage(userMessage) {
                     const typingIndicator = showTypingIndicator();
                     chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
@@ -1882,11 +1888,14 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                         chatHistory.push({ role: "model", parts: [{ text: finalText }] });
                     } else {
                         chatWindow.removeChild(typingIndicator);
-                        const message = {
-    text: aiResponseData.text,
-    isPlannerResponse: true
-};
-addMessage(message, 'ai');
+
+// Si la respuesta contiene [CLIMA:...], NO es un plan, es una consulta normal.
+if (weatherMatch) {
+    addMessage({ text: finalText }, 'ai');
+} else {
+    // Para cualquier otra respuesta, NO es un plan personalizado.
+    addMessage({ text: aiResponseData.text }, 'ai');
+}
 
 // Mostrar el botón de compartir por WhatsApp
 setTimeout(() => {
