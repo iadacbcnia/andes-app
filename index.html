@@ -44,6 +44,62 @@
     background-color: #334155 !important; /* slate-700 */
     color: #f3f4f6 !important; /* gray-100 */
 }
+        /* ✅ Corrección para botones del planificador en modo oscuro y móvil */
+        .planner-option-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.75rem 0.5rem;
+            border: 2px solid #475569; /* slate-600 */
+            border-radius: 0.5rem;
+            background-color: #334155; /* slate-700 */
+            color: #f3f4f6; /* gray-100 */
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.875rem; /* Texto más pequeño para móviles */
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .planner-option-btn:hover {
+            background-color: #475569; /* slate-600 */
+            border-color: #64748b; /* slate-500 */
+        }
+        .planner-option-btn.selected,
+        .planner-option-btn.bg-emerald-500 {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+        .planner-option-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: currentColor;
+        }
+        .planner-option-btn span {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        /* ✅ Asegurar que el texto no se salga en móviles */
+        @media (max-width: 768px) {
+            .planner-option-btn {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.25rem;
+                min-width: 80px;
+            }
+            .planner-option-btn span {
+                font-size: 1.25rem;
+            }
+            .planner-option-btn svg {
+                width: 1.25rem;
+                height: 1.25rem;
+            }
+        }
         /* ✅ Corrección para botones del planificador en modo oscuro */
         .planner-option-btn {
             flex: 1;
@@ -314,15 +370,15 @@
                             Tu estilo de viaje
                         </label>
                         <div id="planner-style-group" class="grid grid-cols-3 gap-4 mt-2">
-                            <button type="button" data-value="Aventura" class="planner-option-btn flex flex-col items-center justify-center gap-2">
+                            <button type="button" data-value="Aventura" class="planner-option-btn">
                                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
                                 <span class="font-semibold">Aventura</span>
                             </button>
-                            <button type="button" data-value="Relax" class="planner-option-btn flex flex-col items-center justify-center gap-2">
+                            <button type="button" data-value="Relax" class="planner-option-btn">
                                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>
                                 <span class="font-semibold">Relax</span>
                             </button>
-                            <button type="button" data-value="Familiar" class="planner-option-btn flex flex-col items-center justify-center gap-2 p-4 border-2 rounded-lg cursor-pointer transition-colors duration-200 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            <button type="button" data-value="Familiar" class="planner-option-btn">
                                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3.75 3.75 0 0115 12a3.75 3.75 0 01-2.25 3.512m-9.75-2.962c0-.552.246-1.631 1.25-2.262a25.814 25.814 0 017.5 0c1.004.631 1.25 1.71 1.25 2.262m-9.75 1.068c0 .551.246 1.631 1.25 2.261a25.814 25.814 0 007.5 0c1.004-.63 1.25-1.71 1.25-2.261M12 6a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z" /></svg>
                                 <span class="font-semibold">Familiar</span>
                             </button>
@@ -341,14 +397,14 @@
                             Tu nivel de energía
                         </label>
                         <div id="planner-energy-group" class="grid grid-cols-3 gap-4 mt-2">
-                            <button type="button" data-value="Bajo" class="planner-option-btn flex flex-col items-center justify-center gap-2">
+                            <button type="button" data-value="Bajo" class="planner-option-btn">
                                 <span class="text-2xl">🐢</span>
                                 <span class="font-semibold">Bajo</span>
                             </button>
-                            <button type="button" data-value="Medio" class="planner-option-btn flex flex-col items-center justify-center gap-2">
+                            <button type="button" data-value="Medio" class="planner-option-btn">
                                 <span class="font-semibold">Medio</span>
                             </button>
-                            <button type="button" data-value="Alto" class="planner-option-btn flex flex-col items-center justify-center gap-2">
+                            <button type="button" data-value="Alto" class="planner-option-btn">
                                 <span class="text-2xl">⚡</span>
                                 <span class="font-semibold">Alto</span>
                             </button>
@@ -388,7 +444,7 @@
                         </div>
                     </div>
                     <div class="pt-6">
-                        <button type="submit" class="w-full flex items-center justify-center gap-3 font-bold py-4 px-4 rounded-xl text-lg transition-transform transform hover:scale-105 shadow-lg">
+                        <button type="submit" class="w-full flex items-center justify-center gap-3 font-bold py-3 px-4 rounded-xl text-base transition-transform transform hover:scale-105 shadow-lg">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M3.5 2.75a.75.75 0 00-1.5 0v14.5a.75.75 0 001.5 0v-4.392l1.657-.348a6.44 6.44 0 014.231.575l.256.102a.75.75 0 00.868-.133l4.25-4.25a.75.75 0 00-.133-.868l-.102-.256a6.44 6.44 0 01-.575-4.231l.348-1.657V2.75z" />
                             </svg>
