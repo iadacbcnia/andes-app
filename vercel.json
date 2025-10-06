@@ -1,8 +1,14 @@
 {
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+{
   "crons": [
     {
       "path": "/api/scrape-elhoyo",
       "schedule": "0 0 * * 0"
     }
   ]
+
 }
