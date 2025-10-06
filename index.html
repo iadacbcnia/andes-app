@@ -1340,7 +1340,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             placeData.createdAt = serverTimestamp();
                             await addDoc(lugaresCollectionRef, placeData);
                         }
-                        submitBtn.textContent = '¡Guardado!';
+                                                submitBtn.textContent = '¡Guardado!';
                         submitBtn.classList.remove('bg-emerald-500');
                         submitBtn.classList.add('bg-green-600');
                         setTimeout(() => {
@@ -1349,14 +1349,16 @@ Aclaración: No hay un laberinto para niños."></textarea>
                             submitBtn.classList.remove('bg-green-600');
                             submitBtn.classList.add('bg-emerald-500');
                             if (editingPlaceId) {
+                                // Si estaba editando, volvemos al listado de gestión
                                 submitBtn.textContent = 'Actualizar Lugar';
                                 contributionModal.classList.add('hidden');
                                 manageModal.classList.remove('hidden');
+                                editingPlaceId = null;
                             } else {
+                                // Si era un lugar nuevo, mantenemos el modal abierto para seguir agregando
                                 submitBtn.textContent = 'Añadir Lugar';
-                                contributionModal.classList.add('hidden');
+                                // contributionModal.classList.add('hidden'); // <-- ESTA LÍNEA SE COMENTA
                             }
-                            editingPlaceId = null; 
                         }, 1500);
                     } catch (error) {
                         console.error("Error al guardar el lugar: ", error);
