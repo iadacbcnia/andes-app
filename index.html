@@ -1758,44 +1758,45 @@ const weatherCodeToDescription = {
 };
 
 async function formatWeatherResponse(weatherInfo, timeframe) {
-    let relevantData = {
-        lugar: weatherInfo.location
-    };
     const current = weatherInfo.data.current;
     const daily = weatherInfo.data.daily;
+    const lugar = weatherInfo.location;
 
-    if (timeframe === 'hoy') {
-        relevantData.tipo = 'actual';
-        relevantData.temp = Math.round(current.temperature_2m);
-        relevantData.descripcion = weatherCodeToDescription[current.weather_code] || "Clima actual";
-    } else if (timeframe === 'mañana') {
-        relevantData.tipo = 'pronóstico para mañana';
-        const tomorrow = daily.temperature_2m_max[1];
-        const tomorrowMin = daily.temperature_2m_min[1];
-        const tomorrowCode = daily.weather_code[1];
-        relevantData.temp_max = Math.round(tomorrow);
-        relevantData.temp_min = Math.round(tomorrowMin);
-        relevantData.descripcion = weatherCodeToDescription[tomorrowCode] || "Clima para mañana";
-    } else if (timeframe === 'semana') {
-        relevantData.tipo = 'pronóstico semanal';
-        relevantData.resumen = [];
-        for (let i = 0; i < 7; i++) {
-            relevantData.resumen.push({
-                dia: new Date(daily.time[i]).toLocaleDateString('es-AR', { weekday: 'long' }),
-                temp_max: Math.round(daily.temperature_2m_max[i]),
-                temp_min: Math.round(daily.temperature_2m_min[i]),
-                descripcion: weatherCodeToDescription[daily.weather_code[i]] || "Clima"
-            });
-        }
+    // Clima actual
+    const tempActual = Math.round(current.temperature_2m);
+    const climaActualDesc = weatherCodeToDescription[current.weather_code] || "Clima actual";
+
+    // Resumen semanal (7 días)
+    const resumenSemanal = [];
+    for (let i = 0; i < Math.min(7, daily.time.length); i++) {
+        resumenSemanal.push({
+            dia: new Date(daily.time[i]).toLocaleDateString('es-AR', { weekday: 'long' }),
+            temp_max: Math.round(daily.temperature_2m_max[i]),
+            temp_min: Math.round(daily.temperature_2m_min[i]),
+            descripcion: weatherCodeToDescription[daily.weather_code[i]] || "Clima"
+        });
     }
 
+    const relevantData = {
+        lugar: lugar,
+        clima_actual: {
+            temperatura: tempActual,
+            descripcion: climaActualDesc
+        },
+        pronostico_semanal: resumenSemanal
+    };
+
     const prompt = `
-        Eres Andes, un guía turístico amigable y conversador. Te daré datos del clima en formato JSON.
-        Tu tarea es convertir estos datos en una respuesta natural, amigable y útil para un turista.
-        Usa un tono canchero y cercano, y siempre incluye un emoji relevante. No digas "según los datos".
+        Eres Andes, un guía turístico amigable y conversador de la Comarca Andina.
+        Te daré datos del clima en formato JSON.
+        Tu tarea es convertirlos en una respuesta natural, útil y amigable para un turista.
+        Usa un tono cercano, canchero y entusiasta. Incluye un emoji relevante.
+        NO digas "según los datos" ni "la API dice". Habla como si lo supieras tú.
+        Responde en español rioplatense (ej: "hace", "está", "dale", "bárbaro").
         Datos del clima:
         ${JSON.stringify(relevantData)}
     `;
+
     const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
     const response = await getAIResponse(history, prompt);
     return response.text;
@@ -1872,27 +1873,23 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                     chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
                     const systemPrompt = generateSystemPrompt();
                     const aiResponseData = await getAIResponse(chatHistory, systemPrompt);
-                    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?):(.*?)\]/);
-                    if (weatherMatch) {
-                        const location = weatherMatch[1].trim();
-                        const timeframe = weatherMatch[2].trim();
-                        const weatherInfo = await getWeatherData(location);
-                        let finalText;
-                        if (weatherInfo.error) {
-                            finalText = weatherInfo.error;
-                        } else {
-                            finalText = await formatWeatherResponse(weatherInfo, timeframe);
-                        }
-                        chatWindow.removeChild(typingIndicator);
-                        addMessage({ text: finalText }, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: finalText }] });
-                                    } else {
-                    chatWindow.removeChild(typingIndicator);
-                    // ✅ Solo el planificador debe tener isPlannerResponse: true
-                    // Las respuestas normales NO lo tienen.
-                    addMessage({ text: aiResponseData.text, isHtml: aiResponseData.isHtml, isSponsored: aiResponseData.isSponsored }, 'ai');
-                    chatHistory.push({ role: "model", parts: [{ text: aiResponseData.text }] });
-                }
+                    const weatherMatch = aiResponseData.text.match(/\[CLIMA:(.*?)\]/);
+if (weatherMatch) {
+    const location = weatherMatch[1].trim();
+    // Siempre pedimos el pronóstico completo (7 días), sin importar el timeframe
+    const weatherInfo = await getWeatherData(location);
+    let finalText;
+    if (weatherInfo.error) {
+        finalText = weatherInfo.error;
+    } else {
+        // Pasamos 'semana' para que muestre el resumen completo
+        finalText = await formatWeatherResponse(weatherInfo, 'semana');
+    }
+    chatWindow.removeChild(typingIndicator);
+    addMessage({ text: finalText }, 'ai');
+    chatHistory.push({ role: "model", parts: [{ text: finalText }] });
+    return; // ← muy importante: salir para no procesar como mensaje normal
+}
                 }
                 function showTypingIndicator() {
                     const typingDiv = document.createElement('div');
