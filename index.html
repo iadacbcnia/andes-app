@@ -1886,8 +1886,8 @@ if (weatherMatch) {
         finalText = await formatWeatherResponse(weatherInfo, 'semana');
     }
     chatWindow.removeChild(typingIndicator);
-    addMessage({ text: finalText }, 'ai');
-    chatHistory.push({ role: "model", parts: [{ text: finalText }] });
+addMessage({ text: finalText, isHtml: true }, 'ai');
+chatHistory.push({ role: "model", parts: [{ text: finalText }] });
     return; // ← muy importante: salir para no procesar como mensaje normal
 }
                 }
