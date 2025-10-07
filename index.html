@@ -744,16 +744,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
     <input type="url" id="lugar-imagen4" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 4">
     <input type="url" id="lugar-imagen5" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 5">
 </div>
-// Mostrar/Ocultar campos de fotos según el nivel de auspicio
-document.getElementById('lugar-nivel-auspicio').addEventListener('change', function() {
-    const nivel = parseInt(this.value);
-    const camposFotos = document.getElementById('campos-fotos-auspicio');
-    if (nivel > 0) {
-        camposFotos.classList.remove('hidden');
-    } else {
-        camposFotos.classList.add('hidden');
-    }
-});
+
                             <div class="pt-4 flex justify-end">
                                                            <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px] shadow-lg">Añadir Lugar</button>
                             </div>
@@ -984,6 +975,16 @@ document.getElementById('lugar-nivel-auspicio').addEventListener('change', funct
                 const tipForm = document.getElementById('tip-form');
                 const tipInput = document.getElementById('tip-input');
                 const plannerForm = document.getElementById('planner-form');
+                // Mostrar/Ocultar campos de fotos según el nivel de auspicio
+document.getElementById('lugar-nivel-auspicio').addEventListener('change', function() {
+    const nivel = parseInt(this.value);
+    const camposFotos = document.getElementById('campos-fotos-auspicio');
+    if (nivel > 0) {
+        camposFotos.classList.remove('hidden');
+    } else {
+        camposFotos.classList.add('hidden');
+    }
+});
                 const vrSky = document.getElementById('vr-sky');
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
