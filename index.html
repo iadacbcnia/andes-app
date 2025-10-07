@@ -96,6 +96,7 @@
             }
         }
 
+
         /* ✅ Corrección para checkboxes de localidades en modo oscuro */
         .planner-localidad-checkbox {
             accent-color: #10b981; /* emerald-500 */
@@ -112,6 +113,7 @@
         #planner-localidades-group label:hover {
             background-color: #475569 !important;
         }
+
 
         /* ✅ Corrección para el botón "Generar Mi Plan" */
         #planner-form button[type="submit"] {
@@ -453,6 +455,7 @@
             </button>
         </div>
 
+
         <!-- ✅ MODAL DE PLANIFICADOR ACTUALIZADO CON SELECCIÓN DE LOCALIDADES -->
         <div id="planner-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
             <div class="relative top-1/2 -translate-y-1/2 mx-auto p-8 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
@@ -571,6 +574,7 @@
                 </form>
             </div>
         </div>
+
 
         <!-- Resto de modales (password, admin, contribution, etc.) SIN CAMBIOS -->
         <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 transition-opacity duration-300">
@@ -725,10 +729,27 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                    </button>
                                 </div>
                             </div>
-                            <div class="flex items-center">
-                                <input id="lugar-sponsor" type="checkbox" class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
-                                <label for="lugar-sponsor" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">⭐ Es un lugar recomendado</label>
-                            </div>
+                            <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nivel de auspicio</label>
+    <div class="flex gap-2">
+        <select id="lugar-nivel-auspicio" class="mt-1 block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm">
+            <option value="0">Ninguno</option>
+            <option value="1">Bronce (1 estrella)</option>
+            <option value="2">Plata (2 estrellas)</option>
+            <option value="3">Oro (3 estrellas)</option>
+        </select>
+    </div>
+</div>
+<!-- Campos adicionales para fotos (solo visibles si es auspiciante) -->
+<div id="campos-fotos-auspicio" class="hidden space-y-3">
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fotos adicionales (máx. 4)</label>
+    <input type="url" id="lugar-imagen2" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 2">
+    <input type="url" id="lugar-imagen3" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 3">
+    <input type="url" id="lugar-imagen4" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 4">
+    <input type="url" id="lugar-imagen5" class="block w-full p-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-600 rounded-md shadow-sm" placeholder="URL de la foto 5">
+</div>
+
+
                             <div class="pt-4 flex justify-end">
                                                            <button id="contribution-submit-btn" type="submit" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 flex items-center justify-center min-w-[120px] shadow-lg">Añadir Lugar</button>
                             </div>
@@ -900,6 +921,7 @@ Aclaración: No hay un laberinto para niños."></textarea>
         </div>
         <!-- ✅ MODAL DE AR ELIMINADO -->
 
+
         <audio id="radio-player" preload="none"></audio>
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -956,9 +978,23 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const adminAddBtn = document.getElementById('admin-add-btn');
                 const adminManageBtn = document.getElementById('admin-manage-btn');
                 const contributionForm = document.getElementById('contribution-form');
+                // Mostrar/Ocultar campos de fotos según el nivel de auspicio
+const nivelAuspicioSelect = document.getElementById('lugar-nivel-auspicio');
+const camposFotosAuspicio = document.getElementById('campos-fotos-auspicio');
+if (nivelAuspicioSelect && camposFotosAuspicio) {
+    nivelAuspicioSelect.addEventListener('change', function() {
+        const nivel = parseInt(this.value);
+        if (nivel > 0) {
+            camposFotosAuspicio.classList.remove('hidden');
+        } else {
+            camposFotosAuspicio.classList.add('hidden');
+        }
+    });
+}
                 const tipForm = document.getElementById('tip-form');
                 const tipInput = document.getElementById('tip-input');
                 const plannerForm = document.getElementById('planner-form');
+               
                 const vrSky = document.getElementById('vr-sky');
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
@@ -1329,7 +1365,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         imagen360URL: document.getElementById('lugar-imagen360').value,
                         descripcion: document.getElementById('lugar-descripcion').value,
                         datosClave: document.getElementById('lugar-datos-clave').value,
-                        esAuspiciante: document.getElementById('lugar-sponsor').checked
+                        nivelAuspicio: parseInt(document.getElementById('lugar-nivel-auspicio').value) || 0,
+imagen2URL: document.getElementById('lugar-imagen2')?.value || '',
+imagen3URL: document.getElementById('lugar-imagen3')?.value || '',
+imagen4URL: document.getElementById('lugar-imagen4')?.value || '',
+imagen5URL: document.getElementById('lugar-imagen5')?.value || ''
                     };
                     try {
                         if (!lugaresCollectionRef) throw new Error("La referencia a la base de datos no está lista.");
@@ -1549,7 +1589,11 @@ Aclaración: No hay un laberinto para niños."></textarea>
                                 document.getElementById('lugar-datos-clave').value = placeToEdit.datosClave || '';
                                 document.getElementById('lugar-imagen').value = placeToEdit.imagenURL || '';
                                 document.getElementById('lugar-imagen360').value = placeToEdit.imagen360URL || '';
-                                document.getElementById('lugar-sponsor').checked = placeToEdit.esAuspiciante || false;
+                                nivelAuspicio: parseInt(document.getElementById('lugar-nivel-auspicio').value) || 0,
+imagen2URL: document.getElementById('lugar-imagen2')?.value || '',
+imagen3URL: document.getElementById('lugar-imagen3')?.value || '',
+imagen4URL: document.getElementById('lugar-imagen4')?.value || '',
+imagen5URL: document.getElementById('lugar-imagen5')?.value || ''
                                 const tipoSelect = document.getElementById('lugar-tipo');
                                 for(let i=0; i < tipoSelect.options.length; i++) {
                                     const option = tipoSelect.options[i];
@@ -1662,26 +1706,21 @@ Aclaración: No hay un laberinto para niños."></textarea>
                         }
                     }
                 }
-                function listenForNewPlaces() {
-                    if (!lugaresCollectionRef) return;
-                    onSnapshot(lugaresCollectionRef, (snapshot) => {
-                        placesCache = [];
-                        dynamicKnowledgeBase = {
-                            restaurantes: {},
-                            alojamiento: {},
-                            actividades: {},
-                            lugaresParaVisitar: {}
-                        };
-                        snapshot.docs.forEach(doc => {
-                            const place = { id: doc.id, ...doc.data() };
-                            placesCache.push(place);
-                            const tipo = place.tipo;
-                            if (dynamicKnowledgeBase[tipo]) {
-                                if (!dynamicKnowledgeBase[tipo][place.localidad]) {
-                                    dynamicKnowledgeBase[tipo][place.localidad] = [];
-                                }
-                                dynamicKnowledgeBase[tipo][place.localidad].push(place);
-                            }
+                                        // Ordenar cada array de lugares: primero los de mayor nivel de auspicio
+                        Object.keys(dynamicKnowledgeBase).forEach(tipo => {
+                            Object.keys(dynamicKnowledgeBase[tipo]).forEach(localidad => {
+                                dynamicKnowledgeBase[tipo][localidad].sort((a, b) => 
+                                    (b.nivelAuspicio || 0) - (a.nivelAuspicio || 0)
+                                );
+                            });
+                        });
+                                                // Ordenar cada array de lugares: primero los de mayor nivel de auspicio
+                        Object.keys(dynamicKnowledgeBase).forEach(tipo => {
+                            Object.keys(dynamicKnowledgeBase[tipo]).forEach(localidad => {
+                                dynamicKnowledgeBase[tipo][localidad].sort((a, b) => 
+                                    (b.nivelAuspicio || 0) - (a.nivelAuspicio || 0)
+                                );
+                            });
                         });
                         if (!isDataReady) {
                             chatInput.disabled = false;
@@ -1757,26 +1796,32 @@ const weatherCodeToDescription = {
     99: "Tormenta con granizo intenso"
 };
 
+
 async function formatWeatherResponse(weatherInfo, timeframe) {
     const current = weatherInfo.data.current;
     const daily = weatherInfo.data.daily;
     const lugar = weatherInfo.location;
 
+
     // ✅ Ajustar "noche" a las 21:00 (no a las 18:00)
     const now = new Date();
     const isNight = now.getHours() >= 21; // ← ahora es de noche a las 21:00
 
+
     // ✅ Obtener el nombre del día real de "hoy"
     const hoy = now.toLocaleDateString('es-AR', { weekday: 'long' });
+
 
     // ✅ Clima actual
     const tempActual = Math.round(current.temperature_2m);
     const climaActualDesc = weatherCodeToDescription[current.weather_code] || "Clima actual";
 
+
     // ✅ Construir el pronóstico semanal, ajustando el inicio
     const resumenSemanal = [];
     const startIndex = isNight ? 1 : 0; // si es de noche, empezamos desde mañana
     const daysToShow = 7;
+
 
     for (let i = startIndex; i < Math.min(startIndex + daysToShow, daily.time.length); i++) {
         const fecha = new Date(daily.time[i]);
@@ -1796,6 +1841,7 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
         });
     }
 
+
     const relevantData = {
         lugar: lugar,
         clima_actual: {
@@ -1805,6 +1851,7 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
         },
         pronostico_semanal: resumenSemanal
     };
+
 
     const prompt = `
         Eres Andes, un guía turístico amigable y profesional de la Comarca Andina, en la Patagonia Argentina.
@@ -1820,6 +1867,7 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
         Datos del clima:
         ${JSON.stringify(relevantData)}
     `;
+
 
     const history = [{ role: "user", parts: [{ text: "Dame el clima" }] }];
     const response = await getAIResponse(history, prompt);
@@ -1884,9 +1932,11 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
         }
     }
 
+
     if (sender === 'ai' && message.isSponsored) {
         messageContent.classList.add('sponsored-message');
     }
+
 
     messageDiv.appendChild(messageContent);
     chatWindow.appendChild(messageDiv);
@@ -1935,18 +1985,22 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                 async function getAIResponse(history, systemInstructions) {
     const TIMEOUT_MS = 15000; // 15 segundos
 
+
     try {
         const apiKey = "AIzaSyCH9o4_vc4ih8G95AEXGnk7fF3ZnP1aYas";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
 
         // ✅ Crear un Promise que se rechaza si pasa el timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
+
         const payload = {
             contents: history,
             systemInstruction: { parts: [{ text: systemInstructions }] }
         };
+
 
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -1955,7 +2009,9 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
             signal: controller.signal // ← vincular el abort
         });
 
+
         clearTimeout(timeoutId);
+
 
         if (!response.ok) {
             const errorBody = await response.json().catch(() => ({}));
@@ -1963,9 +2019,11 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
             throw new Error(`API falló con estado: ${response.status}`);
         }
 
+
         const result = await response.json();
         const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Lo siento, no pude generar una respuesta.";
         return processAIResponseText(text);
+
 
     } catch (error) {
         console.error("Error en getAIResponse:", error);
@@ -2002,37 +2060,49 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                     return placesCache.find(place => place.nombre.toLowerCase() === name.toLowerCase());
                 }
                 function formatPlaceForAI(place) {
-                    let html = `<h3 class="font-bold text-lg mb-2">${place.esAuspiciante ? '⭐ ' : ''}${place.nombre}</h3>`;
-                    html += `<p class="text-sm">${place.descripcion}</p>`;
-                    if (place.datosClave) {
-                        html += `<div class="mt-2 text-xs bg-slate-700 text-gray-100 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
-                    }
-                    if (place.direccion || place.telefono) {
-                        html += `<div class="mt-2 text-xs">`;
-                        if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
-                        if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
-                        html += `</div>`;
-                    }
-                    if (place.imagenURL) {
-                        html += `<img src="${place.imagenURL}" alt="Imagen de ${place.nombre}" class="mt-2 rounded-lg max-h-48 w-auto">`;
-                    }
-                    html += `<div class="mt-3 flex flex-wrap gap-2">`;
-                    if (place.imagen360URL) {
-                        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
-                    }
-                    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
-                    if (place.latitud && place.longitud) {
-                        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
-                    }
-                    html += `</div>`;
-                    return html;
-                }
+    const estrellas = place.nivelAuspicio > 0 ? '⭐'.repeat(place.nivelAuspicio) + ' ' : '';
+    let html = `<h3 class="font-bold text-lg mb-2">${estrellas}${place.nombre}</h3>`;
+    html += `<p class="text-sm">${place.descripcion}</p>`;
+    if (place.datosClave) {
+        html += `<div class="mt-2 text-xs bg-slate-700 text-gray-100 p-2 rounded"><strong>Datos clave:</strong><br>${place.datosClave.replace(/\n/g, '<br>')}</div>`;
+    }
+    if (place.direccion || place.telefono) {
+        html += `<div class="mt-2 text-xs">`;
+        if (place.direccion) html += `<strong>Dirección:</strong> ${place.direccion}<br>`;
+        if (place.telefono) html += `<strong>Teléfono:</strong> ${place.telefono}`;
+        html += `</div>`;
+    }
+    const fotos = [
+        place.imagenURL,
+        place.imagen2URL,
+        place.imagen3URL,
+        place.imagen4URL,
+        place.imagen5URL
+    ].filter(url => url && url.trim() !== '');
+    if (fotos.length > 0) {
+        html += `<div class="mt-2 grid grid-cols-2 gap-2">`;
+        fotos.forEach(foto => {
+            html += `<img src="${foto}" alt="Foto de ${place.nombre}" class="rounded-lg w-full h-32 object-cover">`;
+        });
+        html += `</div>`;
+    }
+    html += `<div class="mt-3 flex flex-wrap gap-2">`;
+    if (place.imagen360URL) {
+        html += `<button class="view-360-btn text-xs bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600" data-image="${place.imagen360URL}">Ver en 360°</button>`;
+    }
+    html += `<button class="rate-place-btn text-xs bg-amber-500 text-white py-1 px-3 rounded-full hover:bg-amber-600" data-id="${place.id}">Ver/Dejar Opiniones</button>`;
+    if (place.latitud && place.longitud) {
+        html += `<button class="view-on-map-btn text-xs bg-sky-500 text-white py-1 px-3 rounded-full hover:bg-sky-600" data-id="${place.id}">Ver en Mapa</button>`;
+    }
+    html += `</div>`;
+    return html;
+}
                 function updateSuggestions() {
                     suggestionsContainer.innerHTML = '';
                     const suggestions = [
                         "¿Qué puedo hacer hoy?",
                         "Restaurantes en El Bolsón",
-                        "Cabañas en..."];
+                        "Cabañas en El Hoyo"];
                     suggestions.forEach(text => {
                         const button = document.createElement('button');
                         button.className = "bg-gray-200 dark:bg-slate-700 text-sm px-3 py-1 rounded-full hover:bg-gray-300 dark:hover:bg-slate-600";
@@ -2076,10 +2146,12 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                     const selectedEnergyBtn = document.querySelector('#planner-energy-group .bg-emerald-500');
                     const energy = selectedEnergyBtn ? selectedEnergyBtn.dataset.value : 'Medio';
 
+
                     // ✅ NUEVO: obtener localidades seleccionadas
                     const selectedLocalidades = Array.from(document.querySelectorAll('.planner-localidad-checkbox:checked'))
                         .map(cb => cb.value);
                     const localidades = selectedLocalidades.length > 0 ? selectedLocalidades : ["El Bolsón", "Lago Puelo", "El Hoyo", "Epuyén", "El Maitén", "Cholila"];
+
 
                     plannerModal.classList.add('hidden');
                     const userMessage = `Quiero un plan de viaje para ${days} días, con un estilo ${style}, nivel de energía ${energy}, visitando estas localidades: ${localidades.join(', ')}.`;
@@ -2112,6 +2184,7 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                         - Nivel de Energía: ${energy}
                         - Localidades a visitar: ${localidades.join(', ')}
 
+
                         BASE DE CONOCIMIENTO DISPONIBLE (LUGARES):
                         \`\`\`json
                         ${JSON.stringify(dynamicKnowledgeBase, null, 2)}
@@ -2138,6 +2211,7 @@ async function formatWeatherResponse(weatherInfo, timeframe) {
                 const toggleDarkModeBtn = document.getElementById('toggle-dark-mode-btn');
 let isDarkMode = true; // asumimos que empieza en modo oscuro
 
+
 function toggleDarkMode() {
     isDarkMode = !isDarkMode;
     if (isDarkMode) {
@@ -2162,6 +2236,7 @@ function toggleDarkMode() {
         `;
     }
 }
+
 
 if (toggleDarkModeBtn) {
     toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
@@ -2439,6 +2514,7 @@ if (toggleDarkModeBtn) {
                     }, 200);
                 }
                 // ✅ FUNCIONALIDAD DE AR ELIMINADA
+
 
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
