@@ -130,6 +130,7 @@
             background-color: #059669 !important;
             transform: scale(1.02);
         }
+}
         /* ✅ Corrección para botones del planificador en modo oscuro y móvil */
         .planner-option-btn {
             flex: 1;
@@ -1364,7 +1365,7 @@ if (nivelAuspicioSelect && camposFotosAuspicio) {
                         imagen360URL: document.getElementById('lugar-imagen360').value,
                         descripcion: document.getElementById('lugar-descripcion').value,
                         datosClave: document.getElementById('lugar-datos-clave').value,
-                        nivelAuspicio: parseInt(document.getElementById('lugar-nivel-auspicio').value) || 0,
+document.getElementById('lugar-nivel-auspicio').value = parseInt(document.getElementById('lugar-nivel-auspicio').value) || 0;
 imagen2URL: document.getElementById('lugar-imagen2')?.value || '',
 imagen3URL: document.getElementById('lugar-imagen3')?.value || '',
 imagen4URL: document.getElementById('lugar-imagen4')?.value || '',
@@ -1588,13 +1589,12 @@ imagen5URL: document.getElementById('lugar-imagen5')?.value || ''
                                 document.getElementById('lugar-datos-clave').value = placeToEdit.datosClave || '';
                                 document.getElementById('lugar-imagen').value = placeToEdit.imagenURL || '';
                                 document.getElementById('lugar-imagen360').value = placeToEdit.imagen360URL || '';
-                                nivelAuspicio: parseInt(document.getElementById('lugar-nivel-auspicio').value) || 0,
-imagen2URL: document.getElementById('lugar-imagen2')?.value || '',
-imagen3URL: document.getElementById('lugar-imagen3')?.value || '',
-imagen4URL: document.getElementById('lugar-imagen4')?.value || '',
-imagen5URL: document.getElementById('lugar-imagen5')?.value || ''
-                                const tipoSelect = document.getElementById('lugar-tipo');
-                                for(let i=0; i < tipoSelect.options.length; i++) {
+                                document.getElementById('lugar-nivel-auspicio').value = parseInt(placeToEdit.nivelAuspicio) || 0;
+document.getElementById('lugar-imagen2').value = placeToEdit.imagen2URL || '';
+document.getElementById('lugar-imagen3').value = placeToEdit.imagen3URL || '';
+document.getElementById('lugar-imagen4').value = placeToEdit.imagen4URL || '';
+document.getElementById('lugar-imagen5').value = placeToEdit.imagen5URL || '';
+for(let i=0; i < tipoSelect.options.length; i++) {
                                     const option = tipoSelect.options[i];
                                     if(option.value === placeToEdit.tipo && (option.dataset.subtype || '') === placeToEdit.subtipo) {
                                         tipoSelect.selectedIndex = i;
