@@ -976,15 +976,18 @@ Aclaración: No hay un laberinto para niños."></textarea>
                 const tipInput = document.getElementById('tip-input');
                 const plannerForm = document.getElementById('planner-form');
                 // Mostrar/Ocultar campos de fotos según el nivel de auspicio
-document.getElementById('lugar-nivel-auspicio').addEventListener('change', function() {
-    const nivel = parseInt(this.value);
-    const camposFotos = document.getElementById('campos-fotos-auspicio');
-    if (nivel > 0) {
-        camposFotos.classList.remove('hidden');
-    } else {
-        camposFotos.classList.add('hidden');
-    }
-});
+const nivelAuspicioSelect = document.getElementById('lugar-nivel-auspicio');
+const camposFotosAuspicio = document.getElementById('campos-fotos-auspicio');
+if (nivelAuspicioSelect && camposFotosAuspicio) {
+    nivelAuspicioSelect.addEventListener('change', function() {
+        const nivel = parseInt(this.value);
+        if (nivel > 0) {
+            camposFotosAuspicio.classList.remove('hidden');
+        } else {
+            camposFotosAuspicio.classList.add('hidden');
+        }
+    });
+}
                 const vrSky = document.getElementById('vr-sky');
                 const manageList = document.getElementById('manage-list');
                 const rinconList = document.getElementById('rincon-list');
